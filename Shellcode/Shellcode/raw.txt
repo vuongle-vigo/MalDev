@@ -1,0 +1,31 @@
+Microsoft (R) COFF/PE Dumper Version 12.00.21005.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file main.obj
+
+File Type: COFF OBJECT
+
+SECTION HEADER #1
+.text$mn name
+       0 physical address
+       0 virtual address
+      24 size of raw data
+      B4 file pointer to raw data (000000B4 to 000000D7)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+60300020 flags
+         Code
+         4 byte align
+         Execute Read
+
+RAW DATA #1
+  00000000: 55 8B EC 81 EC 00 03 00 00 33 C0 89 45 FC 89 45  U.ì.ì....3À.Eü.E
+  00000010: F8 64 A1 30 00 00 00 89 45 FC 83 C0 0C 89 45 F8  ød¡0....Eü.À..Eø
+  00000020: 8B E5 5D C3                                      .å]Ã
+
+  Summary
+
+          24 .text$mn

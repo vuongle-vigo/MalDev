@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.35906.104 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Downloader", "Downloader\Downloader.vcxproj", "{86210C86-2B04-43EA-9B67-5505F17FCADC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DownloaderDLL", "DownloaderDLL\DownloaderDLL.vcxproj", "{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,14 @@ Global
 		{86210C86-2B04-43EA-9B67-5505F17FCADC}.Release|x64.Build.0 = Release|x64
 		{86210C86-2B04-43EA-9B67-5505F17FCADC}.Release|x86.ActiveCfg = Release|Win32
 		{86210C86-2B04-43EA-9B67-5505F17FCADC}.Release|x86.Build.0 = Release|Win32
+		{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}.Debug|x64.ActiveCfg = Debug|x64
+		{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}.Debug|x64.Build.0 = Debug|x64
+		{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}.Debug|x86.ActiveCfg = Debug|Win32
+		{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}.Debug|x86.Build.0 = Debug|Win32
+		{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}.Release|x64.ActiveCfg = Release|x64
+		{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}.Release|x64.Build.0 = Release|x64
+		{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}.Release|x86.ActiveCfg = Release|Win32
+		{5DE9F5CD-2619-4F98-9562-A0DCC83EBEA7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

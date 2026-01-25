@@ -66,3 +66,7 @@ __pycache__/
 *.pyd
 *.pdb
 /venv/
+
+
+# File
+*.msi

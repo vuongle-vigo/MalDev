@@ -58,3 +58,11 @@ dkms.conf
 #VS C
 .vs/
 x64/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+/venv/

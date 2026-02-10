@@ -35,19 +35,22 @@ start_code:
 	add esp, 8
 	mov [ebp - 16], eax		;store kernel32 base
 
-	push [ebx + offset sLoadLibraryA]
+	lea edx, [ebx + offset sLoadLibraryA]
+	push edx
 	push eax
 	call GetFuncAddr
 	mov [ebp - 20], eax
 
-	push [ebx + offset sUser32]
+	lea edx, [ebx + offset sUser32]
+	push edx
 	call eax		;LoadLibraryA
 
 	test eax, eax
 	jz Exit
 
 	mov [ebp - 24], eax	;Store HMODULE User32
-	push [ebx + offset sMessageBoxA]
+	lea edx, [ebx + offset sMessageBoxA]
+	push edx
 	push eax
 	call GetFuncAddr
 	mov [ebp - 28], eax

@@ -11,7 +11,7 @@ start_code:
 
 	push ebp
 	mov ebp, esp
-	sub esp, 300h				;prelog 
+	sub esp, 300h			;prelog 
 	xor eax, eax
 	mov [ebp - 4], eax		;*PEB
 	mov [ebp - 8], eax		;*LDR
@@ -20,8 +20,9 @@ start_code:
 	mov [ebp - 20], eax		;LoadLibrary
 	mov [ebp - 24], eax		;HMODULE User32.dll
 	mov [ebp - 28], eax		;MessageBoxA
+
 	assume fs:nothing
-	mov eax, fs:[30h]
+	mov eax, fs:[30h]		;Get PEB
 	assume fs:error
 
 	mov eax, [eax + 0ch]		;*LDR
@@ -81,20 +82,14 @@ LoopGetModuleBase:
 	add ecx, 24h		;pointer to UNICODE_STRING FullDllName; 
 	mov ecx, [ecx + 4h]	;pointer to PWSTR  Buffer;	
 		
-	push esi
-	push edi
-
 	push ecx
 	push edi
 	call CompareUnicodeString
 	add esp, 8
 
-	pop edi
-	pop esi
-
 	test eax, eax
 	jz LoopGetModuleBase
-	mov eax, [esi + 18h - 8h]
+	mov eax, [esi - 8h + 18h]	;Pointer to PVOID DllBase;
 	mov esp, ebp
 	pop ebp
 	ret
@@ -103,65 +98,62 @@ GetModuleBase endp
 GetFuncAddr proc	;arg1: base dll ;arg2: winapiname ;return address of api
 	push ebp
 	mov ebp, esp
-	sub esp, 20h
+	sub esp, 50h
 	xor eax, eax
-	mov [ebp - 4], eax	;base dll
-	mov [ebp - 8], eax	;RVA to AddressOfFunctions
-	mov [ebp - 12], eax ;RVA to AddressOfNameOridinal
-	mov esi, [ebp + 8]	;base dll
+
+	mov [ebp - 4], eax		;base dll
+	mov [ebp - 8], eax		;RVA to AddressOfFunctions
+	mov [ebp - 12], eax		;RVA to AddressOfNameOridinal
+
+	mov esi, [ebp + 8]		;base dll
 	mov [ebp - 4], esi
-	add esi, [esi + 3ch] ;pointer to nt header
+	add esi, [esi + 3ch]	;pointer to nt header
 	mov esi, [esi + 78h]
 	mov eax, [ebp - 4]
-	add esi, eax		;pointer to _IMAGE_EXPORT_DIRECTORY 
-	lea eax, [esi + 20h]	;RVA to AddressOfNames
+	add esi, eax			;pointer to _IMAGE_EXPORT_DIRECTORY 
+	lea eax, [esi + 20h]	;RVA to AddressOfNames array
 	lea edx, [esi + 1ch]	;RVA to AddressOfFunctions
 	mov [ebp - 8], edx
 	lea edx, [esi + 24h]	;RVA to AddressOfNameOridinal
-	mov [ebp - 12], edx
+	mov [ebp - 12], edx	
 
-	mov esi, [eax]
-	add esi, [ebp - 4]		
+	mov esi, [eax]			;RVA AddressOfNames[0]
+	add esi, [ebp - 4]		;VA AddressOfNames[0]
 	xor ecx, ecx
 
-	mov edi, [ebp + 12] ;string function name
+	mov edi, [ebp + 12]		;arg2 winapi name
 LoopFindNameFunc:
 	mov eax, [esi]
 	add eax, [ebp - 4]
 	
-	push esi
-	push edi
-
 	push edi
 	push eax
 	call CompareString
 	add esp, 8
 
-	pop edi
-	pop esi
-	add esi, 4
-	inc ecx
-	test eax, eax
+	add esi, 4				;AddressOfNames[i + 1]
+	inc ecx					;inc index
+	test eax, eax			;Check result compare
 	jz LoopFindNameFunc
 
-	mov edx, [ebp - 12]
-	mov eax, [ebp - 4]
-	add eax, [edx]
+	mov edx, [ebp - 12]		;RVA to AddressOfNameOridinal
+	mov eax, [ebp - 4]		;base dll
+	add eax, [edx]			;VA AddressOfNameOridinal
 
-	lea edx, [ecx * 2]	;calc index of oridinals - word
+	lea edx, [ecx * 2]		;calc index of oridinals - word
 	add eax, edx
 	xor edx, edx
-	mov dx, [eax]	;store oridinal to dx
+	mov dx, [eax]			;store oridinal to dx
 
-	dec edx			;dec index
+	dec edx				;dec index
 	lea edx, [edx * 4]	;calc offset (dword)
 	mov eax, [ebp - 8]	;RVA address func
 	mov eax, [eax]
 	add eax, [ebp - 4]	;VA address func
 	add eax, edx		;VA function find
 
-	mov eax, [eax]		;address function find
-	add eax, [ebp - 4]
+	mov eax, [eax]		;RVA function find
+	add eax, [ebp - 4]	;VA function
 
 	mov esp, ebp
 	pop ebp
@@ -171,8 +163,13 @@ GetFuncAddr endp
 CompareUnicodeString proc	;arg1: unicode string 1		;arg2: unicode string 2
 	push ebp
 	mov ebp, esp
+
+	push esi
+	push edi
+
 	mov esi, [ebp + 8]	;arg1
 	mov edi, [ebp + 12] ;arg2
+
 	xor ecx, ecx
 LoopCompare:
 	mov al, [esi + ecx]
@@ -180,12 +177,12 @@ LoopCompare:
 	add ecx, 2
 	push eax
 	call ToLower
-	push eax
+	push eax		;store char1
 	push edx
 	call ToLower
-	add esp, 4
-	mov dl, al
-	pop eax
+	add esp, 4		;restore stack
+	mov dl, al		;store result to dl
+	pop eax			;restore char1
 	test al, al
 	jnz Compare
 	test dl, dl
@@ -200,6 +197,10 @@ Compare:
 	jmp ExitCompare
 
 ExitCompare:
+
+	pop edi
+	pop esi
+	
 	mov esp, ebp
 	pop ebp
 	ret
@@ -208,9 +209,12 @@ CompareUnicodeString endp
 CompareString proc	;arg1: string 1 ;arg2: string 2
 	push ebp
 	mov ebp, esp
+	
+	push esi
+	push edi
+
 	mov esi, [ebp + 8]	;arg1
 	mov edi, [ebp + 12]	;arg2
-
 LoopCompareString:
 	mov al, byte ptr [esi]
 	mov dl, byte ptr [edi]
@@ -239,6 +243,10 @@ CompareByte:
 	je LoopCompareString
 	xor eax, eax
 ExitCompareString:
+	
+	pop edi
+	pop esi
+
 	mov esp, ebp
 	pop ebp
 	ret

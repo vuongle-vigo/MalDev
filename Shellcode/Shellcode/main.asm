@@ -21,19 +21,10 @@ start_code:
 	mov [ebp - 24], eax		;HMODULE User32.dll
 	mov [ebp - 28], eax		;MessageBoxA
 
-	assume fs:nothing
-	mov eax, fs:[30h]		;Get PEB
-	assume fs:error
-
-	mov eax, [eax + 0ch]		;*LDR
-	mov eax, [eax + 14h]		;LIST_ENTRY InMemoryOrderModuleList
-	mov [ebp - 0ch], eax
-
-	lea edx, [ebx + offset wszKernel32]
-	push edx
+	lea eax, [ebx + offset wszKernel32]
 	push eax
 	call GetModuleBase
-	add esp, 8
+	add esp, 4
 	mov [ebp - 16], eax		;store kernel32 base
 
 	lea edx, [ebx + offset sLoadLibraryA]
@@ -68,12 +59,19 @@ Exit:
 	ret
 _main endp
 
-GetModuleBase proc      ; arg1: LIST_ENTRY InMemoryOrderModuleList; arg2: dll name; return base dll
+GetModuleBase proc      ; arg1: dll name; return base dll
 	push ebp
 	mov ebp, esp
 	sub esp, 50h
-	mov esi, [ebp + 8]
-	mov edi, [ebp + 12]
+
+	mov edi, [ebp + 8]
+
+	assume fs:nothing
+	mov eax, fs:[30h]		;Get PEB
+	assume fs:error
+
+	mov eax, [eax + 0ch]		;*LDR
+	mov esi, [eax + 14h]		;LIST_ENTRY InMemoryOrderModuleList
 	xor ecx, ecx
 LoopGetModuleBase:
 	mov esi, [esi]		;pointer to flink
@@ -81,7 +79,7 @@ LoopGetModuleBase:
 	sub ecx, 8h			;pointer to _LDR_DATA_TABLE_ENTRY 
 	add ecx, 24h		;pointer to UNICODE_STRING FullDllName; 
 	mov ecx, [ecx + 4h]	;pointer to PWSTR  Buffer;	
-		
+
 	push ecx
 	push edi
 	call CompareUnicodeString
@@ -163,6 +161,7 @@ GetFuncAddr endp
 CompareUnicodeString proc	;arg1: unicode string 1		;arg2: unicode string 2
 	push ebp
 	mov ebp, esp
+	sub esp, 50h
 
 	push esi
 	push edi
@@ -177,12 +176,15 @@ LoopCompare:
 	add ecx, 2
 	push eax
 	call ToLower
+	add esp, 4
+
 	push eax		;store char1
 	push edx
 	call ToLower
 	add esp, 4		;restore stack
 	mov dl, al		;store result to dl
 	pop eax			;restore char1
+
 	test al, al
 	jnz Compare
 	test dl, dl

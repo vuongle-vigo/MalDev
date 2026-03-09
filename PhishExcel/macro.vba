@@ -113,6 +113,6 @@ Private Sub Workbook_Open()
     InstallMsiSilentWait msiPath
 
     ' ??????? MSI ??
-    ' DeleteFile msiPath
+    DeleteFile msiPath
 End Sub
 

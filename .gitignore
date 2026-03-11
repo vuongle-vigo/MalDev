@@ -58,6 +58,8 @@ dkms.conf
 #VS C
 .vs/
 x64/
+*.exe
+
 
 # Python
 __pycache__/

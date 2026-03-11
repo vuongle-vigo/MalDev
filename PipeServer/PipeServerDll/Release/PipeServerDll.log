@@ -1,0 +1,12 @@
+﻿  dllmain.cpp
+C:\Users\ADMIN\Documents\GitHub\MalDev\PipeServer\PipeServerDll\dllmain.cpp(265,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\ADMIN\Documents\GitHub\MalDev\PipeServer\PipeServerDll\dllmain.cpp(391,10): warning C4101: 'bytesWritten': unreferenced local variable
+     Creating library C:\Users\ADMIN\Documents\GitHub\MalDev\PipeServer\Release\PipeServerDll.lib and object C:\Users\ADMIN\Documents\GitHub\MalDev\PipeServer\Release\PipeServerDll.exp
+  Generating code
+  2 of 421 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  PipeServerDll.vcxproj -> C:\Users\ADMIN\Documents\GitHub\MalDev\PipeServer\Release\PipeServerDll.dll
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.

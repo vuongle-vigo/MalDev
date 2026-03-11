@@ -10,10 +10,10 @@
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
     <Filter Include="MemoryMapping">
-      <UniqueIdentifier>{f3ff9c74-edb5-4c54-9a0a-3c5301e688b0}</UniqueIdentifier>
+      <UniqueIdentifier>{9773fa4c-18fd-4bf2-b7c2-70ca049a3b3c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ProcessUtils">
-      <UniqueIdentifier>{95d40c2a-f2a8-40c2-b6c5-ff6b9dacf8ad}</UniqueIdentifier>
+      <UniqueIdentifier>{f361e795-89fa-48e7-b693-1d06514a6987}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -23,13 +23,25 @@
     <ClCompile Include="MemoryMapping.cpp">
       <Filter>MemoryMapping</Filter>
     </ClCompile>
-    <ClCompile Include="ResolveApi.h">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="ProcessUtils.cpp">
+      <Filter>ProcessUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ResolveApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="MemoryMapping.h">
       <Filter>MemoryMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessUtils.h">
+      <Filter>ProcessUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

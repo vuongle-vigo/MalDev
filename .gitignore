@@ -60,7 +60,8 @@ dkms.conf
 .vs/
 x64/
 *.exe
-
+Debug/
+Release/
 
 # Python
 __pycache__/

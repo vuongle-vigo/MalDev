@@ -9,21 +9,20 @@
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-CONST	SEGMENT
-$SG2772	DB	'vuongle', 00H
-CONST	ENDS
+PUBLIC	?test@@YAXXZ					; test
 PUBLIC	_main
+EXTRN	__imp__CreateThread@24:PROC
+EXTRN	__imp__MessageBoxA@16:PROC
 ; Function compile flags: /Odtp
 _TEXT	SEGMENT
-_dataString$ = -20					; size = 10
-_dataa$ = -8						; size = 8
+_dataString$ = -12					; size = 10
 _main	PROC
 ; File C:\Users\levuong\Documents\GitHub\MalDev\Shellcode\ShellcodeExe\main.cpp
-; Line 4
+; Line 10
 	push	ebp
 	mov	ebp, esp
-	sub	esp, 20					; 00000014H
-; Line 6
+	sub	esp, 12					; 0000000cH
+; Line 11
 	mov	BYTE PTR _dataString$[ebp], 72		; 00000048H
 	mov	BYTE PTR _dataString$[ebp+1], 101	; 00000065H
 	mov	BYTE PTR _dataString$[ebp+2], 108	; 0000006cH
@@ -34,16 +33,59 @@ _main	PROC
 	mov	BYTE PTR _dataString$[ebp+7], 117	; 00000075H
 	mov	BYTE PTR _dataString$[ebp+8], 108	; 0000006cH
 	mov	BYTE PTR _dataString$[ebp+9], 100	; 00000064H
-; Line 8
-	mov	eax, DWORD PTR $SG2772
-	mov	ecx, DWORD PTR $SG2772+4
-	mov	DWORD PTR _dataa$[ebp], eax
-	mov	DWORD PTR _dataa$[ebp+4], ecx
-; Line 10
+; Line 12
+	push	0
+	push	0
+	push	0
+	push	0
+	call	DWORD PTR __imp__MessageBoxA@16
+; Line 13
+	push	0
+	push	0
+	push	0
+	push	OFFSET ?test@@YAXXZ			; test
+	push	0
+	push	0
+	call	DWORD PTR __imp__CreateThread@24
+	npad	1
+; Line 14
 	xor	eax, eax
 	mov	esp, ebp
 	pop	ebp
 	ret	0
 _main	ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtp
+_TEXT	SEGMENT
+_c$1 = -12						; size = 4
+_b$2 = -8						; size = 4
+_a$3 = -4						; size = 4
+?test@@YAXXZ PROC					; test
+; File C:\Users\levuong\Documents\GitHub\MalDev\Shellcode\ShellcodeExe\main.cpp
+; Line 3
+	push	ebp
+	mov	ebp, esp
+	sub	esp, 12					; 0000000cH
+$LN2@test:
+; Line 4
+	mov	eax, 1
+	test	eax, eax
+	je	SHORT $LN3@test
+; Line 5
+	mov	DWORD PTR _a$3[ebp], 1
+; Line 6
+	mov	DWORD PTR _b$2[ebp], 2
+; Line 7
+	mov	ecx, DWORD PTR _a$3[ebp]
+	add	ecx, DWORD PTR _b$2[ebp]
+	mov	DWORD PTR _c$1[ebp], ecx
+; Line 8
+	jmp	SHORT $LN2@test
+$LN3@test:
+; Line 9
+	mov	esp, ebp
+	pop	ebp
+	ret	0
+?test@@YAXXZ ENDP					; test
 _TEXT	ENDS
 END

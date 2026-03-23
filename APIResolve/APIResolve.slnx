@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="APIResolve/APIResolve.vcxproj" Id="639ee4f4-04c7-45d5-92a5-107abbb38fa7" />
+</Solution>

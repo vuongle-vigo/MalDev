@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="BrowserDecryptData/BrowserDecryptData.vcxproj" Id="60cda186-81e1-4ed1-ab86-946b3b0c892d" />
+</Solution>

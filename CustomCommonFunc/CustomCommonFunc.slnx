@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="CustomCommonFunc/CustomCommonFunc.vcxproj" Id="92e0f3bb-2ac7-4cc5-b242-cbf16ad6b7e3" />
+</Solution>

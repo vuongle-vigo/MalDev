@@ -102,12 +102,12 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, const char* sApiName) {
 		if (!CompareStringA(sName, sApiName)) {
 			continue;
 		}
-		
+
 		WORD ordinal = *(WORD*)((DWORD64)pAddressOfOrdinal + i * sizeof(BYTE) * 2);
 		DWORD rvaFunction = *(DWORD*)((DWORD64)pAddressOfFunction + ordinal * sizeof(DWORD));
 		return (LPVOID)((DWORD64)lpBaseAddress + rvaFunction);
 	}
-	
+
 	return NULL;
 }
 

@@ -5,4 +5,5 @@
   </Configurations>
   <Project Path="BrowserDecryptData/BrowserDecryptData.vcxproj" Id="60cda186-81e1-4ed1-ab86-946b3b0c892d" />
   <Project Path="DllDecryptKey/DllDecryptKey.vcxproj" Id="2a479be7-310e-400c-a1bd-e0804c0833b1" />
+  <Project Path="KeyExtractShell/KeyExtractShell.vcxproj" Id="c293049a-afd3-477d-a557-08cbba595342" />
 </Solution>

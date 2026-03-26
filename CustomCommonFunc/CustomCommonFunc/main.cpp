@@ -3,14 +3,17 @@
 #include "CRT.h"
 
 int main() {
-    
-    const char* sHello = "HelloWorld";
-    char* b64en = Base64Encode(sHello, 10);
+	LPVOID pBytes = nullptr;
+	if (AllocMemory(50, &pBytes)) {
+	
+	}
 
-    int length; 
-    char* b64de = Base64Decode(b64en, length);
+	char sHello[] = { 'h', 'e', 'l', 'l', 'o' };
+	CopyMemoryV(pBytes, sHello, 5);
 
+	if (!FreeMemory(pBytes)) {
 
+	}
 
     return 0;
 }

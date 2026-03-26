@@ -16,7 +16,6 @@ bool CopyStringW(const wchar_t* src, wchar_t* dst, size_t sizeDst);
 
 size_t StrLen(char* s);
 
-
 bool CopyMemoryV(void* dst, const void* src, SIZE_T size);
 
 bool AllocMemory(size_t size, LPVOID* result);

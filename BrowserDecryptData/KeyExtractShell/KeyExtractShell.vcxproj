@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{92e0f3bb-2ac7-4cc5-b242-cbf16ad6b7e3}</ProjectGuid>
-    <RootNamespace>CustomCommonFunc</RootNamespace>
+    <ProjectGuid>{c293049a-afd3-477d-a557-08cbba595342}</ProjectGuid>
+    <RootNamespace>KeyExtractShell</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -109,8 +109,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EntryPointSymbol>
-      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,16 +127,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ApiResolve.h" />
-    <ClInclude Include="Base64.h" />
-    <ClInclude Include="CRT.h" />
-    <ClInclude Include="HashString.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="ApiResolve.cpp" />
     <ClCompile Include="Base64.cpp" />
     <ClCompile Include="CRT.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ApiResolve.h" />
+    <ClInclude Include="Base64.h" />
+    <ClInclude Include="CRT.h" />
+    <ClInclude Include="HashString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

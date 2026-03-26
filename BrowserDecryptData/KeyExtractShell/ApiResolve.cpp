@@ -111,7 +111,7 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, const char* sApiName) {
 	return NULL;
 }
 
-LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash, unsigned int* hashNewDll, unsigned int* hashNewApi) {
+LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash) {
 	IMAGE_DOS_HEADER* pDosHeader = (IMAGE_DOS_HEADER*)lpBaseAddress;
 	IMAGE_NT_HEADERS* pNtHeaders = (IMAGE_NT_HEADERS*)((DWORD64)lpBaseAddress + pDosHeader->e_lfanew);
 	IMAGE_OPTIONAL_HEADER* pOptionalHeader = &pNtHeaders->OptionalHeader;

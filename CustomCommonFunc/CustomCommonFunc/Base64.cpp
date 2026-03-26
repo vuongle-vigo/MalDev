@@ -1,9 +1,14 @@
 #include "Base64.h"
+#include "CRT.h"
 
 char* Base64Encode(const char* input, int length) {
     char B64Chars[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' };
     int output_length = 4 * ((length + 2) / 3);
-    char* output = new char[output_length + 1]; 
+    char* output;
+    if (!AllocMemory(output_length + 1, (LPVOID*) & output)) {
+        return NULL;
+    }
+
 
     int val = 0, valb = -6;
     int out_index = 0;
@@ -34,7 +39,11 @@ char* Base64Decode(const char* input, int& output_length) {
     int length = 0;
     while (input[length] != '\0') length++; 
 
-    int* T = new int[256]; 
+    int* T = NULL;
+    if (!AllocMemory(256 * sizeof(int), (LPVOID*) & T)) {
+        return NULL;
+    }
+
     for (int i = 0; i < 256; i++) {
         T[i] = -1;
     }
@@ -61,6 +70,9 @@ char* Base64Decode(const char* input, int& output_length) {
     }
 
     output[out_index] = '\0';
-    delete[] T;
+    if (!FreeMemory(T)) {
+        return NULL;
+    }
+
     return output;
 }

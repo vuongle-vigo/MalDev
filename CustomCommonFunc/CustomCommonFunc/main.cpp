@@ -1,20 +1,14 @@
 #include "ApiResolve.h"
+#include "Base64.h"
 #include "CRT.h"
 
 int main() {
- //   constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
- //   constexpr unsigned int hashHello = ComplexHashForAnsi("hello");
+    
+    const char* sHello = "HelloWorld";
+    char* b64en = Base64Encode(sHello, 10);
 
- //   //std::cout << "Hash of kernel32.dll: " << std::hex << hashKernel32 << std::endl;
- //   //std::cout << "Hash of 'hello': " << std::hex << hashHello << std::endl;
-
-	//ApiResolve apiResolver;
-	//LPVOID hKernel32 = apiResolver.GetModuleBaseAddress(hashKernel32);
-
-	LPVOID pBytes = nullptr;
-	if (AllocMemory(50, &pBytes)) {
-	
-	}
+    int length; 
+    char* b64de = Base64Decode(b64en, length);
 
 
 

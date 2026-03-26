@@ -151,6 +151,19 @@ bool CopyStringW(const wchar_t* src, wchar_t* dst, size_t sizeDst) {
 	return false;
 }
 
+size_t StrLen(char* s) {
+	size_t size = 0;
+	while (true) {
+		if (s[size] == '\0') {
+			break;
+		}
+		
+		size++;
+	}
+
+	return size;
+}
+
 bool CopyMemoryV(void* dst, const void* src, SIZE_T size) {
 	BYTE* d = (BYTE*)dst;
 	BYTE* s = (BYTE*)src;

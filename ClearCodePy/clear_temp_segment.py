@@ -16,9 +16,12 @@ def clear_segments(input_file):
     
     filtered_lines = []
     skip = False
-    segments_to_remove = ['pdata', 'xdata']
+    segments_to_remove = ['pdata', 'xdata', 'voltbl']
     
     for line in lines:
+        # Thay thế 'gs:96' thành 'gs:[96]'
+        line = line.replace('gs:96', 'gs:[96]')
+        
         # Bắt đầu bỏ qua khi gặp SEGMENT
         for segment in segments_to_remove:
             if f'{segment}\tSEGMENT' in line or f'{segment} SEGMENT' in line:

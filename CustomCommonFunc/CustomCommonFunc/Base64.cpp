@@ -56,7 +56,10 @@ char* Base64Decode(const char* input, int& output_length) {
     if (input[length - 1] == '=') output_length--;
     if (input[length - 2] == '=') output_length--;
 
-    char* output = new char[output_length + 1];
+    char* output = NULL;
+    if (!AllocMemory(256 * sizeof(char), (LPVOID*)&output)) {
+        return NULL;
+    }
     int out_index = 0;
 
     for (int i = 0; i < length; i++) {

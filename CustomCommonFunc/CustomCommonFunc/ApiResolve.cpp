@@ -111,7 +111,7 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, const char* sApiName) {
 	return NULL;
 }
 
-LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash, unsigned int* hashNewDll, unsigned int* hashNewApi) {
+LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash) {
 	IMAGE_DOS_HEADER* pDosHeader = (IMAGE_DOS_HEADER*)lpBaseAddress;
 	IMAGE_NT_HEADERS* pNtHeaders = (IMAGE_NT_HEADERS*)((DWORD64)lpBaseAddress + pDosHeader->e_lfanew);
 	IMAGE_OPTIONAL_HEADER* pOptionalHeader = &pNtHeaders->OptionalHeader;
@@ -133,6 +133,46 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash, unsign
 
 		WORD ordinal = *(WORD*)((DWORD64)pAddressOfOrdinal + i * sizeof(BYTE) * 2);
 		DWORD rvaFunction = *(DWORD*)((DWORD64)pAddressOfFunction + ordinal * sizeof(DWORD));
+		LPVOID lpFunction = (LPVOID)((DWORD64)lpBaseAddress + rvaFunction);
+		if ((StrLen(sName) + 1) + sName == lpFunction) {
+			char* s = (char*)lpFunction;
+			int size = 0;
+			for (int i = 0;;i++) {
+				if (*s == '.') {
+					break;
+				}
+
+				s++;
+				size++;
+			}
+
+			char sDllName[MAX_PATH] = { 0 };
+			CopyStringA((char*)lpFunction, sDllName, size + 4);
+			char dll[] = { '.', 'd', 'l', 'l' };
+			CopyStringA(dll, sDllName + size, 4);
+			LowerStringA(sDllName);
+			wchar_t wsDllName[MAX_PATH] = { 0 };
+			StringAToW(sDllName, wsDllName);
+
+			char sNewApiName[MAX_PATH] = { 0 };
+			CopyStringA(s + 1, sNewApiName, MAX_PATH);
+			LPVOID lpNewDll = GetModuleBaseAddress(ComplexHashForWChar(wsDllName));
+			if (!lpNewDll) {
+				constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+				LPVOID lpKernel32 = GetModuleBaseAddress(hashKernel32);
+				if (!lpKernel32) { return NULL; }
+				constexpr unsigned int hashLoadLibraryA = ComplexHashForAnsi("LoadLibraryA");
+				typedef HMODULE(WINAPI* _LoadLibraryA)(LPCSTR lpLibFileName);
+				_LoadLibraryA pLoadLibraryA = (_LoadLibraryA)GetApiAddress(lpKernel32, hashLoadLibraryA);
+				if (!pLoadLibraryA) { return NULL; }
+				HMODULE hModule = pLoadLibraryA(sDllName);
+				if (!hModule) { return NULL; }
+				lpNewDll = hModule;
+			}
+
+			return GetApiAddress(lpNewDll, ComplexHashForAnsi(sNewApiName));
+		}
+
 		return (LPVOID)((DWORD64)lpBaseAddress + rvaFunction);
 	}
 

@@ -4,3 +4,4 @@
 #include <TlHelp32.h>
 
 HANDLE GetProcessHandleByNameW(const std::wstring wsProcessName);
+HANDLE GetProcessHandleByPid(DWORD dwPid);

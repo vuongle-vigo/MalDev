@@ -131,6 +131,29 @@ bool FindPatternW(const wchar_t* s, const wchar_t* pattern, size_t sizePattern, 
 	}
 }
 
+bool StringAToW(char* src, wchar_t* dst) {
+	for (int i = 0; ;i++) {
+		dst[i] = src[i];
+		dst[i + 1] = '\0';
+		if (src[i] == '\0') {
+			break;
+		}
+	}
+
+	return true;
+}
+
+bool StringWToA(wchar_t* src, char* dst) {
+	for (int i = 0; ; i++) {
+		dst[i] = src[i];
+		if (src[i] == '\0') {
+			break;
+		}
+	}
+
+	return true;
+}
+
 bool CopyStringA(const char* src, char* dst, size_t sizeDst) {
 	for (int i = 0; i < sizeDst; i++) {
 		dst[i] = src[i];
@@ -164,7 +187,7 @@ size_t StrLen(char* s) {
 	return size;
 }
 
-bool CopyMemoryV(void* dst, const void* src, SIZE_T size) {
+bool CopyMemoryV(const void* src, void* dst, SIZE_T size) {
 	BYTE* d = (BYTE*)dst;
 	BYTE* s = (BYTE*)src;
 
@@ -181,6 +204,13 @@ bool AllocMemory(size_t size, LPVOID* result) {
 		ULONG Flags,
 		SIZE_T Size
 		);
+	typedef LPVOID(WINAPI* _HeapAlloc)(
+		HANDLE hHeap,
+		DWORD  dwFlags,
+		SIZE_T dwBytes
+	);
+	unsigned int hashNewDll = 0;
+	unsigned int hashNewApi = 0;
 	typedef HANDLE(WINAPI* _GetProcessHeap)();
 	ApiResolve apiResolver;
 	constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
@@ -195,24 +225,15 @@ bool AllocMemory(size_t size, LPVOID* result) {
 		return false;
 	}
 
-	constexpr unsigned int hashNtdll = ComplexHashForWChar(L"ntdll.dll");
-	LPVOID lpNtdll = apiResolver.GetModuleBaseAddress(hashNtdll);
-	if (lpNtdll == NULL) {
-		return false;
-	}
-
-	constexpr unsigned int hashRtlAllocateHeap = ComplexHashForAnsi("RtlAllocateHeap");
-	_RtlAllocateHeap pRtlAllocateHeap = (_RtlAllocateHeap)apiResolver.GetApiAddress(lpNtdll, hashRtlAllocateHeap);
-	if (pRtlAllocateHeap == NULL) {
-		return false;
-	}
+	constexpr unsigned int hashHeapAlloc = ComplexHashForAnsi("HeapAlloc");
+	_HeapAlloc pHeapAlloc = (_HeapAlloc)apiResolver.GetApiAddress(lpKernel32, hashHeapAlloc);
 
 	HANDLE hHeap = pGetProcessHeap();
 	if (hHeap == NULL) {
 		return false;
 	}
 
-	*result = pRtlAllocateHeap(hHeap, HEAP_ZERO_MEMORY, size);
+	*result = pHeapAlloc(hHeap, HEAP_ZERO_MEMORY, size);
 	return true;
 }
 
@@ -224,7 +245,8 @@ bool FreeMemory(LPVOID lpMemory) {
 		);
 	typedef HANDLE(WINAPI* _GetProcessHeap)();
 	ApiResolve apiResolve;
-	LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(ComplexHashForWChar(L"kernel32.dll"));
+	constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+	LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
 	if (!lpKernel32) {
 		return false;
 	}

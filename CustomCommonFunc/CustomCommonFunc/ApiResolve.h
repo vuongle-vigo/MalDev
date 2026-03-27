@@ -63,7 +63,7 @@ public:
 	LPVOID GetModuleBaseAddress(const LPWSTR lpwsModuleName);
 	LPVOID GetModuleBaseAddress(unsigned int hash);
 	LPVOID GetApiAddress(LPVOID lpBaseAddress, const char* sApiName);
-	LPVOID GetApiAddress(LPVOID lpBaseAddress, unsigned int hash, unsigned int* hashNewDll, unsigned int* hashNewApi);
+	LPVOID GetApiAddress(LPVOID lpBaseAddress, unsigned int hash);
 private:
 	PPEB pPeb;
 };

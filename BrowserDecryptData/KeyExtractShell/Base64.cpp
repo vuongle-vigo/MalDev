@@ -5,7 +5,7 @@ char* Base64Encode(const char* input, int length) {
     char B64Chars[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' };
     int output_length = 4 * ((length + 2) / 3);
     char* output;
-    if (!AllocMemory(output_length + 1, (LPVOID*) & output)) {
+    if (!AllocMemory(output_length + 1, (LPVOID*)&output)) {
         return NULL;
     }
 
@@ -30,17 +30,17 @@ char* Base64Encode(const char* input, int length) {
         output[out_index++] = '=';
     }
 
-    output[out_index] = '\0'; 
+    output[out_index] = '\0';
     return output;
 }
 
 char* Base64Decode(const char* input, int& output_length) {
     char B64Chars[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' };
     int length = 0;
-    while (input[length] != '\0') length++; 
+    while (input[length] != '\0') length++;
 
     int* T = NULL;
-    if (!AllocMemory(256 * sizeof(int), (LPVOID*) & T)) {
+    if (!AllocMemory(256 * sizeof(int), (LPVOID*)&T)) {
         return NULL;
     }
 
@@ -56,7 +56,10 @@ char* Base64Decode(const char* input, int& output_length) {
     if (input[length - 1] == '=') output_length--;
     if (input[length - 2] == '=') output_length--;
 
-    char* output = new char[output_length + 1];
+    char* output = NULL;
+    if (!AllocMemory(256 * sizeof(char), (LPVOID*)&output)) {
+        return NULL;
+    }
     int out_index = 0;
 
     for (int i = 0; i < length; i++) {

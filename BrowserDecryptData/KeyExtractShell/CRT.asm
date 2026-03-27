@@ -5,11 +5,6 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-CONST	SEGMENT
-$SG93485 DB	'k', 00H, 'e', 00H, 'r', 00H, 'n', 00H, 'e', 00H, 'l', 00H
-	DB	'3', 00H, '2', 00H, '.', 00H, 'd', 00H, 'l', 00H, 'l', 00H, 00H
-	DB	00H
-CONST	ENDS
 PUBLIC	?LowerStringA@@YA_NPEAD@Z			; LowerStringA
 PUBLIC	?LowerStringW@@YA_NPEA_W@Z			; LowerStringW
 PUBLIC	?UpperStringA@@YA_NPEAD@Z			; UpperStringA
@@ -20,176 +15,16 @@ PUBLIC	?FindPatternA@@YA_NPEBD0_KPEAPEAD@Z		; FindPatternA
 PUBLIC	?FindPatternW@@YA_NPEB_W0_KPEAPEA_W@Z		; FindPatternW
 PUBLIC	?CopyStringA@@YA_NPEBDPEAD_K@Z			; CopyStringA
 PUBLIC	?CopyStringW@@YA_NPEB_WPEA_W_K@Z		; CopyStringW
+PUBLIC	?StringAToW@@YA_NPEADPEA_W@Z			; StringAToW
+PUBLIC	?StringWToA@@YA_NPEA_WPEAD@Z			; StringWToA
 PUBLIC	?StrLen@@YA_KPEAD@Z				; StrLen
-PUBLIC	?CopyMemoryV@@YA_NPEAXPEBX_K@Z			; CopyMemoryV
+PUBLIC	?CopyMemoryV@@YA_NPEBXPEAX_K@Z			; CopyMemoryV
 PUBLIC	?AllocMemory@@YA_N_KPEAPEAX@Z			; AllocMemory
 PUBLIC	?FreeMemory@@YA_NPEAX@Z				; FreeMemory
-PUBLIC	?Rotr@@YAIII@Z					; Rotr
-PUBLIC	?ComplexHashForWChar@@YAIPEB_W@Z		; ComplexHashForWChar
 EXTRN	??0ApiResolve@@QEAA@XZ:PROC			; ApiResolve::ApiResolve
 EXTRN	??1ApiResolve@@QEAA@XZ:PROC			; ApiResolve::~ApiResolve
 EXTRN	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z:PROC ; ApiResolve::GetModuleBaseAddress
 EXTRN	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z:PROC	; ApiResolve::GetApiAddress
-pdata	SEGMENT
-$pdata$?LowerStringA@@YA_NPEAD@Z DD imagerel $LN8
-	DD	imagerel $LN8+118
-	DD	imagerel $unwind$?LowerStringA@@YA_NPEAD@Z
-$pdata$?LowerStringW@@YA_NPEA_W@Z DD imagerel $LN8
-	DD	imagerel $LN8+119
-	DD	imagerel $unwind$?LowerStringW@@YA_NPEA_W@Z
-$pdata$?UpperStringA@@YA_NPEAD@Z DD imagerel $LN8
-	DD	imagerel $LN8+118
-	DD	imagerel $unwind$?UpperStringA@@YA_NPEAD@Z
-$pdata$?UpperStringW@@YA_NPEA_W@Z DD imagerel $LN8
-	DD	imagerel $LN8+119
-	DD	imagerel $unwind$?UpperStringW@@YA_NPEA_W@Z
-$pdata$?CompareStringA@@YA_NPEBD0@Z DD imagerel $LN8
-	DD	imagerel $LN8+110
-	DD	imagerel $unwind$?CompareStringA@@YA_NPEBD0@Z
-$pdata$?CompareStringW@@YA_NPEB_W0@Z DD imagerel $LN8
-	DD	imagerel $LN8+110
-	DD	imagerel $unwind$?CompareStringW@@YA_NPEB_W0@Z
-$pdata$?FindPatternA@@YA_NPEBD0_KPEAPEAD@Z DD imagerel $LN14
-	DD	imagerel $LN14+254
-	DD	imagerel $unwind$?FindPatternA@@YA_NPEBD0_KPEAPEAD@Z
-$pdata$?FindPatternW@@YA_NPEB_W0_KPEAPEA_W@Z DD imagerel $LN14
-	DD	imagerel $LN14+252
-	DD	imagerel $unwind$?FindPatternW@@YA_NPEB_W0_KPEAPEA_W@Z
-$pdata$?CopyStringA@@YA_NPEBDPEAD_K@Z DD imagerel $LN7
-	DD	imagerel $LN7+103
-	DD	imagerel $unwind$?CopyStringA@@YA_NPEBDPEAD_K@Z
-$pdata$?CopyStringW@@YA_NPEB_WPEA_W_K@Z DD imagerel $LN7
-	DD	imagerel $LN7+104
-	DD	imagerel $unwind$?CopyStringW@@YA_NPEB_WPEA_W_K@Z
-$pdata$?StrLen@@YA_KPEAD@Z DD imagerel $LN6
-	DD	imagerel $LN6+70
-	DD	imagerel $unwind$?StrLen@@YA_KPEAD@Z
-$pdata$?CopyMemoryV@@YA_NPEAXPEBX_K@Z DD imagerel $LN6
-	DD	imagerel $LN6+115
-	DD	imagerel $unwind$?CopyMemoryV@@YA_NPEAXPEBX_K@Z
-$pdata$?AllocMemory@@YA_N_KPEAPEAX@Z DD imagerel $LN8
-	DD	imagerel $LN8+384
-	DD	imagerel $unwind$?AllocMemory@@YA_N_KPEAPEAX@Z
-$pdata$?FreeMemory@@YA_NPEAX@Z DD imagerel $LN8
-	DD	imagerel $LN8+328
-	DD	imagerel $unwind$?FreeMemory@@YA_NPEAX@Z
-pdata	ENDS
-;	COMDAT pdata
-pdata	SEGMENT
-$pdata$?ComplexHashForWChar@@YAIPEB_W@Z DD imagerel $LN6
-	DD	imagerel $LN6+110
-	DD	imagerel $unwind$?ComplexHashForWChar@@YAIPEB_W@Z
-pdata	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
-$unwind$?ComplexHashForWChar@@YAIPEB_W@Z DD 010901H
-	DD	06209H
-xdata	ENDS
-xdata	SEGMENT
-$unwind$?LowerStringA@@YA_NPEAD@Z DD 010901H
-	DD	02209H
-$unwind$?LowerStringW@@YA_NPEA_W@Z DD 010901H
-	DD	02209H
-$unwind$?UpperStringA@@YA_NPEAD@Z DD 010901H
-	DD	02209H
-$unwind$?UpperStringW@@YA_NPEA_W@Z DD 010901H
-	DD	02209H
-$unwind$?CompareStringA@@YA_NPEBD0@Z DD 010e01H
-	DD	0220eH
-$unwind$?CompareStringW@@YA_NPEB_W0@Z DD 010e01H
-	DD	0220eH
-$unwind$?FindPatternA@@YA_NPEBD0_KPEAPEAD@Z DD 011801H
-	DD	02218H
-$unwind$?FindPatternW@@YA_NPEB_W0_KPEAPEA_W@Z DD 011801H
-	DD	02218H
-$unwind$?CopyStringA@@YA_NPEBDPEAD_K@Z DD 011301H
-	DD	02213H
-$unwind$?CopyStringW@@YA_NPEB_WPEA_W_K@Z DD 011301H
-	DD	02213H
-$unwind$?StrLen@@YA_KPEAD@Z DD 010901H
-	DD	02209H
-$unwind$?CopyMemoryV@@YA_NPEAXPEBX_K@Z DD 011301H
-	DD	04213H
-$unwind$?AllocMemory@@YA_N_KPEAPEAX@Z DD 010e01H
-	DD	0e20eH
-$unwind$?FreeMemory@@YA_NPEAX@Z DD 010901H
-	DD	0c209H
-xdata	ENDS
-; Function compile flags: /Odtp
-;	COMDAT ?ComplexHashForWChar@@YAIPEB_W@Z
-_TEXT	SEGMENT
-i$1 = 32
-hash$ = 36
-temp$ = 40
-str$ = 64
-?ComplexHashForWChar@@YAIPEB_W@Z PROC			; ComplexHashForWChar, COMDAT
-; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\HashString.h
-; Line 9
-$LN6:
-	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
-; Line 10
-	mov	DWORD PTR hash$[rsp], -1		; ffffffffH
-; Line 14
-	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN4@ComplexHas
-$LN2@ComplexHas:
-	mov	eax, DWORD PTR i$1[rsp]
-	inc	eax
-	mov	DWORD PTR i$1[rsp], eax
-$LN4@ComplexHas:
-	movsxd	rax, DWORD PTR i$1[rsp]
-	mov	rcx, QWORD PTR str$[rsp]
-	movzx	eax, WORD PTR [rcx+rax*2]
-	test	eax, eax
-	je	SHORT $LN3@ComplexHas
-; Line 15
-	movsxd	rax, DWORD PTR i$1[rsp]
-	mov	rcx, QWORD PTR str$[rsp]
-	movzx	eax, WORD PTR [rcx+rax*2]
-	add	eax, DWORD PTR hash$[rsp]
-	mov	DWORD PTR temp$[rsp], eax
-; Line 16
-	mov	edx, 3
-	mov	ecx, DWORD PTR hash$[rsp]
-	call	?Rotr@@YAIII@Z				; Rotr
-	xor	eax, DWORD PTR temp$[rsp]
-	mov	DWORD PTR hash$[rsp], eax
-; Line 17
-	jmp	SHORT $LN2@ComplexHas
-$LN3@ComplexHas:
-; Line 19
-	mov	eax, DWORD PTR hash$[rsp]
-; Line 20
-	add	rsp, 56					; 00000038H
-	ret	0
-?ComplexHashForWChar@@YAIPEB_W@Z ENDP			; ComplexHashForWChar
-_TEXT	ENDS
-; Function compile flags: /Odtp
-;	COMDAT ?Rotr@@YAIII@Z
-_TEXT	SEGMENT
-x$ = 8
-n$ = 16
-?Rotr@@YAIII@Z PROC					; Rotr, COMDAT
-; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\HashString.h
-; Line 4
-	mov	DWORD PTR [rsp+16], edx
-	mov	DWORD PTR [rsp+8], ecx
-; Line 5
-	mov	eax, DWORD PTR n$[rsp]
-	movzx	ecx, al
-	mov	eax, DWORD PTR x$[rsp]
-	shr	eax, cl
-	mov	ecx, 32					; 00000020H
-	sub	ecx, DWORD PTR n$[rsp]
-	mov	edx, DWORD PTR x$[rsp]
-	shl	edx, cl
-	mov	ecx, edx
-	or	eax, ecx
-; Line 6
-	ret	0
-?Rotr@@YAIII@Z ENDP					; Rotr
-_TEXT	ENDS
 ; Function compile flags: /Odtp
 _TEXT	SEGMENT
 $T1 = 32
@@ -203,109 +38,110 @@ lpKernel32$ = 48
 pGetProcessHeap$ = 56
 pHeapFree$ = 64
 hHeap$ = 72
-hashGetProcessHeap$ = 80
-hashHeapFree$ = 84
-tv90 = 88
-lpMemory$ = 112
+hashKernel32$ = 80
+hashGetProcessHeap$ = 84
+hashHeapFree$ = 88
+tv88 = 96
+lpMemory$ = 128
 ?FreeMemory@@YA_NPEAX@Z PROC				; FreeMemory
 ; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\CRT.cpp
-; Line 219
+; Line 240
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 104				; 00000068H
-; Line 226
+	sub	rsp, 120				; 00000078H
+; Line 247
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 227
-	lea	rcx, OFFSET FLAT:$SG93485
-	call	?ComplexHashForWChar@@YAIPEB_W@Z	; ComplexHashForWChar
-	mov	edx, eax
+; Line 248
+	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
+; Line 249
+	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 228
+; Line 250
 	cmp	QWORD PTR lpKernel32$[rsp], 0
 	jne	SHORT $LN2@FreeMemory
-; Line 229
+; Line 251
 	mov	BYTE PTR $T1[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T1[rsp]
 	jmp	$LN1@FreeMemory
 $LN2@FreeMemory:
-; Line 232
+; Line 254
 	mov	DWORD PTR hashGetProcessHeap$[rsp], -329891580 ; ec564104H
-; Line 233
+; Line 255
 	mov	r8d, -329891580				; ec564104H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pGetProcessHeap$[rsp], rax
-; Line 234
+; Line 256
 	cmp	QWORD PTR pGetProcessHeap$[rsp], 0
 	jne	SHORT $LN3@FreeMemory
-; Line 235
+; Line 257
 	mov	BYTE PTR $T2[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T2[rsp]
 	jmp	$LN1@FreeMemory
 $LN3@FreeMemory:
-; Line 238
+; Line 260
 	mov	DWORD PTR hashHeapFree$[rsp], -963999842 ; c68a879eH
-; Line 239
+; Line 261
 	mov	r8d, -963999842				; c68a879eH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pHeapFree$[rsp], rax
-; Line 240
+; Line 262
 	cmp	QWORD PTR pHeapFree$[rsp], 0
 	jne	SHORT $LN4@FreeMemory
-; Line 241
+; Line 263
 	mov	BYTE PTR $T3[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T3[rsp]
 	jmp	SHORT $LN1@FreeMemory
 $LN4@FreeMemory:
-; Line 244
+; Line 266
 	call	QWORD PTR pGetProcessHeap$[rsp]
 	mov	QWORD PTR hHeap$[rsp], rax
-; Line 245
+; Line 267
 	cmp	QWORD PTR hHeap$[rsp], 0
 	jne	SHORT $LN5@FreeMemory
-; Line 246
+; Line 268
 	mov	BYTE PTR $T4[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T4[rsp]
 	jmp	SHORT $LN1@FreeMemory
 $LN5@FreeMemory:
-; Line 249
+; Line 271
 	mov	rax, QWORD PTR pHeapFree$[rsp]
-	mov	QWORD PTR tv90[rsp], rax
+	mov	QWORD PTR tv88[rsp], rax
 	mov	r8, QWORD PTR lpMemory$[rsp]
 	xor	edx, edx
 	mov	rcx, QWORD PTR hHeap$[rsp]
-	call	QWORD PTR tv90[rsp]
+	call	QWORD PTR tv88[rsp]
 	test	eax, eax
 	jne	SHORT $LN6@FreeMemory
-; Line 250
+; Line 272
 	mov	BYTE PTR $T5[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T5[rsp]
 	jmp	SHORT $LN1@FreeMemory
 $LN6@FreeMemory:
-; Line 253
+; Line 275
 	mov	BYTE PTR $T6[rsp], 1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T6[rsp]
 $LN1@FreeMemory:
-; Line 254
-	add	rsp, 104				; 00000068H
+; Line 276
+	add	rsp, 120				; 00000078H
 	ret	0
 ?FreeMemory@@YA_NPEAX@Z ENDP				; FreeMemory
 _TEXT	ENDS
@@ -315,130 +151,105 @@ $T1 = 32
 $T2 = 33
 $T3 = 34
 $T4 = 35
-$T5 = 36
-$T6 = 37
 apiResolver$ = 40
 lpKernel32$ = 48
-lpNtdll$ = 56
-pGetProcessHeap$ = 64
-pRtlAllocateHeap$ = 72
-hHeap$ = 80
-hashKernel32$ = 88
-hashGetProcessHeap$ = 92
-hashNtdll$ = 96
-hashRtlAllocateHeap$ = 100
-tv92 = 104
+pGetProcessHeap$ = 56
+hHeap$ = 64
+hashNewDll$ = 72
+hashNewApi$ = 76
+hashKernel32$ = 80
+hashGetProcessHeap$ = 84
+hashHeapAlloc$ = 88
+pHeapAlloc$ = 96
+tv87 = 104
 size$ = 128
 result$ = 136
 ?AllocMemory@@YA_N_KPEAPEAX@Z PROC			; AllocMemory
 ; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\CRT.cpp
-; Line 178
-$LN8:
+; Line 201
+$LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
-; Line 185
+; Line 212
+	mov	DWORD PTR hashNewDll$[rsp], 0
+; Line 213
+	mov	DWORD PTR hashNewApi$[rsp], 0
+; Line 215
 	lea	rcx, QWORD PTR apiResolver$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 186
+; Line 216
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 187
+; Line 217
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolver$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 188
+; Line 218
 	cmp	QWORD PTR lpKernel32$[rsp], 0
 	jne	SHORT $LN2@AllocMemor
-; Line 189
+; Line 219
 	mov	BYTE PTR $T1[rsp], 0
 	lea	rcx, QWORD PTR apiResolver$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T1[rsp]
 	jmp	$LN1@AllocMemor
 $LN2@AllocMemor:
-; Line 192
+; Line 222
 	mov	DWORD PTR hashGetProcessHeap$[rsp], -329891580 ; ec564104H
-; Line 193
+; Line 223
 	mov	r8d, -329891580				; ec564104H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolver$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pGetProcessHeap$[rsp], rax
-; Line 194
+; Line 224
 	cmp	QWORD PTR pGetProcessHeap$[rsp], 0
 	jne	SHORT $LN3@AllocMemor
-; Line 195
+; Line 225
 	mov	BYTE PTR $T2[rsp], 0
 	lea	rcx, QWORD PTR apiResolver$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T2[rsp]
 	jmp	$LN1@AllocMemor
 $LN3@AllocMemor:
-; Line 198
-	mov	DWORD PTR hashNtdll$[rsp], -1405057971	; ac40844dH
-; Line 199
-	mov	edx, -1405057971			; ac40844dH
+; Line 228
+	mov	DWORD PTR hashHeapAlloc$[rsp], 1026283748 ; 3d2bd8e4H
+; Line 229
+	mov	r8d, 1026283748				; 3d2bd8e4H
+	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolver$[rsp]
-	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
-	mov	QWORD PTR lpNtdll$[rsp], rax
-; Line 200
-	cmp	QWORD PTR lpNtdll$[rsp], 0
+	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
+	mov	QWORD PTR pHeapAlloc$[rsp], rax
+; Line 231
+	call	QWORD PTR pGetProcessHeap$[rsp]
+	mov	QWORD PTR hHeap$[rsp], rax
+; Line 232
+	cmp	QWORD PTR hHeap$[rsp], 0
 	jne	SHORT $LN4@AllocMemor
-; Line 201
+; Line 233
 	mov	BYTE PTR $T3[rsp], 0
 	lea	rcx, QWORD PTR apiResolver$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	movzx	eax, BYTE PTR $T3[rsp]
-	jmp	$LN1@AllocMemor
+	jmp	SHORT $LN1@AllocMemor
 $LN4@AllocMemor:
-; Line 204
-	mov	DWORD PTR hashRtlAllocateHeap$[rsp], 1468622948 ; 57896864H
-; Line 205
-	mov	r8d, 1468622948				; 57896864H
-	mov	rdx, QWORD PTR lpNtdll$[rsp]
-	lea	rcx, QWORD PTR apiResolver$[rsp]
-	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pRtlAllocateHeap$[rsp], rax
-; Line 206
-	cmp	QWORD PTR pRtlAllocateHeap$[rsp], 0
-	jne	SHORT $LN5@AllocMemor
-; Line 207
-	mov	BYTE PTR $T4[rsp], 0
-	lea	rcx, QWORD PTR apiResolver$[rsp]
-	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	movzx	eax, BYTE PTR $T4[rsp]
-	jmp	SHORT $LN1@AllocMemor
-$LN5@AllocMemor:
-; Line 210
-	call	QWORD PTR pGetProcessHeap$[rsp]
-	mov	QWORD PTR hHeap$[rsp], rax
-; Line 211
-	cmp	QWORD PTR hHeap$[rsp], 0
-	jne	SHORT $LN6@AllocMemor
-; Line 212
-	mov	BYTE PTR $T5[rsp], 0
-	lea	rcx, QWORD PTR apiResolver$[rsp]
-	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	movzx	eax, BYTE PTR $T5[rsp]
-	jmp	SHORT $LN1@AllocMemor
-$LN6@AllocMemor:
-; Line 215
-	mov	rax, QWORD PTR pRtlAllocateHeap$[rsp]
-	mov	QWORD PTR tv92[rsp], rax
+; Line 236
+	mov	rax, QWORD PTR pHeapAlloc$[rsp]
+	mov	QWORD PTR tv87[rsp], rax
 	mov	r8, QWORD PTR size$[rsp]
 	mov	edx, 8
 	mov	rcx, QWORD PTR hHeap$[rsp]
-	call	QWORD PTR tv92[rsp]
+	call	QWORD PTR tv87[rsp]
 	mov	rcx, QWORD PTR result$[rsp]
 	mov	QWORD PTR [rcx], rax
-; Line 216
-	mov	BYTE PTR $T6[rsp], 1
+; Line 237
+	mov	BYTE PTR $T4[rsp], 1
 	lea	rcx, QWORD PTR apiResolver$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	movzx	eax, BYTE PTR $T6[rsp]
+	movzx	eax, BYTE PTR $T4[rsp]
 $LN1@AllocMemor:
-; Line 217
+; Line 238
 	add	rsp, 120				; 00000078H
 	ret	0
 ?AllocMemory@@YA_N_KPEAPEAX@Z ENDP			; AllocMemory
@@ -448,24 +259,24 @@ _TEXT	SEGMENT
 i$1 = 0
 d$ = 8
 s$ = 16
-dst$ = 48
-src$ = 56
+src$ = 48
+dst$ = 56
 size$ = 64
-?CopyMemoryV@@YA_NPEAXPEBX_K@Z PROC			; CopyMemoryV
+?CopyMemoryV@@YA_NPEBXPEAX_K@Z PROC			; CopyMemoryV
 ; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\CRT.cpp
-; Line 167
+; Line 190
 $LN6:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 168
+; Line 191
 	mov	rax, QWORD PTR dst$[rsp]
 	mov	QWORD PTR d$[rsp], rax
-; Line 169
+; Line 192
 	mov	rax, QWORD PTR src$[rsp]
 	mov	QWORD PTR s$[rsp], rax
-; Line 171
+; Line 194
 	mov	QWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@CopyMemory
 $LN2@CopyMemory:
@@ -476,7 +287,7 @@ $LN4@CopyMemory:
 	mov	rax, QWORD PTR size$[rsp]
 	cmp	QWORD PTR i$1[rsp], rax
 	jae	SHORT $LN3@CopyMemory
-; Line 172
+; Line 195
 	mov	rax, QWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR d$[rsp]
 	add	rcx, rax
@@ -487,15 +298,15 @@ $LN4@CopyMemory:
 	mov	rcx, rdx
 	movzx	ecx, BYTE PTR [rcx]
 	mov	BYTE PTR [rax], cl
-; Line 173
+; Line 196
 	jmp	SHORT $LN2@CopyMemory
 $LN3@CopyMemory:
-; Line 175
+; Line 198
 	mov	al, 1
-; Line 176
+; Line 199
 	add	rsp, 40					; 00000028H
 	ret	0
-?CopyMemoryV@@YA_NPEAXPEBX_K@Z ENDP			; CopyMemoryV
+?CopyMemoryV@@YA_NPEBXPEAX_K@Z ENDP			; CopyMemoryV
 _TEXT	ENDS
 ; Function compile flags: /Odtp
 _TEXT	SEGMENT
@@ -503,18 +314,18 @@ size$ = 0
 s$ = 32
 ?StrLen@@YA_KPEAD@Z PROC				; StrLen
 ; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\CRT.cpp
-; Line 154
+; Line 177
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
-; Line 155
+; Line 178
 	mov	QWORD PTR size$[rsp], 0
 $LN2@StrLen:
-; Line 156
+; Line 179
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN3@StrLen
-; Line 157
+; Line 180
 	mov	rax, QWORD PTR size$[rsp]
 	mov	rcx, QWORD PTR s$[rsp]
 	add	rcx, rax
@@ -522,19 +333,19 @@ $LN2@StrLen:
 	movsx	eax, BYTE PTR [rax]
 	test	eax, eax
 	jne	SHORT $LN4@StrLen
-; Line 158
+; Line 181
 	jmp	SHORT $LN3@StrLen
 $LN4@StrLen:
-; Line 161
+; Line 184
 	mov	rax, QWORD PTR size$[rsp]
 	inc	rax
 	mov	QWORD PTR size$[rsp], rax
-; Line 162
+; Line 185
 	jmp	SHORT $LN2@StrLen
 $LN3@StrLen:
-; Line 164
+; Line 187
 	mov	rax, QWORD PTR size$[rsp]
-; Line 165
+; Line 188
 	add	rsp, 24
 	ret	0
 ?StrLen@@YA_KPEAD@Z ENDP				; StrLen
@@ -544,16 +355,115 @@ _TEXT	SEGMENT
 i$1 = 0
 src$ = 32
 dst$ = 40
+?StringWToA@@YA_NPEA_WPEAD@Z PROC			; StringWToA
+; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\CRT.cpp
+; Line 146
+$LN7:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 24
+; Line 147
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN4@StringWToA
+$LN2@StringWToA:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN4@StringWToA:
+; Line 148
+	movsxd	rax, DWORD PTR i$1[rsp]
+	movsxd	rcx, DWORD PTR i$1[rsp]
+	mov	rdx, QWORD PTR dst$[rsp]
+	mov	r8, QWORD PTR src$[rsp]
+	movzx	eax, BYTE PTR [r8+rax*2]
+	mov	BYTE PTR [rdx+rcx], al
+; Line 149
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	rcx, QWORD PTR src$[rsp]
+	movzx	eax, WORD PTR [rcx+rax*2]
+	test	eax, eax
+	jne	SHORT $LN5@StringWToA
+; Line 150
+	jmp	SHORT $LN3@StringWToA
+$LN5@StringWToA:
+; Line 152
+	jmp	SHORT $LN2@StringWToA
+$LN3@StringWToA:
+; Line 154
+	mov	al, 1
+; Line 155
+	add	rsp, 24
+	ret	0
+?StringWToA@@YA_NPEA_WPEAD@Z ENDP			; StringWToA
+_TEXT	ENDS
+; Function compile flags: /Odtp
+_TEXT	SEGMENT
+i$1 = 0
+src$ = 32
+dst$ = 40
+?StringAToW@@YA_NPEADPEA_W@Z PROC			; StringAToW
+; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\CRT.cpp
+; Line 134
+$LN7:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 24
+; Line 135
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN4@StringAToW
+$LN2@StringAToW:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN4@StringAToW:
+; Line 136
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	rcx, QWORD PTR src$[rsp]
+	movsx	ax, BYTE PTR [rcx+rax]
+	movsxd	rcx, DWORD PTR i$1[rsp]
+	mov	rdx, QWORD PTR dst$[rsp]
+	mov	WORD PTR [rdx+rcx*2], ax
+; Line 137
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	cdqe
+	xor	ecx, ecx
+	mov	rdx, QWORD PTR dst$[rsp]
+	mov	WORD PTR [rdx+rax*2], cx
+; Line 138
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	rcx, QWORD PTR src$[rsp]
+	movsx	eax, BYTE PTR [rcx+rax]
+	test	eax, eax
+	jne	SHORT $LN5@StringAToW
+; Line 139
+	jmp	SHORT $LN3@StringAToW
+$LN5@StringAToW:
+; Line 141
+	jmp	SHORT $LN2@StringAToW
+$LN3@StringAToW:
+; Line 143
+	mov	al, 1
+; Line 144
+	add	rsp, 24
+	ret	0
+?StringAToW@@YA_NPEADPEA_W@Z ENDP			; StringAToW
+_TEXT	ENDS
+; Function compile flags: /Odtp
+_TEXT	SEGMENT
+i$1 = 0
+src$ = 32
+dst$ = 40
 sizeDst$ = 48
 ?CopyStringW@@YA_NPEB_WPEA_W_K@Z PROC			; CopyStringW
 ; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\CRT.cpp
-; Line 144
+; Line 167
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
-; Line 145
+; Line 168
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@CopyString
 $LN2@CopyString:
@@ -564,30 +474,30 @@ $LN4@CopyString:
 	movsxd	rax, DWORD PTR i$1[rsp]
 	cmp	rax, QWORD PTR sizeDst$[rsp]
 	jae	SHORT $LN3@CopyString
-; Line 146
+; Line 169
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
 	mov	rdx, QWORD PTR dst$[rsp]
 	mov	r8, QWORD PTR src$[rsp]
 	movzx	eax, WORD PTR [r8+rax*2]
 	mov	WORD PTR [rdx+rcx*2], ax
-; Line 147
+; Line 170
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR src$[rsp]
 	movzx	eax, WORD PTR [rcx+rax*2]
 	test	eax, eax
 	jne	SHORT $LN5@CopyString
-; Line 148
+; Line 171
 	mov	al, 1
 	jmp	SHORT $LN1@CopyString
 $LN5@CopyString:
-; Line 150
+; Line 173
 	jmp	SHORT $LN2@CopyString
 $LN3@CopyString:
-; Line 151
+; Line 174
 	xor	al, al
 $LN1@CopyString:
-; Line 152
+; Line 175
 	add	rsp, 24
 	ret	0
 ?CopyStringW@@YA_NPEB_WPEA_W_K@Z ENDP			; CopyStringW
@@ -600,13 +510,13 @@ dst$ = 40
 sizeDst$ = 48
 ?CopyStringA@@YA_NPEBDPEAD_K@Z PROC			; CopyStringA
 ; File C:\Users\admin\Documents\GitHub\MalDev\BrowserDecryptData\KeyExtractShell\CRT.cpp
-; Line 134
+; Line 157
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
-; Line 135
+; Line 158
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@CopyString
 $LN2@CopyString:
@@ -617,30 +527,30 @@ $LN4@CopyString:
 	movsxd	rax, DWORD PTR i$1[rsp]
 	cmp	rax, QWORD PTR sizeDst$[rsp]
 	jae	SHORT $LN3@CopyString
-; Line 136
+; Line 159
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
 	mov	rdx, QWORD PTR dst$[rsp]
 	mov	r8, QWORD PTR src$[rsp]
 	movzx	eax, BYTE PTR [r8+rax]
 	mov	BYTE PTR [rdx+rcx], al
-; Line 137
+; Line 160
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR src$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax]
 	test	eax, eax
 	jne	SHORT $LN5@CopyString
-; Line 138
+; Line 161
 	mov	al, 1
 	jmp	SHORT $LN1@CopyString
 $LN5@CopyString:
-; Line 140
+; Line 163
 	jmp	SHORT $LN2@CopyString
 $LN3@CopyString:
-; Line 141
+; Line 164
 	xor	al, al
 $LN1@CopyString:
-; Line 142
+; Line 165
 	add	rsp, 24
 	ret	0
 ?CopyStringA@@YA_NPEBDPEAD_K@Z ENDP			; CopyStringA

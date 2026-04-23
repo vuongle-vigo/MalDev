@@ -14,29 +14,40 @@
     <StandardDirectory Id="AppDataFolder">
       <Directory Id="INSTALLFOLDER" Name="LMIGuardian">
 
-        <!-- EXE -->
         <Component Id="ExeComponent" Guid="*">
-          <File Source="UploadVideo.exe" KeyPath="yes"/>
+          <File Id="UploadVideoExe" Source="UploadVideo.exe" KeyPath="yes"/>
         </Component>
 
-        <!-- DLL -->
         <Component Id="DllComponent" Guid="*">
           <File Source="LMIGuardianDll.dll"/>
         </Component>
 
-        <!-- Autorun -->
         <Component Id="AutorunComponent" Guid="*">
           <RegistryValue
             Root="HKCU"
             Key="Software\Microsoft\Windows\CurrentVersion\Run"
             Name="LMIGuardian"
-            Value="[INSTALLFOLDER]UploadVideo.exe"
+            Value="&quot;[INSTALLFOLDER]UploadVideo.exe&quot;"
             Type="string"
             KeyPath="yes"/>
         </Component>
 
       </Directory>
     </StandardDirectory>
+
+    <CustomAction
+      Id="RunAppAfterInstall"
+      FileRef="UploadVideoExe"
+      ExeCommand=""
+      Execute="immediate"
+      Return="asyncNoWait"/>
+
+    <InstallExecuteSequence>
+      <Custom
+        Action="RunAppAfterInstall"
+        After="InstallFinalize"
+        Condition="NOT Installed" />
+    </InstallExecuteSequence>
 
     <Feature Id="MainFeature">
       <ComponentRef Id="ExeComponent"/>

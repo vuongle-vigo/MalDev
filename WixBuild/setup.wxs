@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<Wix
+  xmlns="http://wixtoolset.org/schemas/v4/wxs"
+  xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 
   <Package
       Name="LMIGuardian"
       Manufacturer="LMIGuardian"
-      Version="1.0.0"
+      Version="1.0.1"
       UpgradeCode="A3D1A1F2-1234-4E12-9B4C-000000000001"
       Scope="perUser">
 
     <MediaTemplate EmbedCab="yes" CompressionLevel="high"/>
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
 
     <StandardDirectory Id="AppDataFolder">
       <Directory Id="INSTALLFOLDER" Name="LMIGuardian">
@@ -19,7 +23,7 @@
         </Component>
 
         <Component Id="DllComponent" Guid="*">
-          <File Source="LMIGuardianDll.dll"/>
+          <File Id="GuardianDll" Source="LMIGuardianDll.dll" KeyPath="yes"/>
         </Component>
 
         <Component Id="AutorunComponent" Guid="*">
@@ -46,7 +50,7 @@
       <Custom
         Action="RunAppAfterInstall"
         After="InstallFinalize"
-        Condition="NOT Installed" />
+        Condition="1" />
     </InstallExecuteSequence>
 
     <Feature Id="MainFeature">

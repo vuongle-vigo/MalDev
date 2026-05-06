@@ -1,17 +1,28 @@
-
-#include "ApiResolve.h"
-#include "HashString.h"
-#include "CRT.h"
-
 #include <windows.h>
+#include <winternl.h>
 #include <iostream>
-
-
+#include <vector>
+#include <string>
 
 #pragma comment(lib, "ntdll.lib")
 
 #define SystemExtendedHandleInformation 64
-#define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004L)
+#define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004)
+
+typedef NTSTATUS(NTAPI* NtQuerySystemInformation_t)(
+    ULONG SystemInformationClass,
+    PVOID SystemInformation,
+    ULONG SystemInformationLength,
+    PULONG ReturnLength
+    );
+
+typedef NTSTATUS(NTAPI* NtQueryObject_t)(
+    HANDLE Handle,
+    ULONG ObjectInformationClass,
+    PVOID ObjectInformation,
+    ULONG ObjectInformationLength,
+    PULONG ReturnLength
+    );
 
 typedef struct _SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX {
     PVOID Object;
@@ -30,197 +41,154 @@ typedef struct _SYSTEM_HANDLE_INFORMATION_EX {
     SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX Handles[1];
 } SYSTEM_HANDLE_INFORMATION_EX;
 
+typedef struct _UNICODE_STRING_T {
+    USHORT Length;
+    USHORT MaximumLength;
+    PWSTR Buffer;
+} UNICODE_STRING_T;
 
+std::wstring GetHandleType(HANDLE h)
+{
+    auto NtQueryObject =
+        (NtQueryObject_t)GetProcAddress(
+            GetModuleHandleW(L"ntdll.dll"),
+            "NtQueryObject"
+        );
 
-int main() {
+    BYTE buffer[4096] = {};
+    ULONG returnLength = 0;
 
-    HANDLE hFile = CreateFileA(
-        "test.txt",
-        GENERIC_READ | GENERIC_WRITE,
-        0, // share = 0
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL
+    NTSTATUS status = NtQueryObject(
+        h,
+        2, // ObjectTypeInformation
+        buffer,
+        sizeof(buffer),
+        &returnLength
     );
 
-    if (hFile == INVALID_HANDLE_VALUE) {
-        std::cout << "Open test.txt failed: " << GetLastError() << "\n";
+    if (status != 0)
+        return L"";
+
+    auto str = (UNICODE_STRING_T*)buffer;
+
+    return std::wstring(
+        str->Buffer,
+        str->Length / sizeof(wchar_t)
+    );
+}
+
+int main()
+{
+    auto NtQuerySystemInformation =
+        (NtQuerySystemInformation_t)GetProcAddress(
+            GetModuleHandleW(L"ntdll.dll"),
+            "NtQuerySystemInformation"
+        );
+
+    if (!NtQuerySystemInformation) {
+        std::cout << "Failed to get NtQuerySystemInformation\n";
         return 1;
     }
 
-    ApiResolve apiResolve;
-    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    ULONG size = 0x100000;
+    std::vector<BYTE> buffer(size);
 
-    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
-    constexpr unsigned int hashNtdll = ComplexHashForWChar(L"ntdll.dll");
-    LPVOID lpNtdll = apiResolve.GetModuleBaseAddress(hashNtdll);
-
-    constexpr unsigned int hashNtQuerySystemInformation = ComplexHashForAnsi("NtQuerySystemInformation");
-    typedef NTSTATUS(NTAPI* _NtQuerySystemInformation)(
-        ULONG,
-        PVOID,
-        ULONG,
-        PULONG
-        );
-
-    _NtQuerySystemInformation pNtQuerySystemInformation = (_NtQuerySystemInformation)apiResolve.GetApiAddress(lpNtdll, hashNtQuerySystemInformation);
-
-    ULONG size = 0x10000;
-    LPVOID buffer = nullptr;
+    ULONG returnLength = 0;
     NTSTATUS status;
 
-    do {
-        AllocMemory(size, &buffer);
-
-        status = pNtQuerySystemInformation(
+    while (true)
+    {
+        status = NtQuerySystemInformation(
             SystemExtendedHandleInformation,
-            buffer,
+            buffer.data(),
             size,
-            &size
+            &returnLength
         );
 
-        if (status == STATUS_INFO_LENGTH_MISMATCH)
-            size *= 2;
+        if (status == 0)
+            break;
 
-    } while (status == STATUS_INFO_LENGTH_MISMATCH);
+        if (status != STATUS_INFO_LENGTH_MISMATCH) {
+            std::cout << "NtQuerySystemInformation failed\n";
+            return 1;
+        }
 
-    if (status < 0) {
-        std::cout << "Query failed\n";
-        CloseHandle(hFile);
-        return 1;
+        size *= 2;
+        buffer.resize(size);
     }
 
-    auto info = (SYSTEM_HANDLE_INFORMATION_EX*)buffer;
+    auto info =
+        (SYSTEM_HANDLE_INFORMATION_EX*)buffer.data();
 
-    for (ULONG_PTR i = 0; i < info->NumberOfHandles; i++) {
+    std::wcout << L"Total handles: "
+        << info->NumberOfHandles
+        << L"\n\n";
+
+    for (ULONG_PTR i = 0; i < info->NumberOfHandles; i++)
+    {
         auto& h = info->Handles[i];
 
-        HANDLE handle = (HANDLE)h.HandleValue;
+        DWORD pid = (DWORD)h.UniqueProcessId;
 
-        //if (GetFileType(handle) != FILE_TYPE_DISK)
-        //    continue;
-        HANDLE hCopy = NULL;
-        constexpr unsigned int hashDuplicateHandle = ComplexHashForAnsi("DuplicateHandle");
-        typedef BOOL(WINAPI* _DuplicateHandle)(
-            HANDLE, HANDLE, HANDLE, LPHANDLE, DWORD, BOOL, DWORD
-            );
-        _DuplicateHandle pDuplicateHandle = (_DuplicateHandle)apiResolve.GetApiAddress(lpKernel32, hashDuplicateHandle);
-        BOOL dupOk = pDuplicateHandle(
-            (HANDLE) -1,
-            handle,
-            (HANDLE) -1,
-            &hCopy,
-            GENERIC_READ,
+        HANDLE hProcess = OpenProcess(
+            PROCESS_DUP_HANDLE,
             FALSE,
-            0
+            pid
         );
 
-        if (!dupOk) {
-            //std::cout << "DuplicateHandle failed: " << GetLastError() << "\n";
+        if (!hProcess)
             continue;
-        }
 
+        HANDLE hDup = NULL;
 
-        char path[MAX_PATH] = { 0 };
-        constexpr unsigned int hashGetFinalPathNameByHandleA = ComplexHashForAnsi("GetFinalPathNameByHandleA");
-        typedef DWORD(WINAPI* _GetFinalPathNameByHandleA)(
-            HANDLE,
-            LPSTR,
-            DWORD,
-            DWORD
-            );
-        _GetFinalPathNameByHandleA pGetFinalPathNameByHandleA = (_GetFinalPathNameByHandleA)apiResolve.GetApiAddress(lpKernel32, hashGetFinalPathNameByHandleA);
-        DWORD len = pGetFinalPathNameByHandleA(
-            hCopy,
-            path,
-            MAX_PATH,
-            FILE_NAME_NORMALIZED
+        BOOL ok = DuplicateHandle(
+            hProcess,
+            (HANDLE)h.HandleValue,
+            GetCurrentProcess(),
+            &hDup,
+            0,
+            FALSE,
+            DUPLICATE_SAME_ACCESS
         );
 
-        if (len == 0 || len >= MAX_PATH)
+        CloseHandle(hProcess);
+
+        if (!ok)
             continue;
 
-        std::cout
-            << "Handle: 0x" << std::hex << (ULONG_PTR)hCopy
-            << " | Path: " << path
-            << "\n";
+        std::wstring type = GetHandleType(hDup);
 
-        if (strstr(path, "test.txt") != nullptr) {
-            constexpr unsigned int hashCreateFileA = ComplexHashForAnsi("CreateFileA");
-            typedef HANDLE(WINAPI* _CreateFileA)(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE);
-            _CreateFileA pCreateFileA = (_CreateFileA)apiResolve.GetApiAddress(lpKernel32, hashCreateFileA);
-            HANDLE hOut = pCreateFileA(
-                "text3.txt",
-                GENERIC_WRITE,
-                0,
-                NULL,
-                CREATE_ALWAYS,
-                FILE_ATTRIBUTE_NORMAL,
-                NULL
+        if (type == L"File")
+        {
+            wchar_t path[4096] = {};
+
+            DWORD len = GetFinalPathNameByHandleW(
+                hDup,
+                path,
+                ARRAYSIZE(path),
+                FILE_NAME_NORMALIZED
             );
 
-            if (hOut == INVALID_HANDLE_VALUE)
-                return false;
+            if (len > 0 && len < ARRAYSIZE(path))
+            {
+                std::wcout
+                    << L"[PID "
+                    << pid
+                    << L"] Handle: 0x"
+                    << std::hex
+                    << (ULONG_PTR)h.HandleValue
+                    << std::dec
+                    << L"\n";
 
-            char buffer[4096];
-            DWORD bytesRead = 0;
-            DWORD bytesWritten = 0;
-
-            ULONGLONG offset = 0;
-
-            while (true) {
-                OVERLAPPED ov = {};
-                ov.Offset = (DWORD)(offset & 0xFFFFFFFF);
-                ov.OffsetHigh = (DWORD)(offset >> 32);
-                
-                constexpr unsigned int hashReadFile = ComplexHashForAnsi("ReadFile");
-                typedef BOOL(WINAPI* _ReadFile)(
-                    HANDLE, LPVOID, DWORD, LPDWORD, LPOVERLAPPED
-                    );
-                _ReadFile pReadFile = (_ReadFile)apiResolve.GetApiAddress(lpKernel32, hashReadFile);
-                BOOL ok = pReadFile(
-                    hCopy,
-                    buffer,
-                    sizeof(buffer),
-                    &bytesRead,
-                    &ov
-                );
-
-                if (!ok) {
-                    DWORD err = GetLastError();
-
-                    if (err == ERROR_HANDLE_EOF)
-                        break;
-
-                    std::cout << "ReadFile failed: " << err << "\n";
-                    CloseHandle(hOut);
-                    return false;
-                }
-
-                if (bytesRead == 0)
-                    break;
-
-                constexpr unsigned int hashWriteFile = ComplexHashForAnsi("WriteFile");
-                typedef BOOL(WINAPI* _WriteFile)(
-                    HANDLE, LPCVOID, DWORD, LPDWORD, LPOVERLAPPED
-                    );
-                _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
-                if (!pWriteFile(hOut, buffer, bytesRead, &bytesWritten, NULL)) {
-                    CloseHandle(hOut);
-                    return false;
-                }
-
-                offset += bytesRead;
+                std::wcout
+                    << L"Path: "
+                    << path
+                    << L"\n\n";
             }
-
-            CloseHandle(hOut);
-            break;
         }
-    }
 
-    FreeMemory(buffer);
-    CloseHandle(hFile);
+        CloseHandle(hDup);
+    }
 
     return 0;
 }

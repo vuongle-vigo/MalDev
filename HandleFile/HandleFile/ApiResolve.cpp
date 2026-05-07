@@ -39,7 +39,7 @@ LPVOID ApiResolve::GetModuleBaseAddress(const LPWSTR lpwsModuleName) {
 		LowerStringW(wsModuleName);
 		LowerStringW(lpwsModuleName);
 
-		if (!CompareStringW(wsModuleName, lpwsModuleName)) {
+		if (!VxCompareStringW(wsModuleName, lpwsModuleName)) {
 			continue;
 		}
 
@@ -99,7 +99,7 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, const char* sApiName) {
 	for (int i = 0; i < pExportDirectory->NumberOfNames; i++) {
 		DWORD rvaName = *(DWORD*)((DWORD64)pAddressOfName + i * sizeof(DWORD));
 		char* sName = (char*)((DWORD64)lpBaseAddress + rvaName);
-		if (!CompareStringA(sName, sApiName)) {
+		if (!VxCompareStringA(sName, sApiName)) {
 			continue;
 		}
 

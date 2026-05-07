@@ -67,6 +67,9 @@ bool CompareStringA(const char* s1, const char* s2) {
 }
 
 bool CompareStringW(const wchar_t* s1, const wchar_t* s2) {
+	if (!s1 || !s2)
+		return false;
+
 	for (int i = 0; ; i++) {
 		if (s1[i] == L'\0' && s2[i] == L'\0') {
 			return true;

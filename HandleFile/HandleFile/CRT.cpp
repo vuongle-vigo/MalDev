@@ -55,7 +55,7 @@ bool UpperStringW(wchar_t* s) {
 	return true;
 }
 
-bool CompareStringA(const char* s1, const char* s2) {
+bool VxCompareStringA(const char* s1, const char* s2) {
 	for (int i = 0; ; i++) {
 		if (s1[i] == '\0' && s2[i] == '\0') {
 			return true;
@@ -66,7 +66,7 @@ bool CompareStringA(const char* s1, const char* s2) {
 	}
 }
 
-bool CompareStringW(const wchar_t* s1, const wchar_t* s2) {
+bool VxCompareStringW(const wchar_t* s1, const wchar_t* s2) {
 	for (int i = 0; ; i++) {
 		if (s1[i] == L'\0' && s2[i] == L'\0') {
 			return true;

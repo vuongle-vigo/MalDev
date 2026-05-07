@@ -28,9 +28,8 @@ key_path = sys.argv[2]
 
 # Đọc khóa từ file
 with open(key_path, 'rb') as f:
-    key = f.read().strip()
+    key = f.read()
 
-key = key[:32]  # Đảm bảo khóa có độ dài 32 byte cho AES-256
 print(f"Key read from file: {key.hex()}")
 # Kết nối tới cơ sở dữ liệu SQLite
 conn = sqlite3.connect(cookies_db)
@@ -55,10 +54,12 @@ rows = cursor.fetchall()
 with open('decrypted_cookies.json', 'w') as json_file:
     # Khởi tạo danh sách để chứa tất cả các đối tượng JSON
     all_cookies = []
-
     for row in rows:
         row_dict = dict(zip(columns, row))
         encrypted_value = row_dict['encrypted_value']
+        domain = row_dict['host_key']
+        if domain != "mail.google.com" and domain != ".google.com":
+            continue
         if encrypted_value.startswith((b'v10', b'v11', b'v20')):
             encrypted_value = encrypted_value[3:]
             tag = encrypted_value[-16:]
@@ -69,31 +70,29 @@ with open('decrypted_cookies.json', 'w') as json_file:
                 decrypted_raw = cipher.decrypt_and_verify(encrypted_value[12:-16], tag)
                 decoded_value, is_utf8 = decode_cookie_value(decrypted_raw)
 
-                if is_utf8:
-                    print(f"Decrypted value for {row_dict['name']}: {decoded_value}")
-                else:
-                    print(f"Decrypted value for {row_dict['name']} is binary; exporting as hex.")
-
                 # Tạo đối tượng dữ liệu cần ghi vào JSON
+                # Convert expires_utc from Windows epoch (microseconds) to Unix epoch (seconds)
+                expires_unix = (row_dict["expires_utc"] - 11644473600000000) / 1000000
+                
                 decrypted_data = {
                     "domain": row_dict["host_key"],
-                    "expirationDate": row_dict["expires_utc"],
+                    "expirationDate": expires_unix,
                     "hostOnly": row_dict["host_key"].startswith('.'),
                     "httpOnly": bool(row_dict["is_httponly"]),
-                    "secure": bool(row_dict["is_secure"]),
-                    "session": False,  
                     "name": row_dict["name"],
                     "path": row_dict["path"],
-                    "expires_utc": row_dict["expires_utc"],
+                    "sameSite": None,
+                    "secure": bool(row_dict["is_secure"]),
+                    "session": False,
+                    "storeId": None,
                     "value": decoded_value
                 }
 
                 # Thêm đối tượng vào danh sách all_cookies
                 all_cookies.append(decrypted_data)
             except (ValueError, UnicodeDecodeError) as e:
-                print(f"Error decrypting value for {row_dict['name']}: {e}")
-        else:
-            print(f"Value for {row_dict['name']} is not encrypted.")
+                print(f"Error decrypting cookie: domain={row_dict['host_key']} name={row_dict['name']} error={e}")
+        
 
     # Ghi tất cả các đối tượng vào file JSON dưới dạng một mảng
     json.dump(all_cookies, json_file, indent=4)

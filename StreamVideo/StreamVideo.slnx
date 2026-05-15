@@ -3,5 +3,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="StreamVideo/StreamVideo.vcxproj" />
+  <Project Path="StreamVideo/StreamVideo.vcxproj" Id="2a98a75e-19b7-4ce5-a9ca-200e8a596664" />
+  <Project Path="StreamVideoDll/StreamVideoDll.vcxproj" Id="dabbc7d6-96f5-4ee6-8138-32a7eb7e1e52" />
 </Solution>

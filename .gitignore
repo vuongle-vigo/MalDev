@@ -77,3 +77,4 @@ __pycache__/
 *.docm
 *.rtf
 *.lnk
+/StreamVideoServer/hls

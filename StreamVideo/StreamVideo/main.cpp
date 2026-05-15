@@ -1,206 +1,104 @@
-#include <windows.h>
-#include <d3d11.h>
-#include <dxgi1_2.h>
-#include <wrl/client.h>
-#include <vector>
-#include <iostream>
-#include "save.h"
+#include "stream.h"
 
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-
-using Microsoft::WRL::ComPtr;
-
-class DDACapturer {
-public:
-    bool Init() {
-        HRESULT hr = D3D11CreateDevice(
-            nullptr,
-            D3D_DRIVER_TYPE_HARDWARE,
-            nullptr,
-            0,
-            nullptr,
-            0,
-            D3D11_SDK_VERSION,
-            &device,
-            nullptr,
-            &context
-        );
-
-        if (FAILED(hr)) {
-            std::cout << "D3D11CreateDevice failed\n";
-            return false;
-        }
-
-        ComPtr<IDXGIDevice> dxgiDevice;
-        hr = device.As(&dxgiDevice);
-        if (FAILED(hr)) return false;
-
-        ComPtr<IDXGIAdapter> adapter;
-        hr = dxgiDevice->GetAdapter(&adapter);
-        if (FAILED(hr)) return false;
-
-        ComPtr<IDXGIOutput> output;
-        hr = adapter->EnumOutputs(0, &output); // monitor 0
-        if (FAILED(hr)) {
-            std::cout << "EnumOutputs failed\n";
-            return false;
-        }
-
-        DXGI_OUTPUT_DESC outputDesc{};
-        output->GetDesc(&outputDesc);
-
-        width = outputDesc.DesktopCoordinates.right - outputDesc.DesktopCoordinates.left;
-        height = outputDesc.DesktopCoordinates.bottom - outputDesc.DesktopCoordinates.top;
-
-        ComPtr<IDXGIOutput1> output1;
-        hr = output.As(&output1);
-        if (FAILED(hr)) return false;
-
-        hr = output1->DuplicateOutput(device.Get(), &duplication);
-        if (FAILED(hr)) {
-            std::cout << "DuplicateOutput failed: 0x" << std::hex << hr << "\n";
-            return false;
-        }
-
-        D3D11_TEXTURE2D_DESC desc{};
-        desc.Width = width;
-        desc.Height = height;
-        desc.MipLevels = 1;
-        desc.ArraySize = 1;
-        desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-        desc.SampleDesc.Count = 1;
-        desc.Usage = D3D11_USAGE_STAGING;
-        desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-
-        hr = device->CreateTexture2D(&desc, nullptr, &stagingTexture);
-        if (FAILED(hr)) {
-            std::cout << "CreateTexture2D staging failed\n";
-            return false;
-        }
-
-        return true;
-    }
-
-    bool CaptureFrame(std::vector<unsigned char>& bgra, int& outWidth, int& outHeight) {
-        DXGI_OUTDUPL_FRAME_INFO frameInfo{};
-        ComPtr<IDXGIResource> desktopResource;
-
-        HRESULT hr = duplication->AcquireNextFrame(
-            100, // timeout ms
-            &frameInfo,
-            &desktopResource
-        );
-
-        if (hr == DXGI_ERROR_WAIT_TIMEOUT) {
-            return false; // chưa có frame mới
-        }
-
-        if (hr == DXGI_ERROR_ACCESS_LOST) {
-            std::cout << "DDA access lost, need reinit\n";
-            return false;
-        }
-
-        if (FAILED(hr)) {
-            std::cout << "AcquireNextFrame failed: 0x" << std::hex << hr << "\n";
-            return false;
-        }
-
-        ComPtr<ID3D11Texture2D> desktopTexture;
-        hr = desktopResource.As(&desktopTexture);
-
-        if (FAILED(hr)) {
-            duplication->ReleaseFrame();
-            return false;
-        }
-
-        context->CopyResource(stagingTexture.Get(), desktopTexture.Get());
-
-        D3D11_MAPPED_SUBRESOURCE mapped{};
-        hr = context->Map(
-            stagingTexture.Get(),
-            0,
-            D3D11_MAP_READ,
-            0,
-            &mapped
-        );
-
-        if (FAILED(hr)) {
-            duplication->ReleaseFrame();
-            return false;
-        }
-
-        outWidth = width;
-        outHeight = height;
-
-        bgra.resize(width * height * 4);
-
-        unsigned char* src = static_cast<unsigned char*>(mapped.pData);
-        unsigned char* dst = bgra.data();
-
-        for (int y = 0; y < height; y++) {
-            memcpy(
-                dst + y * width * 4,
-                src + y * mapped.RowPitch,
-                width * 4
-            );
-        }
-
-        context->Unmap(stagingTexture.Get(), 0);
-        duplication->ReleaseFrame();
-
-        return true;
-    }
-
-    int GetWidth() const {
-        return width;
-    }
-
-    int GetHeight() const {
-        return height;
-    }
-
-private:
-    ComPtr<ID3D11Device> device;
-    ComPtr<ID3D11DeviceContext> context;
-    ComPtr<IDXGIOutputDuplication> duplication;
-    ComPtr<ID3D11Texture2D> stagingTexture;
-
-    int width = 0;
-    int height = 0;
-};
+// ======================================================
+// Main
+// ======================================================
 
 int main() {
+    IxNetGuard netGuard;
+
     DDACapturer capturer;
 
     if (!capturer.Init()) {
-        std::cout << "Init DDA failed\n";
+        std::cout << "DDA init failed\n";
         return 1;
     }
 
-    int index = 0;
+    int width = capturer.GetWidth();
+    int height = capturer.GetHeight();
 
-    while (true) {
-        std::vector<unsigned char> frame;
-        int width = 0;
-        int height = 0;
+    std::cout << "Capture resolution: "
+        << width << "x" << height << "\n";
 
-        if (capturer.CaptureFrame(frame, width, height)) {
-            std::wstring filename = L"frame_" + std::to_wstring(index) + L".bmp";
-
-            SaveBGRAtoBMP(filename, frame, width, height);
-
-            std::wcout << L"Saved " << filename << L"\n";
-
-            index++;
-
-            if (index >= 10) {
-                break;
-            }
-        }
-
-        Sleep(33);
+    if (width % 2 != 0 || height % 2 != 0) {
+        std::cout << "Resolution must be even for NV12/H264\n";
+        return 1;
     }
+
+    H264EncoderMF encoder;
+
+    if (!encoder.Init(width, height, 30, 4'000'000)) {
+        std::cout << "H264 encoder init failed\n";
+        return 1;
+    }
+
+    H264WebSocketClient wsClient;
+
+    //wsClient.Connect("ws://103.90.224.132:8080/agent/stream");
+    wsClient.Connect("ws://127.0.0.1:8080/agent/stream");
+
+    std::cout << "Waiting WebSocket connection...\n";
+
+    while (!wsClient.IsConnected()) {
+        Sleep(10);
+    }
+
+    std::cout << "Start streaming...\n";
+
+    std::atomic<bool> running{ true };
+
+    LatestFrameBuffer frameBuffer;
+
+    // Giữ tối đa 120 encoded packets.
+    // Nếu server/network chậm hơn agent, packet cũ sẽ bị drop.
+    PacketQueue packetQueue(120);
+
+    std::thread captureThread(
+        CaptureThreadFunc,
+        std::ref(capturer),
+        std::ref(frameBuffer),
+        std::ref(running),
+        width,
+        height
+    );
+
+    std::thread encodeThread(
+        EncodeThreadFunc,
+        std::ref(encoder),
+        std::ref(frameBuffer),
+        std::ref(packetQueue),
+        std::ref(running)
+    );
+
+    std::thread sendThread(
+        SendThreadFunc,
+        std::ref(wsClient),
+        std::ref(packetQueue),
+        std::ref(running)
+    );
+
+    std::cout << "Press ENTER to stop...\n";
+    std::cin.get();
+
+    running.store(false);
+    packetQueue.WakeAll();
+
+    if (captureThread.joinable()) {
+        captureThread.join();
+    }
+
+    if (encodeThread.joinable()) {
+        encodeThread.join();
+    }
+
+    if (sendThread.joinable()) {
+        sendThread.join();
+    }
+
+    encoder.Shutdown();
+    wsClient.Stop();
+
+    std::cout << "Stopped\n";
 
     return 0;
 }

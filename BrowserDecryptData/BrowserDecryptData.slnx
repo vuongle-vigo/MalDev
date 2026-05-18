@@ -5,6 +5,6 @@
   </Configurations>
   <Project Path="BrowserDecryptData/BrowserDecryptData.vcxproj" Id="60cda186-81e1-4ed1-ab86-946b3b0c892d" />
   <Project Path="DllDecryptKey/DllDecryptKey.vcxproj" Id="2a479be7-310e-400c-a1bd-e0804c0833b1" />
+  <Project Path="KeyChromeExtractShell/KeyChromeExtractShell.vcxproj" Id="88eabf68-5d9c-40ef-b03f-f823540a45f3" />
   <Project Path="KeyEdgeExtractShell/KeyEdgeExtractShell.vcxproj" Id="2f5dcf2a-120e-4ca8-ae64-3ad9ac8cdfb9" />
-  <Project Path="KeyExtractShell/KeyExtractShell.vcxproj" Id="c293049a-afd3-477d-a557-08cbba595342" />
 </Solution>

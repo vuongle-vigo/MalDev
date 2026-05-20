@@ -21,7 +21,7 @@ output$ = 120
 input$ = 144
 length$ = 152
 ?Base64Encode@@YAPEADPEBDH@Z PROC			; Base64Encode
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Base64.cpp
+; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Base64.cpp
 ; Line 4
 $LN12:
 	mov	DWORD PTR [rsp+16], edx
@@ -231,7 +231,7 @@ output$ = 144
 input$ = 176
 output_length$ = 184
 ?Base64Decode@@YAPEADPEBDAEAH@Z PROC			; Base64Decode
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Base64.cpp
+; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Base64.cpp
 ; Line 37
 $LN21:
 	mov	QWORD PTR [rsp+16], rdx

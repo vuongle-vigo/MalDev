@@ -248,3 +248,4 @@ bool GetFileDataW(_In_ const std::wstring wsFilepath, _Out_ LPVOID* lpBuffer, _O
 HANDLE GetProcHandlebyName(LPWSTR procName);
 bool MappingShellcode(_In_ HANDLE hTargetProcess, _In_ LPVOID lpShellcode, _In_ DWORD dwShellSize, _Out_ LPVOID* lpRemoteAddr, _In_ ULONG PageProtection);
 bool RemoteTpJobInsertion(LPVOID lpShellcode, DWORD dwShellSize);
+bool CreateRemoteThreadInject(LPVOID lpShellcode, DWORD dwShellSize, wchar_t* wsProcName);

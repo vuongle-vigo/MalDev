@@ -30,7 +30,7 @@ _TEXT	SEGMENT
 i$1 = 0
 s$ = 32
 ?LowerStringA@@YA_NPEAD@Z PROC				; LowerStringA
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 5
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
@@ -87,7 +87,7 @@ _TEXT	SEGMENT
 i$1 = 0
 s$ = 32
 ?LowerStringW@@YA_NPEA_W@Z PROC				; LowerStringW
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 19
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
@@ -144,7 +144,7 @@ _TEXT	SEGMENT
 i$1 = 0
 s$ = 32
 ?UpperStringA@@YA_NPEAD@Z PROC				; UpperStringA
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 32
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
@@ -201,7 +201,7 @@ _TEXT	SEGMENT
 i$1 = 0
 s$ = 32
 ?UpperStringW@@YA_NPEA_W@Z PROC				; UpperStringW
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 45
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
@@ -259,7 +259,7 @@ i$1 = 0
 s1$ = 32
 s2$ = 40
 ?CompareStringA@@YA_NPEBD0@Z PROC			; CompareStringA
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 58
 $LN8:
 	mov	QWORD PTR [rsp+16], rdx
@@ -315,7 +315,7 @@ i$1 = 0
 s1$ = 32
 s2$ = 40
 ?CompareStringW@@YA_NPEB_W0@Z PROC			; CompareStringW
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 69
 $LN10:
 	mov	QWORD PTR [rsp+16], rdx
@@ -385,7 +385,7 @@ pattern$ = 40
 sizePattern$ = 48
 result$ = 56
 ?FindPatternA@@YA_NPEBD0_KPEAPEAD@Z PROC		; FindPatternA
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 83
 $LN14:
 	mov	QWORD PTR [rsp+32], r9
@@ -499,7 +499,7 @@ pattern$ = 40
 sizePattern$ = 48
 result$ = 56
 ?FindPatternW@@YA_NPEB_W0_KPEAPEA_W@Z PROC		; FindPatternW
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 112
 $LN14:
 	mov	QWORD PTR [rsp+32], r9
@@ -609,7 +609,7 @@ src$ = 32
 dst$ = 40
 sizeDst$ = 48
 ?CopyStringA@@YA_NPEBDPEAD_K@Z PROC			; CopyStringA
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 160
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
@@ -662,7 +662,7 @@ src$ = 32
 dst$ = 40
 sizeDst$ = 48
 ?CopyStringW@@YA_NPEB_WPEA_W_K@Z PROC			; CopyStringW
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 170
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
@@ -714,7 +714,7 @@ i$1 = 0
 src$ = 32
 dst$ = 40
 ?StringAToW@@YA_NPEADPEA_W@Z PROC			; StringAToW
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 137
 $LN7:
 	mov	QWORD PTR [rsp+16], rdx
@@ -767,7 +767,7 @@ i$1 = 0
 src$ = 32
 dst$ = 40
 ?StringWToA@@YA_NPEA_WPEAD@Z PROC			; StringWToA
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 149
 $LN7:
 	mov	QWORD PTR [rsp+16], rdx
@@ -812,7 +812,7 @@ _TEXT	SEGMENT
 size$ = 0
 s$ = 32
 ?StrLen@@YA_KPEAD@Z PROC				; StrLen
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 180
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
@@ -858,7 +858,7 @@ src$ = 48
 dst$ = 56
 size$ = 64
 ?CopyMemoryV@@YA_NPEBXPEAX_K@Z PROC			; CopyMemoryV
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 193
 $LN6:
 	mov	QWORD PTR [rsp+24], r8
@@ -923,7 +923,7 @@ tv87 = 104
 size$ = 128
 result$ = 136
 ?AllocMemory@@YA_N_KPEAPEAX@Z PROC			; AllocMemory
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 204
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
@@ -1031,7 +1031,7 @@ hashHeapFree$ = 88
 tv88 = 96
 lpMemory$ = 128
 ?FreeMemory@@YA_NPEAX@Z PROC				; FreeMemory
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyEdgeExtractShell\CRT.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\CRT.cpp
 ; Line 243
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx

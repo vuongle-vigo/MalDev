@@ -129,12 +129,14 @@
   <ItemGroup>
     <ClCompile Include="ApiResolve.cpp" />
     <ClCompile Include="Base64.cpp" />
+    <ClCompile Include="Common.cpp" />
     <ClCompile Include="CRT.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApiResolve.h" />
     <ClInclude Include="Base64.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="CRT.h" />
     <ClInclude Include="HashString.h" />
   </ItemGroup>

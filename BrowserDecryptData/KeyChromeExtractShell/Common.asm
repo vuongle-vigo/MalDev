@@ -46,7 +46,7 @@ processName$ = 768
 outPids$ = 776
 maxCount$ = 784
 ?GetProcessIdsByName@@YA_KPEB_WPEAK_K@Z PROC		; GetProcessIdsByName
-; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Common.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Common.cpp
 ; Line 12
 $LN10:
 	mov	QWORD PTR [rsp+24], r8
@@ -265,7 +265,7 @@ buffer$45 = 1904
 filename$ = 6016
 newFileName$ = 6024
 ?CreateCopyFile@@YA_NPEAD0@Z PROC			; CreateCopyFile
-; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Common.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Common.cpp
 ; Line 63
 $LN34:
 	mov	QWORD PTR [rsp+16], rdx
@@ -975,7 +975,7 @@ orHistoryPath$ = 3024
 passwordPath$ = 3296
 orPasswordPath$ = 3568
 ?DecryptKey@@YAXXZ PROC					; DecryptKey
-; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Common.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\Common.cpp
 ; Line 392
 $LN40:
 	push	rdi

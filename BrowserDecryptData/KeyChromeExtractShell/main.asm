@@ -10,7 +10,7 @@ EXTRN	?DecryptKey@@YAXXZ:PROC				; DecryptKey
 ; Function compile flags: /Odtp
 _TEXT	SEGMENT
 main	PROC
-; File C:\Users\vuong\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\main.cpp
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\BrowserDecryptData\KeyChromeExtractShell\main.cpp
 ; Line 4
 $LN3:
 	sub	rsp, 40					; 00000028H

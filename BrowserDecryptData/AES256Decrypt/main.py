@@ -50,6 +50,7 @@ cursor.execute("""
 columns = [description[0] for description in cursor.description]
 rows = cursor.fetchall()
 
+domain_list = []
 # Mở file JSON để ghi
 with open('decrypted_cookies.json', 'w') as json_file:
     # Khởi tạo danh sách để chứa tất cả các đối tượng JSON
@@ -58,8 +59,12 @@ with open('decrypted_cookies.json', 'w') as json_file:
         row_dict = dict(zip(columns, row))
         encrypted_value = row_dict['encrypted_value']
         domain = row_dict['host_key']
+        if domain not in domain_list:
+            domain_list.append(domain)
         if domain != "mail.google.com" and domain != ".google.com":
             continue
+        # if domain != ".facebook.com":
+        #     continue
         if encrypted_value.startswith((b'v10', b'v11', b'v20')):
             encrypted_value = encrypted_value[3:]
             tag = encrypted_value[-16:]
@@ -99,3 +104,5 @@ with open('decrypted_cookies.json', 'w') as json_file:
 
 # Đóng kết nối cơ sở dữ liệu
 conn.close()
+
+print(domain_list)

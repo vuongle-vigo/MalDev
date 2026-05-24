@@ -1,0 +1,482 @@
+#include "CRT.h"
+#include <stdio.h>
+
+void print_separator(const char* title) {
+    printf("\n=== %s ===\n", title);
+}
+
+//=============================================================================
+// TEST MEMORY ALLOCATION
+//=============================================================================
+
+void test_memory_allocation() {
+    print_separator("MEMORY ALLOCATION TESTS");
+    
+    // Test malloc
+    printf("Testing crt_malloc...\n");
+    int* arr = (int*)crt_malloc(10 * sizeof(int));
+    if (arr) {
+        printf("[PASS] crt_malloc: Allocated %zu bytes\n", 10 * sizeof(int));
+        crt_free(arr);
+    } else {
+        printf("[FAIL] crt_malloc failed\n");
+    }
+    
+    // Test calloc
+    printf("\nTesting crt_calloc...\n");
+    int* arr2 = (int*)crt_calloc(5, sizeof(int));
+    if (arr2) {
+        BOOL allZero = TRUE;
+        for (int i = 0; i < 5; i++) {
+            if (arr2[i] != 0) {
+                allZero = FALSE;
+                break;
+            }
+        }
+        printf("[%s] crt_calloc: Memory initialized to zero = %s\n", 
+               allZero ? "PASS" : "FAIL", allZero ? "YES" : "NO");
+        crt_free(arr2);
+    } else {
+        printf("[FAIL] crt_calloc failed\n");
+    }
+    
+    // Test realloc
+    printf("\nTesting crt_realloc...\n");
+    int* arr3 = (int*)crt_malloc(3 * sizeof(int));
+    if (arr3) {
+        arr3[0] = 1; arr3[1] = 2; arr3[2] = 3;
+        int* arr4 = (int*)crt_realloc(arr3, 6 * sizeof(int));
+        if (arr4) {
+            BOOL dataPreserved = (arr4[0] == 1 && arr4[1] == 2 && arr4[2] == 3);
+            printf("[%s] crt_realloc: Data preserved = %s\n", 
+                   dataPreserved ? "PASS" : "FAIL", dataPreserved ? "YES" : "NO");
+            crt_free(arr4);
+        }
+    }
+    
+    // Test realloc to NULL
+    printf("\nTesting crt_realloc with NULL...\n");
+    int* newArr = (int*)crt_realloc(NULL, 5 * sizeof(int));
+    if (newArr) {
+        printf("[PASS] crt_realloc(NULL, size) works like malloc\n");
+        crt_free(newArr);
+    }
+    
+    // Test free
+    printf("\nTesting crt_free...\n");
+    void* temp = crt_malloc(100);
+    crt_free(temp);
+    printf("[PASS] crt_free: No crash on valid free\n");
+    
+    crt_free(NULL);
+    printf("[PASS] crt_free: No crash on NULL\n");
+}
+
+//=============================================================================
+// TEST STRING FUNCTIONS (CHAR)
+//=============================================================================
+
+void test_string_char() {
+    print_separator("STRING FUNCTIONS (CHAR)");
+    
+    // Test strlen
+    printf("Testing crt_strlen...\n");
+    const char* test1 = "Hello, World!";
+    SIZE_T len = crt_strlen(test1);
+    printf("[%s] crt_strlen(\"%s\") = %zu (expected: %zu)\n", 
+           len == 13 ? "PASS" : "FAIL", test1, len, (SIZE_T)13);
+    
+    len = crt_strlen("");
+    printf("[%s] crt_strlen(\"\") = %zu (expected: 0)\n", 
+           len == 0 ? "PASS" : "FAIL", len);
+    
+    // Test strcpy
+    printf("\nTesting crt_strcpy...\n");
+    char dest1[50];
+    crt_strcpy(dest1, "Copy this!");
+    printf("[%s] crt_strcpy result: \"%s\"\n", 
+           crt_strcmp(dest1, "Copy this!") == 0 ? "PASS" : "FAIL", dest1);
+    
+    // Test strncpy
+    printf("\nTesting crt_strncpy...\n");
+    char dest2[50] = {0};
+    crt_strncpy(dest2, "Hello World", 5);
+    printf("[%s] crt_strncpy: \"%s\" (expected: \"Hello\")\n", 
+           crt_strncmp(dest2, "Hello", 5) == 0 ? "PASS" : "FAIL", dest2);
+    
+    // Test strcat
+    printf("\nTesting crt_strcat...\n");
+    char dest3[50] = "Hello";
+    crt_strcat(dest3, ", World!");
+    printf("[%s] crt_strcat: \"%s\"\n", 
+           crt_strcmp(dest3, "Hello, World!") == 0 ? "PASS" : "FAIL", dest3);
+    
+    // Test strncat
+    printf("\nTesting crt_strncat...\n");
+    char dest4[50] = "Hello";
+    crt_strncat(dest4, ", World!!!", 6);
+    printf("[%s] crt_strncat: \"%s\"\n", 
+           crt_strcmp(dest4, "Hello, Worl") == 0 ? "PASS" : "FAIL", dest4);
+    
+    // Test strcmp
+    printf("\nTesting crt_strcmp...\n");
+    int cmp;
+    cmp = crt_strcmp("abc", "abc");
+    printf("[%s] strcmp(\"abc\", \"abc\") = %d (expected: 0)\n", cmp == 0 ? "PASS" : "FAIL", cmp);
+    
+    cmp = crt_strcmp("abc", "abd");
+    printf("[%s] strcmp(\"abc\", \"abd\") = %d (expected: -1)\n", cmp < 0 ? "PASS" : "FAIL", cmp);
+    
+    cmp = crt_strcmp("abd", "abc");
+    printf("[%s] strcmp(\"abd\", \"abc\") = %d (expected: > 0)\n", cmp > 0 ? "PASS" : "FAIL", cmp);
+    
+    // Test strncmp
+    printf("\nTesting crt_strncmp...\n");
+    cmp = crt_strncmp("Hello World", "Hello Earth", 5);
+    printf("[%s] strncmp(\"Hello World\", \"Hello Earth\", 5) = %d (expected: 0)\n", 
+           cmp == 0 ? "PASS" : "FAIL", cmp);
+    
+    // Test strcmpi
+    printf("\nTesting crt_strcmpi...\n");
+    cmp = crt_strcmpi("HELLO", "hello");
+    printf("[%s] strcmpi(\"HELLO\", \"hello\") = %d (expected: 0)\n", cmp == 0 ? "PASS" : "FAIL", cmp);
+    
+    // Test strchr
+    printf("\nTesting crt_strchr...\n");
+    const char* str = "Hello World";
+    char* found = crt_strchr(str, 'o');
+    printf("[%s] strchr(\"Hello World\", 'o') found at \"%s\"\n", 
+           found != NULL && *found == 'o' ? "PASS" : "FAIL", found ? found : "NULL");
+    
+    found = crt_strchr(str, 'z');
+    printf("[%s] strchr(\"Hello World\", 'z') = %s\n", found == NULL ? "PASS" : "FAIL", 
+           found ? found : "NULL (expected)");
+    
+    // Test strrchr
+    printf("\nTesting crt_strrchr...\n");
+    found = crt_strrchr("Hello World", 'o');
+    printf("[%s] strrchr(\"Hello World\", 'o') found at \"%s\" (last 'o')\n", 
+           found != NULL && *(found+1) == 'r' ? "PASS" : "FAIL", found ? found : "NULL");
+    
+    // Test strstr
+    printf("\nTesting crt_strstr...\n");
+    found = crt_strstr("Hello World", "World");
+    printf("[%s] strstr(\"Hello World\", \"World\") found at \"%s\"\n", 
+           found != NULL && found == str + 6 ? "PASS" : "FAIL", found ? found : "NULL");
+    
+    // Test strupr
+    printf("\nTesting crt_strupr...\n");
+    char s1[] = "Hello";
+    printf("[%s] strupr(\"Hello\") = \"%s\"\n", 
+           crt_strcmp(crt_strupr(s1), "HELLO") == 0 ? "PASS" : "FAIL", s1);
+    
+    // Test strlwr
+    printf("\nTesting crt_strlwr...\n");
+    char s2[] = "HELLO";
+    printf("[%s] strlwr(\"HELLO\") = \"%s\"\n", 
+           crt_strcmp(crt_strlwr(s2), "hello") == 0 ? "PASS" : "FAIL", s2);
+    
+    // Test strtok
+    printf("\nTesting crt_strtok...\n");
+    char strtok_test[] = "Hello,World,Test,String";
+    const char delim[] = ",";
+    char* token = crt_strtok(strtok_test, delim);
+    const char* expected[] = {"Hello", "World", "Test", "String"};
+    BOOL allPassed = TRUE;
+    int i = 0;
+    while (token != NULL) {
+        if (crt_strcmp(token, expected[i]) != 0) {
+            allPassed = FALSE;
+        }
+        printf("  Token %d: \"%s\"\n", i + 1, token);
+        token = crt_strtok(NULL, delim);
+        i++;
+    }
+    printf("[%s] strtok extracted all tokens correctly\n", allPassed ? "PASS" : "FAIL");
+}
+
+//=============================================================================
+// TEST STRING FUNCTIONS (WCHAR)
+//=============================================================================
+
+void test_string_wchar() {
+    print_separator("STRING FUNCTIONS (WCHAR)");
+    
+    // Test wcslen
+    printf("Testing crt_wcslen...\n");
+    const wchar_t* wtest1 = L"Hello, World!";
+    SIZE_T len = crt_wcslen(wtest1);
+    printf("[%s] wcslen(L\"Hello, World!\") = %zu (expected: %zu)\n", 
+           len == 13 ? "PASS" : "FAIL", len, (SIZE_T)13);
+    
+    // Test wcscpy
+    printf("\nTesting crt_wcscpy...\n");
+    wchar_t wdest1[50];
+    crt_wcscpy(wdest1, L"Copy this!");
+    printf("[%s] wcscpy result: \"Hello\"\n", 
+           crt_wcscmp(wdest1, L"Copy this!") == 0 ? "PASS" : "FAIL");
+    
+    // Test wcsncpy
+    printf("\nTesting crt_wcsncpy...\n");
+    wchar_t wdest2[50] = {0};
+    crt_wcsncpy(wdest2, L"Hello World", 5);
+    printf("[%s] wcsncpy: \"Hello\"\n", 
+           crt_wcsncmp(wdest2, L"Hello", 5) == 0 ? "PASS" : "FAIL");
+    
+    // Test wcscat
+    printf("\nTesting crt_wcscat...\n");
+    wchar_t wdest3[50] = L"Hello";
+    crt_wcscat(wdest3, L", World!");
+    printf("[%s] wcscat: \"Hello, World!\"\n", 
+           crt_wcscmp(wdest3, L"Hello, World!") == 0 ? "PASS" : "FAIL");
+    
+    // Test wcscmp
+    printf("\nTesting crt_wcscmp...\n");
+    int cmp = crt_wcscmp(L"abc", L"abc");
+    printf("[%s] wcscmp(L\"abc\", L\"abc\") = %d (expected: 0)\n", cmp == 0 ? "PASS" : "FAIL", cmp);
+    
+    // Test wcschr
+    printf("\nTesting crt_wcschr...\n");
+    const wchar_t* wstr = L"Hello World";
+    wchar_t* wfound = crt_wcschr(wstr, L'o');
+    printf("[%s] wcschr(L\"Hello World\", 'o') found\n", wfound != NULL ? "PASS" : "FAIL");
+    
+    // Test wcsstr
+    printf("\nTesting crt_wcsstr...\n");
+    wfound = crt_wcsstr(L"Hello World", L"World");
+    printf("[%s] wcsstr(L\"Hello World\", L\"World\") found\n", 
+           wfound != NULL ? "PASS" : "FAIL");
+    
+    // Test wcsupr
+    printf("\nTesting crt_wcsupr...\n");
+    wchar_t ws1[] = L"Hello";
+    crt_wcsupr(ws1);
+    printf("[%s] wcsupr(L\"Hello\") = L\"HELLO\"\n", 
+           crt_wcscmp(ws1, L"HELLO") == 0 ? "PASS" : "FAIL");
+    
+    // Test wcslwr
+    printf("\nTesting crt_wcslwr...\n");
+    wchar_t ws2[] = L"HELLO";
+    crt_wcslwr(ws2);
+    printf("[%s] wcslwr(L\"HELLO\") = L\"hello\"\n", 
+           crt_wcscmp(ws2, L"hello") == 0 ? "PASS" : "FAIL");
+}
+
+//=============================================================================
+// TEST STRING CONVERSION
+//=============================================================================
+
+void test_string_conversion() {
+    print_separator("STRING CONVERSION TESTS");
+    
+    // Test atowc
+    printf("Testing crt_atowc...\n");
+    const char* ansi = "Hello Wide";
+    wchar_t* wide = crt_atowc(ansi);
+    if (wide) {
+        printf("[PASS] atowc: \"%s\" -> %zu wchars\n", ansi, crt_wcslen(wide));
+        crt_free(wide);
+    }
+    
+    // Test wctoa
+    printf("\nTesting crt_wctoa...\n");
+    const wchar_t* wides = L"Hello ANSI";
+    char* ansi2 = crt_wctoa(wides);
+    if (ansi2) {
+        printf("[PASS] wctoa: converted -> \"%s\"\n", ansi2);
+        crt_free(ansi2);
+    }
+    
+    // Test atoi
+    printf("\nTesting crt_atoi...\n");
+    printf("[%s] atoi(\"12345\") = %d (expected: 12345)\n", 
+           crt_atoi("12345") == 12345 ? "PASS" : "FAIL", crt_atoi("12345"));
+    printf("[%s] atoi(\"-54321\") = %d (expected: -54321)\n", 
+           crt_atoi("-54321") == -54321 ? "PASS" : "FAIL", crt_atoi("-54321"));
+    printf("[%s] atoi(\"  789\") = %d (expected: 789)\n", 
+           crt_atoi("  789") == 789 ? "PASS" : "FAIL", crt_atoi("  789"));
+    
+    // Test itoa
+    printf("\nTesting crt_itoa...\n");
+    char numStr[50];
+    crt_itoa(12345, numStr, 10);
+    printf("[%s] itoa(12345, 10) = \"%s\" (expected: \"12345\")\n", 
+           crt_strcmp(numStr, "12345") == 0 ? "PASS" : "FAIL", numStr);
+    
+    crt_itoa(-12345, numStr, 10);
+    printf("[%s] itoa(-12345, 10) = \"%s\" (expected: \"-12345\")\n", 
+           crt_strcmp(numStr, "-12345") == 0 ? "PASS" : "FAIL", numStr);
+    
+    crt_itoa(255, numStr, 16);
+    printf("[%s] itoa(255, 16) = \"%s\" (expected: \"ff\")\n", 
+           crt_strcmp(numStr, "ff") == 0 ? "PASS" : "FAIL", numStr);
+    
+    crt_itoa(8, numStr, 2);
+    printf("[%s] itoa(8, 2) = \"%s\" (expected: \"1000\")\n", 
+           crt_strcmp(numStr, "1000") == 0 ? "PASS" : "FAIL", numStr);
+    
+    // Test wtol
+    printf("\nTesting crt_wtoi...\n");
+    int wtoi_result = crt_wtoi(L"99999");
+    printf("[%s] wtoi(L\"99999\") = %d (expected: 99999)\n", 
+           wtoi_result == 99999 ? "PASS" : "FAIL", wtoi_result);
+    
+    // Test itow
+    printf("\nTesting crt_itow...\n");
+    wchar_t wnumStr[50];
+    crt_itow(54321, wnumStr, 10);
+    printf("[%s] itow(54321, 10) = L\"54321\"\n", 
+           crt_wcscmp(wnumStr, L"54321") == 0 ? "PASS" : "FAIL");
+}
+
+//=============================================================================
+// TEST MEMORY FUNCTIONS
+//=============================================================================
+
+void test_memory_functions() {
+    print_separator("MEMORY FUNCTIONS TESTS");
+    
+    // Test memset
+    printf("Testing crt_memset...\n");
+    unsigned char buf1[10];
+    crt_memset(buf1, 0xAA, 10);
+    BOOL memsetPass = TRUE;
+    for (int i = 0; i < 10; i++) {
+        if (buf1[i] != 0xAA) {
+            memsetPass = FALSE;
+            break;
+        }
+    }
+    printf("[%s] memset: all bytes set to 0xAA\n", memsetPass ? "PASS" : "FAIL");
+    
+    // Test memcpy
+    printf("\nTesting crt_memcpy...\n");
+    unsigned char src[] = {1, 2, 3, 4, 5};
+    unsigned char dest1[5];
+    crt_memcpy(dest1, src, 5);
+    BOOL memcpyPass = crt_memcmp(dest1, src, 5) == 0;
+    printf("[%s] memcpy: data copied correctly\n", memcpyPass ? "PASS" : "FAIL");
+    
+    // Test memmove (overlapping - forward)
+    printf("\nTesting crt_memmove (forward)...\n");
+    unsigned char buf2[10] = {0,1,2,3,4,5,6,7,8,9};
+    crt_memmove(buf2 + 2, buf2, 5);
+    unsigned char expected2[] = {0, 1, 0, 1, 2, 3, 4, 7, 8, 9};
+    printf("[%s] memmove: overlapping copy works\n", 
+           crt_memcmp(buf2, expected2, 10) == 0 ? "PASS" : "FAIL");
+    
+    // Test memmove (overlapping - backward)
+    printf("\nTesting crt_memmove (backward)...\n");
+    unsigned char buf3[10] = {0,1,2,3,4,5,6,7,8,9};
+    crt_memmove(buf3, buf3 + 2, 5);
+    unsigned char expected3[] = {2, 3, 4, 5, 6, 5, 6, 7, 8, 9};
+    printf("[%s] memmove: backward overlapping copy works\n", 
+           crt_memcmp(buf3, expected3, 10) == 0 ? "PASS" : "FAIL");
+    
+    // Test memcmp
+    printf("\nTesting crt_memcmp...\n");
+    unsigned char a1[] = {1, 2, 3};
+    unsigned char a2[] = {1, 2, 3};
+    unsigned char a3[] = {1, 2, 4};
+    printf("[%s] memcmp(equal arrays) = 0: %d\n", crt_memcmp(a1, a2, 3) == 0 ? "PASS" : "FAIL", crt_memcmp(a1, a2, 3));
+    printf("[%s] memcmp(diff arrays) != 0: %d\n", crt_memcmp(a1, a3, 3) != 0 ? "PASS" : "FAIL", crt_memcmp(a1, a3, 3));
+    
+    // Test memchr
+    printf("\nTesting crt_memchr...\n");
+    unsigned char data[] = "Hello World";
+    void* found = crt_memchr(data, 'o', 11);
+    printf("[%s] memchr found 'o' at position 4\n", 
+           found != NULL && ((char*)found)[0] == 'o' ? "PASS" : "FAIL");
+}
+
+//=============================================================================
+// TEST UTILITY FUNCTIONS
+//=============================================================================
+
+void test_utilities() {
+    print_separator("UTILITY FUNCTION TESTS");
+    
+    // Test abs
+    printf("Testing crt_abs...\n");
+    printf("[%s] abs(-5) = %d (expected: 5)\n", crt_abs(-5) == 5 ? "PASS" : "FAIL", crt_abs(-5));
+    printf("[%s] abs(5) = %d (expected: 5)\n", crt_abs(5) == 5 ? "PASS" : "FAIL", crt_abs(5));
+    printf("[%s] abs(0) = %d (expected: 0)\n", crt_abs(0) == 0 ? "PASS" : "FAIL", crt_abs(0));
+    
+    // Test labs
+    printf("\nTesting crt_labs...\n");
+    printf("[%s] labs(-123456789) = %ld\n", crt_labs(-123456789) == 123456789 ? "PASS" : "FAIL", crt_labs(-123456789));
+    
+    // Test srand and rand
+    printf("\nTesting crt_srand and crt_rand...\n");
+    crt_srand(12345);
+    int r1 = crt_rand();
+    crt_srand(12345);
+    int r2 = crt_rand();
+    printf("[%s] rand with same seed produces same values: %d == %d\n", 
+           r1 == r2 ? "PASS" : "FAIL", r1, r2);
+    
+    // Test qsort
+    printf("\nTesting crt_qsort...\n");
+    int arr[] = {5, 2, 8, 1, 9, 3, 7, 4, 6};
+    int arrSize = sizeof(arr) / sizeof(arr[0]);
+    crt_qsort(arr, arrSize, sizeof(int), 
+              [](const void* a, const void* b) -> int {
+                  return (*(int*)a - *(int*)b);
+              });
+    BOOL sorted = TRUE;
+    for (int i = 1; i < arrSize; i++) {
+        if (arr[i] < arr[i-1]) {
+            sorted = FALSE;
+            break;
+        }
+    }
+    printf("[%s] qsort: array is sorted: ", sorted ? "PASS" : "FAIL");
+    for (int i = 0; i < arrSize; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+    
+    // Test bsearch
+    printf("\nTesting crt_bsearch...\n");
+    int key = 5;
+    int* found = (int*)crt_bsearch(&key, arr, arrSize, sizeof(int),
+                                    [](const void* a, const void* b) -> int {
+                                        return (*(int*)a - *(int*)b);
+                                    });
+    printf("[%s] bsearch found %d in array: %s\n", 
+           found != NULL && *found == 5 ? "PASS" : "FAIL", key, 
+           found ? "YES" : "NO");
+    
+    // Test bsearch for non-existent
+    key = 100;
+    found = (int*)crt_bsearch(&key, arr, arrSize, sizeof(int),
+                              [](const void* a, const void* b) -> int {
+                                  return (*(int*)a - *(int*)b);
+                              });
+    printf("[%s] bsearch for 100 returns NULL: %s\n", 
+           found == NULL ? "PASS" : "FAIL", found ? "NOT NULL" : "NULL");
+}
+
+//=============================================================================
+// MAIN
+//=============================================================================
+
+int main() {
+    printf("=================================================\n");
+    printf("    CRT Library - Custom Implementation Test\n");
+    printf("    Version: %s\n", CRT_VERSION);
+    printf("=================================================\n");
+    
+    test_memory_allocation();
+    test_string_char();
+    test_string_wchar();
+    test_string_conversion();
+    test_memory_functions();
+    test_utilities();
+    
+    printf("\n=================================================\n");
+    printf("    All tests completed!\n");
+    printf("=================================================\n");
+    
+    return 0;
+}

@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 
 from aiohttp import web, WSMsgType
+import re
 
 
 HOST = "0.0.0.0"
@@ -18,6 +19,7 @@ PORT = 8080
 FFMPEG_EXE = os.environ.get("FFMPEG_EXE") or shutil.which("ffmpeg") or r"C:\FFMPEG\bin\ffmpeg.exe"
 
 HLS_DIR = Path("hls")
+RECORDINGS_DIR = Path("recordings")
 HEADER_SIZE = 24
 
 # C++ header:
@@ -33,7 +35,11 @@ MAGIC_H264 = 0x34363248  # 'H264' little-endian
 
 
 class StreamState:
-    def __init__(self):
+    def __init__(self, agent_id: str):
+        self.agent_id = agent_id
+        self.hls_dir = HLS_DIR / agent_id
+        self.recordings_dir = RECORDINGS_DIR / agent_id
+
         self.ffmpeg = None
         self.lock = asyncio.Lock()
         self.packet_count = 0
@@ -50,6 +56,10 @@ class StreamState:
         self.save_tmp_path = None
         self.save_handle = None
 
+        # viewers count and idle stop task
+        self.viewers = 0
+        self._stop_task = None
+
     def ffmpeg_running(self):
         return self.ffmpeg is not None and self.ffmpeg.poll() is None
 
@@ -62,9 +72,9 @@ class StreamState:
             if not ffmpeg_path.exists() and shutil.which(str(FFMPEG_EXE)) is None:
                 raise FileNotFoundError(f"ffmpeg not found: {FFMPEG_EXE}")
 
-            if HLS_DIR.exists():
-                shutil.rmtree(HLS_DIR, ignore_errors=True)
-            HLS_DIR.mkdir(parents=True, exist_ok=True)
+            if self.hls_dir.exists():
+                shutil.rmtree(self.hls_dir, ignore_errors=True)
+            self.hls_dir.mkdir(parents=True, exist_ok=True)
 
             # Không dùng append_list vì dễ giữ playlist cũ / làm player đọc nhầm trạng thái cũ.
             # hls_time quá nhỏ như 0.3 đôi khi làm browser request dày và lag hơn.
@@ -100,10 +110,10 @@ class StreamState:
                 "-hls_list_size", "12",
                 "-hls_delete_threshold", "12",
                 "-hls_flags", "delete_segments+omit_endlist+independent_segments+temp_file",
-                "-hls_segment_filename", str(HLS_DIR / "seg_%06d.ts"),
+                "-hls_segment_filename", str(self.hls_dir / "seg_%06d.ts"),
                 "-hls_segment_type", "mpegts",
 
-                str(HLS_DIR / "stream.m3u8"),
+                str(self.hls_dir / "stream.m3u8"),
             ]
 
             print("[FFMPEG] starting:")
@@ -311,9 +321,12 @@ class StreamState:
         if not payload:
             return
 
-        await self.start_ffmpeg()
+        # Start ffmpeg only when there are viewers
+        if self.viewers > 0:
+            await self.start_ffmpeg()
 
         if not self.ffmpeg_running():
+            # drop packets when ffmpeg not running
             return
 
         self.packet_count += 1
@@ -356,17 +369,41 @@ class StreamState:
             )
 
 
-state = StreamState()
+STATES = {}
+
+def _sanitize_agent(agent: str) -> str:
+    if not agent:
+        return "default"
+    # allow alnum, -, _ only
+    if re.match(r"^[A-Za-z0-9_-]+$", agent):
+        return agent
+    raise web.HTTPBadRequest(text="Bad agent id")
+
+def get_state(agent: str) -> StreamState:
+    aid = _sanitize_agent(agent)
+    s = STATES.get(aid)
+    if s is None:
+        s = StreamState(aid)
+        STATES[aid] = s
+    return s
 
 
 async def agent_ws_handler(request):
+    agent = request.match_info.get("agent") or "default"
+    try:
+        state = get_state(agent)
+    except web.HTTPBadRequest as e:
+        return web.Response(status=400, text=str(e))
+
     ws = web.WebSocketResponse(max_msg_size=0, heartbeat=15)
     await ws.prepare(request)
 
     print("[AGENT] connected")
 
+    # ensure ffmpeg running if there are viewers
     try:
-        await state.start_ffmpeg()
+        if state.viewers > 0:
+            await state.start_ffmpeg()
     except Exception as e:
         print("[FFMPEG] start failed:", e)
         await ws.close()
@@ -427,6 +464,7 @@ async def agent_ws_handler(request):
 
 
 async def index_handler(request):
+    agent = request.match_info.get("agent") or "default"
     html = r"""
 <!doctype html>
 <html>
@@ -487,7 +525,7 @@ async def index_handler(request):
         <div class="status" id="status">loading...</div>
         <div class="status" id="stats"></div>
         <div class="status">
-            HLS URL: <code>/hls/stream.m3u8</code>
+            HLS URL: <code>/hls/__AGENT__/stream.m3u8</code>
         </div>
 
         <button onclick="restartPlayer()">Restart player</button>
@@ -511,7 +549,7 @@ async def index_handler(request):
     }
 
     function hlsUrl() {
-        return "/hls/stream.m3u8?t=" + Date.now();
+        return "/hls/__AGENT__/stream.m3u8?t=" + Date.now();
     }
 
     function isSafariNativeHls() {
@@ -542,7 +580,7 @@ async def index_handler(request):
     async function waitForStreamReady() {
         while (true) {
             try {
-                const res = await fetch("/health?t=" + Date.now(), {
+                const res = await fetch("/health/__AGENT__?t=" + Date.now(), {
                     cache: "no-store"
                 });
 
@@ -714,17 +752,30 @@ async def index_handler(request):
     });
 
     startPlayer();
+
+    // notify server this client is viewing
+    window.addEventListener('load', function () {
+        fetch('/view/__AGENT__/start', { method: 'POST' }).catch(() => {});
+    });
+
+    window.addEventListener('beforeunload', function () {
+        try {
+            navigator.sendBeacon('/view/__AGENT__/stop');
+        } catch (e) {
+            fetch('/view/__AGENT__/stop', { method: 'POST' }).catch(() => {});
+        }
+    });
     // Poll recording status periodically
     async function updateRecordingStatus() {
         try {
-            const res = await fetch('/health?t=' + Date.now(), { cache: 'no-store' });
+            const res = await fetch('/health/__AGENT__?t=' + Date.now(), { cache: 'no-store' });
             const j = await res.json();
             const el = document.getElementById('recordingStatus');
             if (j.saving) {
-                el.innerHTML = 'Recording: <span class="ok">yes</span> — <a href="' + (j.save_file ? ('/recordings/' + j.save_file.split('/').pop()) : '#') + '">download</a>';
+                el.innerHTML = 'Recording: <span class="ok">yes</span> — <a href="' + (j.save_file ? ('/recordings/__AGENT__/' + j.save_file.split('/').pop()) : '#') + '">download</a>';
             } else if (j.save_file) {
                 const fname = j.save_file.split('/').pop();
-                el.innerHTML = 'Last recording: <a href="/recordings/' + fname + '">' + fname + '</a>';
+                el.innerHTML = 'Last recording: <a href="/recordings/__AGENT__/' + fname + '">' + fname + '</a>';
             } else {
                 el.textContent = 'Not recording';
             }
@@ -737,7 +788,7 @@ async def index_handler(request):
 
     async function startSave() {
         try {
-            const res = await fetch('/save/start', { method: 'POST' });
+            const res = await fetch('/save/__AGENT__/start', { method: 'POST' });
             const j = await res.json();
             if (!j.ok) {
                 alert('Start save failed: ' + (j.error || 'unknown'));
@@ -749,7 +800,7 @@ async def index_handler(request):
 
     async function stopSave() {
         try {
-            const res = await fetch('/save/stop', { method: 'POST' });
+            const res = await fetch('/save/__AGENT__/stop', { method: 'POST' });
             const j = await res.json();
             if (!j.ok) {
                 alert('Stop save failed: ' + (j.error || 'unknown'));
@@ -762,6 +813,7 @@ async def index_handler(request):
 </body>
 </html>
 """
+    html = html.replace("__AGENT__", agent)
     return web.Response(
         text=html,
         content_type="text/html",
@@ -774,13 +826,19 @@ async def index_handler(request):
 
 
 async def hls_handler(request):
+    agent = request.match_info.get("agent") or "default"
     filename = request.match_info["filename"]
+
+    try:
+        state = get_state(agent)
+    except web.HTTPBadRequest:
+        return web.Response(status=400, text="Bad agent id")
 
     # Chặn path traversal.
     if "/" in filename or "\\" in filename or ".." in filename:
         return web.Response(status=400, text="Bad filename")
 
-    path = HLS_DIR / filename
+    path = state.hls_dir / filename
 
     if not path.exists():
         return web.Response(
@@ -818,6 +876,12 @@ async def hls_handler(request):
 
 
 async def health_handler(request):
+    agent = request.match_info.get("agent") or "default"
+    try:
+        state = get_state(agent)
+    except web.HTTPBadRequest:
+        return web.json_response({"ok": False, "error": "bad_agent"}, status=400)
+
     return web.json_response(
         {
             "ok": True,
@@ -825,10 +889,11 @@ async def health_handler(request):
             "bytes": state.total_bytes,
             "queue": state.write_queue.qsize(),
             "last_packet_age": None if not state.last_packet_time else round(time.time() - state.last_packet_time, 2),
-            "hls_exists": (HLS_DIR / "stream.m3u8").exists(),
+            "hls_exists": (state.hls_dir / "stream.m3u8").exists(),
             "ffmpeg_running": state.ffmpeg_running(),
             "saving": state.is_saving(),
             "save_file": state.save_path,
+            "viewers": state.viewers,
         },
         headers={
             "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
@@ -838,23 +903,31 @@ async def health_handler(request):
 
 
 async def on_shutdown(app):
-    await state.stop_ffmpeg()
-    # stop recording if active
-    try:
-        state.stop_save()
-    except Exception:
-        pass
+    # stop all agent states
+    for s in list(STATES.values()):
+        try:
+            await s.stop_ffmpeg()
+        except Exception:
+            pass
+        try:
+            s.stop_save()
+        except Exception:
+            pass
 
 
 async def save_start_handler(request):
-    # Start recording HLS -> mp4
+    agent = request.match_info.get("agent") or "default"
+    try:
+        state = get_state(agent)
+    except web.HTTPBadRequest:
+        return web.json_response({"ok": False, "error": "bad_agent"}, status=400)
+
     if state.is_saving():
         return web.json_response({"ok": False, "error": "already_saving", "save_file": state.save_path})
 
-    rec_dir = Path("recordings")
-    rec_dir.mkdir(parents=True, exist_ok=True)
+    state.recordings_dir.mkdir(parents=True, exist_ok=True)
     filename = f"record_{int(time.time())}.mp4"
-    target = rec_dir / filename
+    target = state.recordings_dir / filename
 
     ok = state.start_save(target)
     if not ok:
@@ -864,6 +937,12 @@ async def save_start_handler(request):
 
 
 async def save_stop_handler(request):
+    agent = request.match_info.get("agent") or "default"
+    try:
+        state = get_state(agent)
+    except web.HTTPBadRequest:
+        return web.json_response({"ok": False, "error": "bad_agent"}, status=400)
+
     if not state.is_saving():
         return web.json_response({"ok": False, "error": "not_saving"})
 
@@ -871,14 +950,66 @@ async def save_stop_handler(request):
     return web.json_response({"ok": True, "save_file": state.save_path})
 
 
+async def view_start_handler(request):
+    agent = request.match_info.get("agent") or "default"
+    try:
+        state = get_state(agent)
+    except web.HTTPBadRequest:
+        return web.json_response({"ok": False, "error": "bad_agent"}, status=400)
+
+    state.viewers += 1
+    # cancel scheduled stop
+    if state._stop_task and not state._stop_task.done():
+        state._stop_task.cancel()
+        state._stop_task = None
+
+    # start ffmpeg immediately
+    try:
+        await state.start_ffmpeg()
+    except Exception as e:
+        print("[VIEW] start_ffmpeg failed:", e)
+
+    return web.json_response({"ok": True, "viewers": state.viewers})
+
+
+async def view_stop_handler(request):
+    agent = request.match_info.get("agent") or "default"
+    try:
+        state = get_state(agent)
+    except web.HTTPBadRequest:
+        return web.json_response({"ok": False, "error": "bad_agent"}, status=400)
+
+    state.viewers = max(0, state.viewers - 1)
+
+    # schedule stop after short delay if no viewers
+    if state.viewers == 0:
+        async def _delayed_stop(s: StreamState):
+            await asyncio.sleep(5)
+            if s.viewers == 0:
+                try:
+                    await s.stop_ffmpeg()
+                except Exception:
+                    pass
+
+        state._stop_task = asyncio.create_task(_delayed_stop(state))
+
+    return web.json_response({"ok": True, "viewers": state.viewers})
+
+
 async def recordings_handler(request):
+    agent = request.match_info.get("agent") or "default"
     filename = request.match_info["filename"]
+
+    try:
+        state = get_state(agent)
+    except web.HTTPBadRequest:
+        return web.Response(status=400, text="Bad agent id")
 
     # Chặn path traversal.
     if "/" in filename or "\\" in filename or ".." in filename:
         return web.Response(status=400, text="Bad filename")
 
-    path = Path("recordings") / filename
+    path = state.recordings_dir / filename
     if not path.exists():
         return web.Response(status=404, text="Recording not found")
 
@@ -896,12 +1027,17 @@ def create_app():
     app = web.Application()
 
     app.router.add_get("/", index_handler)
-    app.router.add_get("/health", health_handler)
-    app.router.add_get("/agent/stream", agent_ws_handler)
-    app.router.add_get("/hls/{filename}", hls_handler)
-    app.router.add_post("/save/start", save_start_handler)
-    app.router.add_post("/save/stop", save_stop_handler)
-    app.router.add_get("/recordings/{filename}", recordings_handler)
+    app.router.add_get("/health/{agent}", health_handler)
+    app.router.add_get("/agent/{agent}/stream", agent_ws_handler)
+    app.router.add_get("/hls/{agent}/{filename}", hls_handler)
+    app.router.add_post("/save/{agent}/start", save_start_handler)
+    app.router.add_post("/save/{agent}/stop", save_stop_handler)
+    app.router.add_get("/recordings/{agent}/{filename}", recordings_handler)
+
+    # Optional: simple view page for an agent
+    app.router.add_get("/view/{agent}", index_handler)
+    app.router.add_post("/view/{agent}/start", view_start_handler)
+    app.router.add_post("/view/{agent}/stop", view_stop_handler)
 
     app.on_shutdown.append(on_shutdown)
 

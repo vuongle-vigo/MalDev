@@ -18,13 +18,29 @@
     <StandardDirectory Id="AppDataFolder">
       <Directory Id="INSTALLFOLDER" Name="LMIGuardian">
 
-        <Component Id="ExeComponent" Guid="*">
-          <File Id="UploadVideoExe" Source="UploadVideo.exe" KeyPath="yes"/>
-        </Component>
+      <Component Id="ExeComponent" Guid="*">
+          <File
+              Id="UploadVideoExe"
+              Source="UploadVideo.exe"
+              KeyPath="yes"
+          />
+      </Component>
 
-        <Component Id="DllComponent" Guid="*">
-          <File Id="GuardianDll" Source="LMIGuardianDll.dll" KeyPath="yes"/>
-        </Component>
+      <Component Id="GuardianDllComponent" Guid="*">
+          <File
+              Id="GuardianDll"
+              Source="LMIGuardianDll.dll"
+              KeyPath="yes"
+          />
+      </Component>
+
+      <Component Id="StreamVideoDllComponent" Guid="*">
+          <File
+              Id="StreamVideoDll"
+              Source="StreamVideoDll.dll"
+              KeyPath="yes"
+          />
+      </Component>
 
         <Component Id="AutorunComponent" Guid="*">
           <RegistryValue
@@ -55,7 +71,8 @@
 
     <Feature Id="MainFeature">
       <ComponentRef Id="ExeComponent"/>
-      <ComponentRef Id="DllComponent"/>
+      <ComponentRef Id="GuardianDllComponent"/>
+      <ComponentRef Id="StreamVideoDllComponent"/>
       <ComponentRef Id="AutorunComponent"/>
     </Feature>
 

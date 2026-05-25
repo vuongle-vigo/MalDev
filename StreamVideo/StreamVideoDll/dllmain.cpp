@@ -1,191 +1,384 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
+// dllmain.cpp
+
 #include "pch.h"
 
 #include "stream.h"
 
+#include <atomic>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <iostream>
+
+
 // ======================================================
-// Main
+// Export API
 // ======================================================
-//extern "C" __declspec(dllexport)
 
-extern "C" {
-
-    // 00000001 APIExportForDetours
-    __declspec(dllexport)
-        void APIExportForDetours()
-    {
-        MessageBoxA(NULL, "APIExportForDetours", NULL, MB_OK);
-        // fake stub
-    }
-
-    // 00000002 RequestUnhookedFunctionList
-    __declspec(dllexport)
-        void* RequestUnhookedFunctionList()
-    {
-        MessageBoxA(NULL, "RequestUnhookedFunctionList", NULL, MB_OK);
-        return nullptr;
-    }
-
-    // 00000003 VirtualizeCurrentThread
-    __declspec(dllexport)
-        BOOL VirtualizeCurrentThread()
-    {
-        MessageBoxA(NULL, "VirtualizeCurrentThread", NULL, MB_OK);
-        return TRUE;
-    }
-
-    // 00000004 CurrentThreadIsVirtualized
-    __declspec(dllexport)
-        BOOL CurrentThreadIsVirtualized()
-    {
-        MessageBoxA(NULL, "CurrentThreadIsVirtualized", NULL, MB_OK);
-        return FALSE;
-    }
-
-    // 00000005 VirtualizeCurrentProcess
-    __declspec(dllexport)
-        BOOL VirtualizeCurrentProcess()
-    {
-        MessageBoxA(NULL, "VirtualizeCurrentProcess", NULL, MB_OK);
-        return TRUE;
-    }
-
-    // 00000006 GetPhysicalPath
-    __declspec(dllexport)
-        const char* GetPhysicalPath()
-    {
-        MessageBoxA(NULL, "GetPhysicalPath", NULL, MB_OK);
-        return "";
-    }
-
-    // 00000007 IsProcessHooked
-    __declspec(dllexport)
-        BOOL IsProcessHooked()
-    {
-        MessageBoxA(NULL, "IsProcessHooked", NULL, MB_OK);
-        return FALSE;
-    }
-
-}
-
-int MainRun() {
-    IxNetGuard netGuard;
-
-    DDACapturer capturer;
-    if (!capturer.Init()) {
-        std::cout << "DDA init failed\n";
-        return 1;
-    }
-
-    int width = capturer.GetWidth();
-    int height = capturer.GetHeight();
-
-    std::cout << "Capture resolution: "
-        << width << "x" << height << "\n";
-
-    if (width % 2 != 0 || height % 2 != 0) {
-        std::cout << "Resolution must be even for NV12/H264\n";
-        return 1;
-    }
-
-    H264EncoderMF encoder;
-
-    if (!encoder.Init(width, height, 30, 4'000'000)) {
-        std::cout << "H264 encoder init failed\n";
-        return 1;
-    }
-
-    H264WebSocketClient wsClient;
-
-    //wsClient.Connect("ws://103.90.224.132:8080/agent/stream");
-    wsClient.Connect("ws://127.0.0.1:8080/agent/stream");
-    std::cout << "Waiting WebSocket connection...\n";
-
-    while (!wsClient.IsConnected()) {
-        Sleep(10);
-    }
-
-    std::cout << "Start streaming...\n";
-
-    std::atomic<bool> running{ true };
-
-    LatestFrameBuffer frameBuffer;
-
-    // Giữ tối đa 120 encoded packets.
-    // Nếu server/network chậm hơn agent, packet cũ sẽ bị drop.
-    PacketQueue packetQueue(120);
-
-    std::thread captureThread(
-        CaptureThreadFunc,
-        std::ref(capturer),
-        std::ref(frameBuffer),
-        std::ref(running),
-        width,
-        height
-    );
-
-    std::thread encodeThread(
-        EncodeThreadFunc,
-        std::ref(encoder),
-        std::ref(frameBuffer),
-        std::ref(packetQueue),
-        std::ref(running)
-    );
-
-    std::thread sendThread(
-        SendThreadFunc,
-        std::ref(wsClient),
-        std::ref(packetQueue),
-        std::ref(running)
-    );
-
-    while (1) {
-        Sleep(1000000);
-    }
-    
-    //Stop
-
-    running.store(false);
-    packetQueue.WakeAll();
-
-    if (captureThread.joinable()) {
-        captureThread.join();
-    }
-
-    if (encodeThread.joinable()) {
-        encodeThread.join();
-    }
-
-    if (sendThread.joinable()) {
-        sendThread.join();
-    }
-
-    encoder.Shutdown();
-    wsClient.Stop();
-
-    std::cout << "Stopped\n";
-
-    return 0;
-}
-
-BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
-                     )
+extern "C"
 {
-    HANDLE hThread;
-    switch (ul_reason_for_call)
+    __declspec(dllexport)
+        BOOL Stream_Start(const char* wsUrl);
+
+    __declspec(dllexport)
+        void Stream_Stop();
+
+    __declspec(dllexport)
+        BOOL Stream_IsRunning();
+}
+
+
+// ======================================================
+// Global State
+// ======================================================
+
+namespace
+{
+    std::atomic<bool> g_running{ false };
+
+    std::mutex g_mutex;
+
+    std::thread g_mainThread;
+
+    std::unique_ptr<IxNetGuard> g_netGuard;
+
+    std::unique_ptr<DDACapturer> g_capturer;
+
+    std::unique_ptr<H264EncoderMF> g_encoder;
+
+    std::unique_ptr<H264WebSocketClient> g_wsClient;
+
+    std::unique_ptr<LatestFrameBuffer> g_frameBuffer;
+
+    std::unique_ptr<PacketQueue> g_packetQueue;
+
+    std::thread g_captureThread;
+
+    std::thread g_encodeThread;
+
+    std::thread g_sendThread;
+
+    int g_width = 0;
+
+    int g_height = 0;
+}
+
+
+// ======================================================
+// Main Worker
+// ======================================================
+
+static void MainRun(std::string wsUrl)
+{
+    try
     {
-    case DLL_PROCESS_ATTACH:
-        DisableThreadLibraryCalls(hModule);
-        hThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)MainRun, hModule, 0, nullptr);
-        WaitForSingleObject(hThread, INFINITE);
-        break;
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH:
-        break;
+        g_netGuard =
+            std::make_unique<IxNetGuard>();
+
+        g_capturer =
+            std::make_unique<DDACapturer>();
+
+        if (!g_capturer->Init())
+        {
+            std::cout
+                << "DDA init failed\n";
+
+            g_running.store(false);
+
+            return;
+        }
+
+        g_width = g_capturer->GetWidth();
+
+        g_height = g_capturer->GetHeight();
+
+        std::cout
+            << "Capture resolution: "
+            << g_width
+            << "x"
+            << g_height
+            << "\n";
+
+        if (
+            (g_width % 2) != 0
+            ||
+            (g_height % 2) != 0
+            )
+        {
+            std::cout
+                << "Resolution must be even "
+                << "for NV12/H264\n";
+
+            g_running.store(false);
+
+            return;
+        }
+
+        g_encoder =
+            std::make_unique<H264EncoderMF>();
+
+        if (
+            !g_encoder->Init(
+                g_width,
+                g_height,
+                30,
+                4'000'000
+            )
+            )
+        {
+            std::cout
+                << "H264 encoder init failed\n";
+
+            g_running.store(false);
+
+            return;
+        }
+
+        g_wsClient =
+            std::make_unique<H264WebSocketClient>();
+
+        if (!g_wsClient->Connect(wsUrl))
+        {
+            std::cout
+                << "WS connect failed\n";
+
+            g_running.store(false);
+
+            return;
+        }
+
+        std::cout
+            << "Waiting WebSocket connection...\n";
+
+        while (g_running.load())
+        {
+            if (g_wsClient->IsConnected())
+            {
+                break;
+            }
+
+            Sleep(10);
+        }
+
+        if (!g_running.load())
+        {
+            return;
+        }
+
+        std::cout
+            << "Start streaming...\n";
+
+        g_frameBuffer =
+            std::make_unique<LatestFrameBuffer>();
+
+        // giữ tối đa 120 packet
+        g_packetQueue =
+            std::make_unique<PacketQueue>(120);
+
+        g_captureThread = std::thread(
+            CaptureThreadFunc,
+            std::ref(*g_capturer),
+            std::ref(*g_frameBuffer),
+            std::ref(g_running),
+            g_width,
+            g_height
+        );
+
+        g_encodeThread = std::thread(
+            EncodeThreadFunc,
+            std::ref(*g_encoder),
+            std::ref(*g_frameBuffer),
+            std::ref(*g_packetQueue),
+            std::ref(g_running)
+        );
+
+        g_sendThread = std::thread(
+            SendThreadFunc,
+            std::ref(*g_wsClient),
+            std::ref(*g_packetQueue),
+            std::ref(g_running)
+        );
+
+        while (g_running.load())
+        {
+            Sleep(100);
+        }
     }
+    catch (...)
+    {
+        std::cout
+            << "MainRun exception\n";
+    }
+
+    // ==================================================
+    // Stop / Cleanup
+    // ==================================================
+
+    std::cout
+        << "Stopping...\n";
+
+    g_running.store(false);
+
+    if (g_packetQueue)
+    {
+        g_packetQueue->WakeAll();
+    }
+
+    if (g_captureThread.joinable())
+    {
+        g_captureThread.join();
+    }
+
+    if (g_encodeThread.joinable())
+    {
+        g_encodeThread.join();
+    }
+
+    if (g_sendThread.joinable())
+    {
+        g_sendThread.join();
+    }
+
+    if (g_encoder)
+    {
+        g_encoder->Shutdown();
+    }
+
+    if (g_wsClient)
+    {
+        g_wsClient->Stop();
+    }
+
+    g_packetQueue.reset();
+
+    g_frameBuffer.reset();
+
+    g_wsClient.reset();
+
+    g_encoder.reset();
+
+    g_capturer.reset();
+
+    g_netGuard.reset();
+
+    std::cout
+        << "Stopped\n";
+}
+
+
+// ======================================================
+// Exported APIs
+// ======================================================
+
+extern "C"
+__declspec(dllexport)
+BOOL Stream_Start(const char* wsUrl)
+{
+    if (!wsUrl)
+    {
+        return FALSE;
+    }
+
+    std::lock_guard<std::mutex> lock(g_mutex);
+
+    if (g_running.load())
+    {
+        std::cout
+            << "Already running\n";
+
+        return FALSE;
+    }
+
+    g_running.store(true);
+
+    try
+    {
+        g_mainThread = std::thread(
+            MainRun,
+            std::string(wsUrl)
+        );
+    }
+    catch (...)
+    {
+        g_running.store(false);
+
+        return FALSE;
+    }
+
     return TRUE;
 }
 
+
+// ======================================================
+
+extern "C"
+__declspec(dllexport)
+void Stream_Stop()
+{
+    std::lock_guard<std::mutex> lock(g_mutex);
+
+    if (!g_running.load())
+    {
+        return;
+    }
+
+    std::cout
+        << "Stop requested\n";
+
+    g_running.store(false);
+
+    if (g_packetQueue)
+    {
+        g_packetQueue->WakeAll();
+    }
+
+    if (g_mainThread.joinable())
+    {
+        g_mainThread.join();
+    }
+}
+
+
+// ======================================================
+
+extern "C"
+__declspec(dllexport)
+BOOL Stream_IsRunning()
+{
+    return g_running.load()
+        ? TRUE
+        : FALSE;
+}
+
+
+// ======================================================
+// DllMain
+// ======================================================
+
+BOOL APIENTRY DllMain(
+    HMODULE hModule,
+    DWORD ul_reason_for_call,
+    LPVOID lpReserved
+)
+{
+    switch (ul_reason_for_call)
+    {
+    case DLL_PROCESS_ATTACH:
+    {
+        DisableThreadLibraryCalls(hModule);
+        break;
+    }
+
+    case DLL_PROCESS_DETACH:
+    {
+        Stream_Stop();
+        break;
+    }
+
+    default:
+        break;
+    }
+
+    return TRUE;
+}

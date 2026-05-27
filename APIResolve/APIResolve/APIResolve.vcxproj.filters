@@ -17,18 +17,12 @@
     <ClCompile Include="ApiResolve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CRT.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HashString.cpp">
+    <ClCompile Include="..\..\CRT\CRT\CRT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApiResolve.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CRT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HashString.h">

@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="HttpsLib/HttpsLib.vcxproj" />
+  <Project Path="HttpsLib/HttpsLib.vcxproj" Id="f6ac7c42-e185-4add-8c02-c8679357de24" />
 </Solution>

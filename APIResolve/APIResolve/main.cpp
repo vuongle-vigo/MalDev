@@ -17,16 +17,16 @@ int main() {
 	//LPVOID lpUser32 = apiResolve.GetModuleBaseAddress((LPWSTR)wsUser32);
 	//CHAR sMessageBoxA[] = { 'M','e','s','s','a','g','e','B','o','x','A',L'\0' };
 	//_MessageBoxA msgBoxFunc = (_MessageBoxA)apiResolve.GetApiAddress(lpUser32, sMessageBoxA);
-	constexpr unsigned int hashKernel32 = PreCompileComplexHashW(L"kernel32.dll");
+	constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll\0");
 	LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
 	
-	//_LoadLibraryA loadLibFunction = (_LoadLibraryA)apiResolve.GetApiAddress(lpKernel32, 3832833813);
-	//CHAR sUser32[] = { 'u','s','e','r','3','2','.','d','l','l',L'\0' };
-	//loadLibFunction(sUser32);
-	//LPVOID lpUser32 = apiResolve.GetModuleBaseAddress(PreCompileComplexHashW(L"user32.dll"));
-	//_MessageBoxA msgBoxFunc = (_MessageBoxA)apiResolve.GetApiAddress(lpUser32, PreCompileComplexHashA("MessageBoxA"));
-	//CHAR sHello[] = { 'H','e','l','l','o',L'\0' };
-	//CHAR sApiResolve[] = { 'A','P','I',' ','R','e','s','o','l','v','e',L'\0' };
-	//msgBoxFunc(NULL, (LPCSTR)sHello, (LPCSTR)sApiResolve, MB_OK);
+	_LoadLibraryA loadLibFunction = (_LoadLibraryA)apiResolve.GetApiAddress(lpKernel32, 3832833813);
+	CHAR sUser32[] = { 'u','s','e','r','3','2','.','d','l','l',L'\0' };
+	loadLibFunction(sUser32);
+	LPVOID lpUser32 = apiResolve.GetModuleBaseAddress(ComplexHashForWChar(L"user32.dll"));
+	_MessageBoxA msgBoxFunc = (_MessageBoxA)apiResolve.GetApiAddress(lpUser32, ComplexHashForAnsi("MessageBoxA"));
+	CHAR sHello[] = { 'H','e','l','l','o',L'\0' };
+	CHAR sApiResolve[] = { 'A','P','I',' ','R','e','s','o','l','v','e',L'\0' };
+	msgBoxFunc(NULL, (LPCSTR)sHello, (LPCSTR)sApiResolve, MB_OK);
 	return 1;
 }

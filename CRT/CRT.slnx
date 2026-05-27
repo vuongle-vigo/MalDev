@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="CRT/CRT.vcxproj" />
+  <Project Path="CRT/CRT.vcxproj" Id="c0ab9ff6-c020-446b-a67c-652eb15d611a" />
 </Solution>

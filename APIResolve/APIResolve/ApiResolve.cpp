@@ -24,22 +24,32 @@ LPVOID ApiResolve::GetModuleBaseAddress(const LPWSTR lpwsModuleName) {
 		}
 
 		PWSTR pDllName = NULL;
-		WCHAR wsPattern[] = { '\\' };
-		if (!FindPatternW(pDllPath, wsPattern, 1, &pDllName)) {
+		//WCHAR wsPattern[] = { '\\' };
+		WCHAR wsPattern = '\\';
+		//if (!FindPatternW(pDllPath, wsPattern, 1, &pDllName)) {
+		//	continue;
+		//}
+
+		//while (FindPatternW(pDllName, wsPattern, 1, &pDllName)) {
+		//	pDllName = pDllName + 1;
+		//}
+		pDllName = crt_wcsrchr(pDllName, wsPattern);
+		if (pDllName == NULL) {
 			continue;
 		}
 
-		while (FindPatternW(pDllName, wsPattern, 1, &pDllName)) {
-			pDllName = pDllName + 1;
-		}
-
+		pDllName = pDllPath + 1;
 		WCHAR wsModuleName[MAX_PATH];
-		CopyStringW(pDllName, wsModuleName, sizeof(wsModuleName));
+		//CopyStringW(pDllName, wsModuleName, sizeof(wsModuleName));
+		crt_wcscpy(wsModuleName, pDllName);
+		//LowerStringW(lpwsModuleName);
+		crt_wcslwr(wsModuleName);
 
-		LowerStringW(wsModuleName);
-		LowerStringW(lpwsModuleName);
+		//if (!CompareStringW(wsModuleName, lpwsModuleName)) {
+		//	continue;
+		//}
 
-		if (!CompareStringW(wsModuleName, lpwsModuleName)) {
+		if (!crt_wcscmp(wsModuleName, lpwsModuleName)) {
 			continue;
 		}
 
@@ -61,18 +71,25 @@ LPVOID ApiResolve::GetModuleBaseAddress(unsigned int hash) {
 		}
 
 		PWSTR pDllName = NULL;
-		WCHAR wsPattern[] = { '\\' };
-		if (!FindPatternW(pDllPath, wsPattern, 1, &pDllName)) {
+		//WCHAR wsPattern[] = { '\\' };
+		WCHAR wsPattern = '\\';
+		//if (!FindPatternW(pDllPath, wsPattern, 1, &pDllName)) {
+		//	continue;
+		//}
+		pDllName = crt_wcsrchr(pDllPath, wsPattern);
+
+		if (pDllName == NULL) {
 			continue;
 		}
 
-		while (FindPatternW(pDllName, wsPattern, 1, &pDllName)) {
-			pDllName = pDllName + 1;
-		}
+		pDllName = pDllName + 1;
+
 
 		WCHAR wsModuleName[MAX_PATH];
-		CopyStringW(pDllName, wsModuleName, sizeof(wsModuleName));
-		LowerStringW(pDllName);
+		//CopyStringW(pDllName, wsModuleName, sizeof(wsModuleName));
+		crt_wcscpy(wsModuleName, pDllName);
+		//LowerStringW(pDllName);
+		crt_wcslwr(pDllName);
 		if (ComplexHashForWChar(pDllName) != hash) {
 			continue;
 		}
@@ -99,10 +116,13 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, const char* sApiName) {
 	for (int i = 0; i < pExportDirectory->NumberOfNames; i++) {
 		DWORD rvaName = *(DWORD*)((DWORD64)pAddressOfName + i * sizeof(DWORD));
 		char* sName = (char*)((DWORD64)lpBaseAddress + rvaName);
-		if (!CompareStringA(sName, sApiName)) {
+		//if (!CompareStringA(sName, sApiName)) {
+		//	continue;
+		//}
+		if (!crt_strcmp(sName, sApiName)) {
 			continue;
 		}
-		
+
 		WORD ordinal = *(WORD*)((DWORD64)pAddressOfOrdinal + i * sizeof(BYTE) * 2);
 		DWORD rvaFunction = *(DWORD*)((DWORD64)pAddressOfFunction + ordinal * sizeof(DWORD));
 		return (LPVOID)((DWORD64)lpBaseAddress + rvaFunction);

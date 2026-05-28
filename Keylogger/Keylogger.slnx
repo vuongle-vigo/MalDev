@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Keylogger/Keylogger.vcxproj" />
+  <Project Path="Keylogger/Keylogger.vcxproj" Id="3418dcaa-eda5-43a1-9049-5b5cf03d87d6" />
 </Solution>

@@ -81,7 +81,7 @@ void test_string_char() {
     
     // Test strlen
     printf("Testing crt_strlen...\n");
-    const char* test1 = "Hello, World!";
+    const char test1[] = {'H', 'e', 'l', 'l', 'o', ',', ' ', 'W', 'o', 'r', 'l', 'd', '!', '\0'};
     SIZE_T len = crt_strlen(test1);
     printf("[%s] crt_strlen(\"%s\") = %zu (expected: %zu)\n", 
            len == 13 ? "PASS" : "FAIL", test1, len, (SIZE_T)13);
@@ -143,7 +143,7 @@ void test_string_char() {
     
     // Test strchr
     printf("\nTesting crt_strchr...\n");
-    const char* str = "Hello World";
+    const char str[] = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '\0'};
     char* found = crt_strchr(str, 'o');
     printf("[%s] strchr(\"Hello World\", 'o') found at \"%s\"\n", 
            found != NULL && *found == 'o' ? "PASS" : "FAIL", found ? found : "NULL");
@@ -166,20 +166,20 @@ void test_string_char() {
     
     // Test strupr
     printf("\nTesting crt_strupr...\n");
-    char s1[] = "Hello";
+    char s1[] = {'H', 'e', 'l', 'l', 'o', '\0'};
     printf("[%s] strupr(\"Hello\") = \"%s\"\n", 
            crt_strcmp(crt_strupr(s1), "HELLO") == 0 ? "PASS" : "FAIL", s1);
     
     // Test strlwr
     printf("\nTesting crt_strlwr...\n");
-    char s2[] = "HELLO";
+    char s2[] = {'H', 'E', 'L', 'L', 'O', '\0'};
     printf("[%s] strlwr(\"HELLO\") = \"%s\"\n", 
            crt_strcmp(crt_strlwr(s2), "hello") == 0 ? "PASS" : "FAIL", s2);
     
     // Test strtok
     printf("\nTesting crt_strtok...\n");
-    char strtok_test[] = "Hello,World,Test,String";
-    const char delim[] = ",";
+    char strtok_test[] = {'H', 'e', 'l', 'l', 'o', ',', 'W', 'o', 'r', 'l', 'd', ',', 'T', 'e', 's', 't', ',', 'S', 't', 'r', 'i', 'n', 'g', '\0'};
+    const char delim[] = {',', '\0'};
     char* token = crt_strtok(strtok_test, delim);
     const char* expected[] = {"Hello", "World", "Test", "String"};
     BOOL allPassed = TRUE;
@@ -204,7 +204,7 @@ void test_string_wchar() {
     
     // Test wcslen
     printf("Testing crt_wcslen...\n");
-    const wchar_t* wtest1 = L"Hello, World!";
+    const wchar_t wtest1[] = {L'H', L'e', L'l', L'l', L'o', L',', L' ', L'W', L'o', L'r', L'l', L'd', L'!', L'\0'};
     SIZE_T len = crt_wcslen(wtest1);
     printf("[%s] wcslen(L\"Hello, World!\") = %zu (expected: %zu)\n", 
            len == 13 ? "PASS" : "FAIL", len, (SIZE_T)13);
@@ -237,7 +237,7 @@ void test_string_wchar() {
     
     // Test wcschr
     printf("\nTesting crt_wcschr...\n");
-    const wchar_t* wstr = L"Hello World";
+    const wchar_t wstr[] = {L'H', L'e', L'l', L'l', L'o', L' ', L'W', L'o', L'r', L'l', L'd', L'\0'};
     wchar_t* wfound = crt_wcschr(wstr, L'o');
     printf("[%s] wcschr(L\"Hello World\", 'o') found\n", wfound != NULL ? "PASS" : "FAIL");
     
@@ -249,14 +249,14 @@ void test_string_wchar() {
     
     // Test wcsupr
     printf("\nTesting crt_wcsupr...\n");
-    wchar_t ws1[] = L"Hello";
+    wchar_t ws1[] = {L'H', L'e', L'l', L'l', L'o', L'\0'};
     crt_wcsupr(ws1);
     printf("[%s] wcsupr(L\"Hello\") = L\"HELLO\"\n", 
            crt_wcscmp(ws1, L"HELLO") == 0 ? "PASS" : "FAIL");
     
     // Test wcslwr
     printf("\nTesting crt_wcslwr...\n");
-    wchar_t ws2[] = L"HELLO";
+    wchar_t ws2[] = {L'H', L'E', L'L', L'L', L'O', L'\0'};
     crt_wcslwr(ws2);
     printf("[%s] wcslwr(L\"HELLO\") = L\"hello\"\n", 
            crt_wcscmp(ws2, L"hello") == 0 ? "PASS" : "FAIL");
@@ -271,7 +271,7 @@ void test_string_conversion() {
     
     // Test atowc
     printf("Testing crt_atowc...\n");
-    const char* ansi = "Hello Wide";
+    const char ansi[] = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'i', 'd', 'e', '\0'};
     wchar_t* wide = crt_atowc(ansi);
     if (wide) {
         printf("[PASS] atowc: \"%s\" -> %zu wchars\n", ansi, crt_wcslen(wide));
@@ -280,7 +280,7 @@ void test_string_conversion() {
     
     // Test wctoa
     printf("\nTesting crt_wctoa...\n");
-    const wchar_t* wides = L"Hello ANSI";
+    const wchar_t wides[] = {L'H', L'e', L'l', L'l', L'o', L' ', L'A', L'N', L'S', L'I', L'\0'};
     char* ansi2 = crt_wctoa(wides);
     if (ansi2) {
         printf("[PASS] wctoa: converted -> \"%s\"\n", ansi2);

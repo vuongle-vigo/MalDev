@@ -61,17 +61,17 @@ namespace HttpLib {
     void HttpResponse_Init(HttpResponse* resp);
     void HttpResponse_Free(HttpResponse* resp);
 
-#pragma comment(lib, "winhttp.lib")
+//#pragma comment(lib, "winhttp.lib")
 
     class HttpClient {
     public:
-        static HttpClient& GetInstance();
+        //static HttpClient& GetInstance();
 
         HttpClient();
         ~HttpClient();
 
-        HttpClient(const HttpClient&) = delete;
-        HttpClient& operator=(const HttpClient&) = delete;
+        //HttpClient(const HttpClient&) = delete;
+        //HttpClient& operator=(const HttpClient&) = delete;
 
         void SetUserAgent(const wchar_t* userAgent);
         void SetTimeout(DWORD timeoutMs);

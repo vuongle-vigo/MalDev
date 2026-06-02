@@ -139,6 +139,40 @@ wchar_t* __cdecl crt_ultow(unsigned long value, wchar_t* str, int radix);
 wchar_t* __cdecl crt_ulltow(unsigned long long value, wchar_t* str, int radix);
 
 //=============================================================================
+// WIDE-CHARACTER CLASSIFICATION FUNCTIONS
+//=============================================================================
+
+int __cdecl crt_iswalnum(wint_t ch);
+int __cdecl crt_iswalpha(wint_t ch);
+int __cdecl crt_iswdigit(wint_t ch);
+int __cdecl crt_iswspace(wint_t ch);
+int __cdecl crt_iswupper(wint_t ch);
+int __cdecl crt_iswlower(wint_t ch);
+int __cdecl crt_iswxdigit(wint_t ch);
+wint_t __cdecl crt_towupper(wint_t ch);
+wint_t __cdecl crt_towlower(wint_t ch);
+
+//=============================================================================
+// WIDE-CHARACTER TO NUMBER CONVERSION (wcstox family)
+//=============================================================================
+
+unsigned long __cdecl crt_wcstoul(const wchar_t* nptr, wchar_t** endptr, int base);
+unsigned int  __cdecl crt_wcstoui(const wchar_t* nptr, wchar_t** endptr, int base);
+long           __cdecl crt_wcstol(const wchar_t* nptr, wchar_t** endptr, int base);
+long long      __cdecl crt_wcstoll(const wchar_t* nptr, wchar_t** endptr, int base);
+unsigned long long __cdecl crt_wcstoull(const wchar_t* nptr, wchar_t** endptr, int base);
+unsigned long  __cdecl crt_wcstoull_val(const wchar_t* nptr, wchar_t** endptr, int base);
+
+//=============================================================================
+// WIDE-CHARACTER FORMATTED OUTPUT (swprintf)
+//=============================================================================
+
+int __cdecl crt_swprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, ...);
+int __cdecl crt_vswprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, va_list args);
+int __cdecl crt_swprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, ...);
+int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va_list args);
+
+//=============================================================================
 // UTILITY FUNCTIONS
 //=============================================================================
 

@@ -111,6 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve;C:\Users\vuong\Documents\GitHub\MalDev\CRT\CRT;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +143,8 @@
     <ClInclude Include="HttpClient.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\APIResolve\APIResolve\ApiResolve.cpp" />
+    <ClCompile Include="..\..\CRT\CRT\CRT.cpp" />
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

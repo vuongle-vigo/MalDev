@@ -570,6 +570,7 @@ $LN5@GetApiAddr:
 	mov	BYTE PTR dll$3[rsp], 100		; 00000064H
 	mov	BYTE PTR dll$3[rsp+1], 108		; 0000006cH
 	mov	BYTE PTR dll$3[rsp+2], 108		; 0000006cH
+	mov	BYTE PTR dll$3[rsp+3], 0
 ; Line 164
 	mov	rax, QWORD PTR size$11[rsp]
 	lea	rax, QWORD PTR sDllName$15[rsp+rax+1]

@@ -1096,7 +1096,7 @@ char* __cdecl crt_itoa(int value, char* str, int radix) {
     
     if (value < 0 && radix == 10) {
         negative = TRUE;
-        uvalue = (unsigned int)(-(value + 1)) + 1;
+        uvalue = (unsigned int)(-(int)(value + 1)) + 1;
     } else {
         uvalue = (unsigned int)value;
     }
@@ -1145,7 +1145,7 @@ char* __cdecl crt_lltoa(long long value, char* str, int radix) {
     
     if (value < 0 && radix == 10) {
         negative = TRUE;
-        uvalue = (unsigned long long)(-(value + 1)) + 1;
+        uvalue = (unsigned long long)(-(long long)(value + 1)) + 1;
     } else {
         uvalue = (unsigned long long)value;
     }
@@ -1202,7 +1202,7 @@ wchar_t* __cdecl crt_itow(int value, wchar_t* str, int radix) {
     
     if (value < 0 && radix == 10) {
         negative = TRUE;
-        uvalue = (unsigned int)(-(value + 1)) + 1;
+        uvalue = (unsigned int)(-(int)(value + 1)) + 1;
     } else {
         uvalue = (unsigned int)value;
     }
@@ -1251,7 +1251,7 @@ wchar_t* __cdecl crt_lltow(long long value, wchar_t* str, int radix) {
     
     if (value < 0 && radix == 10) {
         negative = TRUE;
-        uvalue = (unsigned long long)(-(value + 1)) + 1;
+        uvalue = (unsigned long long)(-(long long)(value + 1)) + 1;
     } else {
         uvalue = (unsigned long long)value;
     }
@@ -1299,10 +1299,1120 @@ wchar_t* __cdecl crt_ulltow(unsigned long long value, wchar_t* str, int radix) {
 }
 
 //=============================================================================
-// UTILITY FUNCTIONS
+// WIDE-CHARACTER CLASSIFICATION FUNCTIONS
 //=============================================================================
 
-//static unsigned int rand_seed = 1;
+int __cdecl crt_iswalnum(wint_t ch) {
+    return crt_iswalpha(ch) || crt_iswdigit(ch);
+}
+
+int __cdecl crt_iswalpha(wint_t ch) {
+    if (ch == WEOF) return 0;
+    wchar_t wch = (wchar_t)ch;
+    if ((wch >= L'a' && wch <= L'z') || (wch >= L'A' && wch <= L'Z')) {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_iswdigit(wint_t ch) {
+    if (ch == WEOF) return 0;
+    wchar_t wch = (wchar_t)ch;
+    if (wch >= L'0' && wch <= L'9') {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_iswspace(wint_t ch) {
+    if (ch == WEOF) return 0;
+    wchar_t wch = (wchar_t)ch;
+    if (wch == L' ' || wch == L'\t' || wch == L'\n' || wch == L'\r' || wch == L'\f' || wch == L'\v') {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_iswupper(wint_t ch) {
+    if (ch == WEOF) return 0;
+    wchar_t wch = (wchar_t)ch;
+    if (wch >= L'A' && wch <= L'Z') {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_iswlower(wint_t ch) {
+    if (ch == WEOF) return 0;
+    wchar_t wch = (wchar_t)ch;
+    if (wch >= L'a' && wch <= L'z') {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_iswxdigit(wint_t ch) {
+    if (ch == WEOF) return 0;
+    wchar_t wch = (wchar_t)ch;
+    if ((wch >= L'0' && wch <= L'9') ||
+        (wch >= L'a' && wch <= L'f') ||
+        (wch >= L'A' && wch <= L'F')) {
+        return 1;
+    }
+    return 0;
+}
+
+wint_t __cdecl crt_towupper(wint_t ch) {
+    if (ch == WEOF) return WEOF;
+    wchar_t wch = (wchar_t)ch;
+    if (wch >= L'a' && wch <= L'z') {
+        return (wint_t)(wch - 32);
+    }
+    return ch;
+}
+
+wint_t __cdecl crt_towlower(wint_t ch) {
+    if (ch == WEOF) return WEOF;
+    wchar_t wch = (wchar_t)ch;
+    if (wch >= L'A' && wch <= L'Z') {
+        return (wint_t)(wch + 32);
+    }
+    return ch;
+}
+
+//=============================================================================
+// WIDE-CHARACTER TO NUMBER CONVERSION (wcstox family)
+//=============================================================================
+
+static const wchar_t* crt_wcskip_isspace(const wchar_t* str) {
+    while (crt_iswspace(*str)) {
+        str++;
+    }
+    return str;
+}
+
+static unsigned long crt_wcstoul_base(const wchar_t* nptr, wchar_t** endptr, int base) {
+    if (nptr == NULL) {
+        if (endptr) *endptr = (wchar_t*)nptr;
+        return 0;
+    }
+
+    const wchar_t* p = crt_wcskip_isspace(nptr);
+
+    int negative = 0;
+    if (*p == L'-') {
+        negative = 1;
+        p++;
+    } else if (*p == L'+') {
+        p++;
+    }
+
+    if (base == 0) {
+        base = 10;
+        if (*p == L'0') {
+            if (p[1] == L'x' || p[1] == L'X') {
+                base = 16;
+                p += 2;
+            } else {
+                base = 8;
+            }
+        }
+    } else if (base == 16) {
+        if (*p == L'0' && (p[1] == L'x' || p[1] == L'X')) {
+            p += 2;
+        }
+    }
+
+    unsigned long result = 0;
+    int overflow = 0;
+
+    while (*p) {
+        wchar_t c = *p;
+        int digit;
+
+        if (c >= L'0' && c <= L'9') {
+            digit = c - L'0';
+        } else if (c >= L'a' && c <= L'z') {
+            digit = c - L'a' + 10;
+        } else if (c >= L'A' && c <= L'Z') {
+            digit = c - L'A' + 10;
+        } else {
+            break;
+        }
+
+        if (digit >= base) {
+            break;
+        }
+
+        if (result > (ULONG_MAX - digit) / base) {
+            overflow = 1;
+        }
+        result = result * base + digit;
+        p++;
+    }
+
+    if (endptr) {
+        *endptr = (wchar_t*)p;
+    }
+
+    if (overflow) {
+        return ULONG_MAX;
+    }
+
+    return negative ? (unsigned long)(-(long)result) : result;
+}
+
+unsigned long __cdecl crt_wcstoul(const wchar_t* nptr, wchar_t** endptr, int base) {
+    return crt_wcstoul_base(nptr, endptr, base);
+}
+
+unsigned int __cdecl crt_wcstoui(const wchar_t* nptr, wchar_t** endptr, int base) {
+    return (unsigned int)crt_wcstoul_base(nptr, endptr, base);
+}
+
+long __cdecl crt_wcstol(const wchar_t* nptr, wchar_t** endptr, int base) {
+    if (nptr == NULL) {
+        if (endptr) *endptr = (wchar_t*)nptr;
+        return 0;
+    }
+
+    const wchar_t* p = crt_wcskip_isspace(nptr);
+
+    int negative = 0;
+    if (*p == L'-') {
+        negative = 1;
+        p++;
+    } else if (*p == L'+') {
+        p++;
+    }
+
+    if (base == 0) {
+        base = 10;
+        if (*p == L'0') {
+            if (p[1] == L'x' || p[1] == L'X') {
+                base = 16;
+                p += 2;
+            } else {
+                base = 8;
+            }
+        }
+    } else if (base == 16) {
+        if (*p == L'0' && (p[1] == L'x' || p[1] == L'X')) {
+            p += 2;
+        }
+    }
+
+    unsigned long result = 0;
+    int overflow = 0;
+
+    while (*p) {
+        wchar_t c = *p;
+        int digit;
+
+        if (c >= L'0' && c <= L'9') {
+            digit = c - L'0';
+        } else if (c >= L'a' && c <= L'z') {
+            digit = c - L'a' + 10;
+        } else if (c >= L'A' && c <= L'Z') {
+            digit = c - L'A' + 10;
+        } else {
+            break;
+        }
+
+        if (digit >= base) {
+            break;
+        }
+
+        if (result > (ULONG_MAX - digit) / base) {
+            overflow = 1;
+        }
+        result = result * base + digit;
+        p++;
+    }
+
+    if (endptr) {
+        *endptr = (wchar_t*)p;
+    }
+
+    if (overflow) {
+        return (negative ? LONG_MIN : LONG_MAX);
+    }
+
+    return negative ? (long)(-(long)result) : (long)result;
+}
+
+long long __cdecl crt_wcstoll(const wchar_t* nptr, wchar_t** endptr, int base) {
+    if (nptr == NULL) {
+        if (endptr) *endptr = (wchar_t*)nptr;
+        return 0;
+    }
+
+    const wchar_t* p = crt_wcskip_isspace(nptr);
+
+    int negative = 0;
+    if (*p == L'-') {
+        negative = 1;
+        p++;
+    } else if (*p == L'+') {
+        p++;
+    }
+
+    if (base == 0) {
+        base = 10;
+        if (*p == L'0') {
+            if (p[1] == L'x' || p[1] == L'X') {
+                base = 16;
+                p += 2;
+            } else {
+                base = 8;
+            }
+        }
+    } else if (base == 16) {
+        if (*p == L'0' && (p[1] == L'x' || p[1] == L'X')) {
+            p += 2;
+        }
+    }
+
+    unsigned long long result = 0;
+    int overflow = 0;
+
+    while (*p) {
+        wchar_t c = *p;
+        int digit;
+
+        if (c >= L'0' && c <= L'9') {
+            digit = c - L'0';
+        } else if (c >= L'a' && c <= L'z') {
+            digit = c - L'a' + 10;
+        } else if (c >= L'A' && c <= L'Z') {
+            digit = c - L'A' + 10;
+        } else {
+            break;
+        }
+
+        if (digit >= base) {
+            break;
+        }
+
+        if (result > (ULLONG_MAX - digit) / base) {
+            overflow = 1;
+        }
+        result = result * base + digit;
+        p++;
+    }
+
+    if (endptr) {
+        *endptr = (wchar_t*)p;
+    }
+
+    if (overflow) {
+        return (negative ? LLONG_MIN : LLONG_MAX);
+    }
+
+    return negative ? (long long)(-(long long)result) : (long long)result;
+}
+
+unsigned long long __cdecl crt_wcstoull(const wchar_t* nptr, wchar_t** endptr, int base) {
+    if (nptr == NULL) {
+        if (endptr) *endptr = (wchar_t*)nptr;
+        return 0;
+    }
+
+    const wchar_t* p = crt_wcskip_isspace(nptr);
+
+    if (*p == L'+') {
+        p++;
+    }
+
+    if (base == 0) {
+        base = 10;
+        if (*p == L'0') {
+            if (p[1] == L'x' || p[1] == L'X') {
+                base = 16;
+                p += 2;
+            } else {
+                base = 8;
+            }
+        }
+    } else if (base == 16) {
+        if (*p == L'0' && (p[1] == L'x' || p[1] == L'X')) {
+            p += 2;
+        }
+    }
+
+    unsigned long long result = 0;
+    int overflow = 0;
+
+    while (*p) {
+        wchar_t c = *p;
+        int digit;
+
+        if (c >= L'0' && c <= L'9') {
+            digit = c - L'0';
+        } else if (c >= L'a' && c <= L'z') {
+            digit = c - L'a' + 10;
+        } else if (c >= L'A' && c <= L'Z') {
+            digit = c - L'A' + 10;
+        } else {
+            break;
+        }
+
+        if (digit >= base) {
+            break;
+        }
+
+        if (result > (ULLONG_MAX - digit) / base) {
+            overflow = 1;
+        }
+        result = result * base + digit;
+        p++;
+    }
+
+    if (endptr) {
+        *endptr = (wchar_t*)p;
+    }
+
+    if (overflow) {
+        return ULLONG_MAX;
+    }
+
+    return result;
+}
+
+unsigned long __cdecl crt_wcstoull_val(const wchar_t* nptr, wchar_t** endptr, int base) {
+    return (unsigned long)crt_wcstoull(nptr, endptr, base);
+}
+
+//=============================================================================
+// WIDE-CHARACTER FORMATTED OUTPUT (swprintf)
+//=============================================================================
+
+static const wchar_t* crt_wcformat_next(const wchar_t* fmt, int* width, int* precision, int* flags, wchar_t* spec) {
+    *width = 0;
+    *precision = -1;
+    *flags = 0;
+    *spec = L'\0';
+
+    if (*fmt != L'%') return fmt;
+    fmt++;
+
+    while (*fmt)
+    {
+        if (*fmt == L'-')
+        {
+            *flags |= 1;
+            fmt++;
+        }
+        else if (*fmt == L'+')
+        {
+            *flags |= 2;
+            fmt++;
+        }
+        else if (*fmt == L' ')
+        {
+            *flags |= 4;
+            fmt++;
+        }
+        else if (*fmt == L'0')
+        {
+            *flags |= 8;
+            fmt++;
+        }
+        else if (*fmt == L'#')
+        {
+            *flags |= 16;
+            fmt++;
+        }
+        else
+        {
+            goto width_parsing;
+        }
+    }
+
+width_parsing:
+    if (*fmt >= L'0' && *fmt <= L'9') {
+        int w = 0;
+        while (*fmt >= L'0' && *fmt <= L'9') {
+            w = w * 10 + (*fmt - L'0');
+            fmt++;
+        }
+        *width = w;
+    }
+
+    if (*fmt == L'.') {
+        fmt++;
+        int p = 0;
+        int has_digit = 0;
+        while (*fmt >= L'0' && *fmt <= L'9') {
+            p = p * 10 + (*fmt - L'0');
+            has_digit = 1;
+            fmt++;
+        }
+        *precision = has_digit ? p : 0;
+    }
+
+    *spec = *fmt;
+    return fmt + 1;
+}
+
+static int crt_wcputint(wchar_t* buf, unsigned long long val, int width, int prec, int flags, int negative, int upper) {
+    wchar_t tmp[32];
+    int i = 0;
+    int base = 10;
+
+    if (val == 0) {
+        tmp[i++] = L'0';
+    } else {
+        while (val > 0) {
+            int d = val % base;
+            if (d < 10) {
+                tmp[i++] = (wchar_t)(L'0' + d);
+            } else {
+                tmp[i++] = (wchar_t)((upper ? L'A' : L'a') + d - 10);
+            }
+            val /= base;
+        }
+    }
+
+    if (prec > i) {
+        prec = i;
+    }
+
+    int total_width = i;
+    if (negative) total_width++;
+    if ((flags & 8) && !negative && prec < width) {
+        total_width = width;
+    }
+
+    int out_i = 0;
+
+    if (!(flags & 1) && (flags & 8) && !negative) {
+        while (total_width > i) {
+            buf[out_i++] = L'0';
+            total_width--;
+        }
+    }
+
+    if (negative) {
+        buf[out_i++] = L'-';
+    } else if ((flags & 2) && !negative) {
+        buf[out_i++] = L'+';
+    } else if ((flags & 4) && !negative) {
+        buf[out_i++] = L' ';
+    }
+
+    int pad = width - i;
+    if ((flags & 8) && !negative && prec >= width) {
+        pad = 0;
+    }
+
+    if (flags & 1) {
+        while (i > 0) {
+            buf[out_i++] = tmp[--i];
+        }
+        while (pad > 0) {
+            buf[out_i++] = L' ';
+            pad--;
+        }
+    } else {
+        while (pad > 0 && !(flags & 8)) {
+            buf[out_i++] = L' ';
+            pad--;
+        }
+        while (i > 0) {
+            buf[out_i++] = tmp[--i];
+        }
+    }
+
+    return out_i;
+}
+
+static int crt_wcputunsigned(wchar_t* buf, unsigned long long val, int width, int prec, int flags, int upper, int base) {
+    wchar_t tmp[32];
+    int i = 0;
+
+    if (val == 0) {
+        tmp[i++] = L'0';
+    } else {
+        while (val > 0) {
+            int d = val % base;
+            if (d < 10) {
+                tmp[i++] = (wchar_t)(L'0' + d);
+            } else {
+                tmp[i++] = (wchar_t)((upper ? L'A' : L'a') + d - 10);
+            }
+            val /= base;
+        }
+    }
+
+    int out_i = 0;
+    int pad = width - i;
+
+    if (!(flags & 1) && (flags & 8)) {
+        while (pad > 0) {
+            buf[out_i++] = L'0';
+            pad--;
+        }
+    }
+
+    while (i > 0) {
+        buf[out_i++] = tmp[--i];
+    }
+
+    if (flags & 1) {
+        while (pad > 0) {
+            buf[out_i++] = L' ';
+            pad--;
+        }
+    }
+
+    return out_i;
+}
+
+static int crt_wcputhex(wchar_t* buf, unsigned long long val, int width, int prec, int flags, int upper) {
+    wchar_t tmp[32];
+    int i = 0;
+
+    if (val == 0) {
+        tmp[i++] = L'0';
+    } else {
+        while (val > 0) {
+            int d = val % 16;
+            if (d < 10) {
+                tmp[i++] = (wchar_t)(L'0' + d);
+            } else {
+                tmp[i++] = (wchar_t)((upper ? L'A' : L'a') + d - 10);
+            }
+            val /= 16;
+        }
+    }
+
+    int out_i = 0;
+
+    if ((flags & 16) && val == 0 && i > 0) {
+        buf[out_i++] = upper ? L'X' : L'x';
+        buf[out_i++] = L'0';
+    }
+
+    int pad = width - i;
+    if (!(flags & 1) && (flags & 8)) {
+        while (pad > 0) {
+            buf[out_i++] = L'0';
+            pad--;
+        }
+    }
+
+    while (i > 0) {
+        buf[out_i++] = tmp[--i];
+    }
+
+    if (flags & 1) {
+        while (pad > 0) {
+            buf[out_i++] = L' ';
+            pad--;
+        }
+    }
+
+    return out_i;
+}
+
+static int crt_wcputpointer(wchar_t* buf, void* ptr) {
+    unsigned long long val = (unsigned long long)(SIZE_T)ptr;
+    wchar_t tmp[32];
+    int i = 0;
+
+    if (val == 0) {
+        tmp[i++] = L'0';
+    } else {
+        while (val > 0) {
+            int d = val % 16;
+            if (d < 10) {
+                tmp[i++] = (wchar_t)(L'0' + d);
+            } else {
+                tmp[i++] = (wchar_t)(L'a' + d - 10);
+            }
+            val /= 16;
+        }
+    }
+
+    int out_i = 0;
+    buf[out_i++] = L'0';
+    buf[out_i++] = L'x';
+
+    while (i > 0) {
+        buf[out_i++] = tmp[--i];
+    }
+
+    return out_i;
+}
+
+static int crt_wcputstring(wchar_t* buf, const wchar_t* str, int width, int prec) {
+    int len = 0;
+    if (str != NULL) {
+        while (str[len] != L'\0') {
+            len++;
+        }
+    }
+
+    if (prec > 0 && prec < len) {
+        len = prec;
+    }
+
+    int out_i = 0;
+    int pad = width - len;
+
+    if (!(pad < 0)) {
+        while (pad > 0) {
+            buf[out_i++] = L' ';
+            pad--;
+        }
+    }
+
+    if (str != NULL) {
+        for (int i = 0; i < len; i++) {
+            buf[out_i++] = str[i];
+        }
+    }
+
+    return out_i;
+}
+
+int __cdecl crt_swprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int result = crt_vswprintf(buf, count, fmt, args);
+    va_end(args);
+    return result;
+}
+
+int __cdecl crt_vswprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, va_list args) {
+    if (buf == NULL || fmt == NULL || count == 0) {
+        return -1;
+    }
+
+    wchar_t temp[64];
+    const wchar_t* p = fmt;
+    wchar_t* out = buf;
+    SIZE_T remaining = count;
+    int total = 0;
+
+    while (*p && remaining > 1) {
+        if (*p != L'%') {
+            *out++ = *p++;
+            remaining--;
+            total++;
+            continue;
+        }
+
+        int width = 0, prec = -1, flags = 0;
+        wchar_t spec = L'\0';
+        const wchar_t* next = crt_wcformat_next(p, &width, &prec, &flags, &spec);
+        int chars = 0;
+
+        if (spec == L'd' || spec == L'i')
+        {
+            int v = va_arg(args, int);
+            unsigned int uv;
+            int neg = 0;
+
+            if (v < 0)
+            {
+                neg = 1;
+                uv = (unsigned int)(-(int)(v + 1)) + 1;
+            }
+            else
+            {
+                uv = (unsigned int)v;
+            }
+
+            chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
+        }
+        else if (spec == L'u')
+        {
+            unsigned int v = va_arg(args, unsigned int);
+            chars = crt_wcputunsigned(temp, v, width, prec, flags, 0, 10);
+        }
+        else if (spec == L'o')
+        {
+            unsigned int v = va_arg(args, unsigned int);
+            chars = crt_wcputunsigned(temp, v, width, prec, flags, 0, 8);
+        }
+        else if (spec == L'x' || spec == L'X')
+        {
+            unsigned int v = va_arg(args, unsigned int);
+            chars = crt_wcputhex(temp, v, width, prec, flags,
+                (spec == L'X') ? 1 : 0);
+        }
+        else if (spec == L'c')
+        {
+            wchar_t c = (wchar_t)va_arg(args, int);
+            temp[0] = c;
+            chars = 1;
+        }
+        else if (spec == L's')
+        {
+            wchar_t* s = va_arg(args, wchar_t*);
+            chars = crt_wcputstring(temp, s, width, prec);
+        }
+        else if (spec == L'p')
+        {
+            void* ptr = va_arg(args, void*);
+            chars = crt_wcputpointer(temp, ptr);
+        }
+        else if (spec == L'%')
+        {
+            temp[0] = L'%';
+            chars = 1;
+        }
+        else if (spec == L'n')
+        {
+            int* np = va_arg(args, int*);
+            if (np)
+                *np = total;
+
+            chars = 0;
+        }
+        else if (spec == L'l')
+        {
+            if (p[1] == L'd' || p[1] == L'i')
+            {
+                long v = va_arg(args, long);
+                unsigned long uv;
+                int neg = 0;
+
+                if (v < 0)
+                {
+                    neg = 1;
+                    uv = (unsigned long)(-(long)(v + 1)) + 1;
+                }
+                else
+                {
+                    uv = (unsigned long)v;
+                }
+
+                chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
+                p++;
+            }
+            else if (p[1] == L'u')
+            {
+                unsigned long v = va_arg(args, unsigned long);
+                chars = crt_wcputunsigned(temp, v, width, prec, flags, 0, 10);
+                p++;
+            }
+            else if (p[1] == L'l' && (p[2] == L'd' || p[2] == L'i'))
+            {
+                long long v = va_arg(args, long long);
+                unsigned long long uv;
+                int neg = 0;
+
+                if (v < 0)
+                {
+                    neg = 1;
+                    uv = (unsigned long long)(-(long long)(v + 1)) + 1;
+                }
+                else
+                {
+                    uv = (unsigned long long)v;
+                }
+
+                chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
+                p += 2;
+            }
+            else if (p[1] == L'l' && p[2] == L'u')
+            {
+                unsigned long long v =
+                    va_arg(args, unsigned long long);
+
+                chars = crt_wcputunsigned(
+                    temp,
+                    v,
+                    width,
+                    prec,
+                    flags,
+                    0,
+                    10);
+
+                p += 2;
+            }
+            else
+            {
+                temp[0] = L'l';
+                chars = 1;
+            }
+        }
+        else if (spec == L'z')
+        {
+            if (p[1] == L'u')
+            {
+                SIZE_T v = va_arg(args, SIZE_T);
+
+                chars = crt_wcputunsigned(
+                    temp,
+                    (unsigned long long)v,
+                    width,
+                    prec,
+                    flags,
+                    0,
+                    10);
+
+                p++;
+            }
+            else if (p[1] == L'd' || p[1] == L'i')
+            {
+                SIZE_T v = va_arg(args, SIZE_T);
+                unsigned long long uv = (unsigned long long)v;
+                int neg = 0;
+
+                if ((long)v < 0)
+                {
+                    neg = 1;
+                    uv = (unsigned long long)(-(long long)(v + 1)) + 1;
+                }
+
+                chars = crt_wcputint(
+                    temp,
+                    uv,
+                    width,
+                    prec,
+                    flags,
+                    neg,
+                    0);
+
+                p++;
+            }
+            else
+            {
+                temp[0] = L'z';
+                chars = 1;
+            }
+        }
+        else
+        {
+            temp[0] = *p;
+            chars = 1;
+        }
+
+        for (int i = 0; i < chars && remaining > 1; i++) {
+            *out++ = temp[i];
+            remaining--;
+            total++;
+        }
+
+        p = next;
+    }
+
+    *out = L'\0';
+    return total;
+}
+
+int __cdecl crt_swprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, ...) {
+    if (buf == NULL || bufSize == 0 || fmt == NULL) {
+        return -1;
+    }
+
+    va_list args;
+    va_start(args, fmt);
+    int result = crt_vswprintf(buf, bufSize, fmt, args);
+    va_end(args);
+    return result;
+}
+
+int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va_list args) {
+    if (buf == NULL || bufSize == 0 || fmt == NULL) {
+        return -1;
+    }
+
+    wchar_t temp[64];
+    const wchar_t* p = fmt;
+    wchar_t* out = buf;
+    SIZE_T remaining = bufSize;
+    int total = 0;
+
+    while (*p && remaining > 1) {
+        if (*p != L'%') {
+            *out++ = *p++;
+            remaining--;
+            total++;
+            continue;
+        }
+
+        int width = 0, prec = -1, flags = 0;
+        wchar_t spec = L'\0';
+        const wchar_t* next = crt_wcformat_next(p, &width, &prec, &flags, &spec);
+        int chars = 0;
+
+        if (spec == L's') {
+            wchar_t* s = va_arg(args, wchar_t*);
+            if (s == NULL) {
+                wchar_t wsNull[] = {L'n', L'u', L'l', L'l', L'\0'};
+                crt_wcsncpy(out, wsNull, remaining);
+                SIZE_T null_len = crt_wcslen(wsNull);
+                if (null_len >= remaining) {
+                    buf[bufSize - 1] = L'\0';
+                    return -1;
+                }
+                out += null_len;
+                remaining -= null_len;
+                total += null_len;
+                p = next;
+                continue;
+            }
+            SIZE_T s_len = crt_wcslen(s);
+            if (prec >= 0 && (SIZE_T)prec < s_len) {
+                s_len = prec;
+            }
+            if (s_len >= remaining) {
+                crt_wcsncpy(out, s, remaining - 1);
+                buf[bufSize - 1] = L'\0';
+                return -1;
+            }
+            crt_wcsncpy(out, s, s_len);
+            out += s_len;
+            remaining -= s_len;
+            total += s_len;
+            p = next;
+            continue;
+        }
+
+        if (spec == L'd' || spec == L'i')
+        {
+            int v = va_arg(args, int);
+            unsigned int uv;
+            int neg = 0;
+
+            if (v < 0)
+            {
+                neg = 1;
+                uv = (unsigned int)(-(int)(v + 1)) + 1;
+            }
+            else
+            {
+                uv = (unsigned int)v;
+            }
+
+            chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
+        }
+        else if (spec == L'u' || spec == L'o' || spec == L'x' || spec == L'X')
+        {
+            unsigned int v = va_arg(args, unsigned int);
+
+            if (spec == L'o')
+            {
+                chars = crt_wcputunsigned(temp, v, width, prec, flags, 0, 8);
+            }
+            else
+            {
+                chars = crt_wcputhex(temp, v, width, prec, flags,
+                    (spec == L'X') ? 1 : 0);
+            }
+        }
+        else if (spec == L'c')
+        {
+            temp[0] = (wchar_t)va_arg(args, int);
+            chars = 1;
+        }
+        else if (spec == L'p')
+        {
+            void* ptr = va_arg(args, void*);
+            chars = crt_wcputpointer(temp, ptr);
+        }
+        else if (spec == L'%')
+        {
+            temp[0] = L'%';
+            chars = 1;
+        }
+        else if (spec == L'n')
+        {
+            int* np = va_arg(args, int*);
+            if (np)
+                *np = total;
+
+            chars = 0;
+        }
+        else if (spec == L'l')
+        {
+            if (p[1] == L'd' || p[1] == L'i')
+            {
+                long v = va_arg(args, long);
+                unsigned long uv;
+                int neg = 0;
+
+                if (v < 0)
+                {
+                    neg = 1;
+                    uv = (unsigned long)(-(long)(v + 1)) + 1;
+                }
+                else
+                {
+                    uv = (unsigned long)v;
+                }
+
+                chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
+                p++;
+            }
+            else if (p[1] == L'u')
+            {
+                unsigned long v = va_arg(args, unsigned long);
+                chars = crt_wcputunsigned(temp, v, width, prec, flags, 0, 10);
+                p++;
+            }
+            else
+            {
+                temp[0] = L'l';
+                chars = 1;
+            }
+        }
+        else if (spec == L'z')
+        {
+            if (p[1] == L'u')
+            {
+                SIZE_T v = va_arg(args, SIZE_T);
+
+                chars = crt_wcputunsigned(
+                    temp,
+                    (unsigned long long)v,
+                    width,
+                    prec,
+                    flags,
+                    0,
+                    10);
+
+                p++;
+            }
+            else
+            {
+                temp[0] = L'z';
+                chars = 1;
+            }
+        }
+        else
+        {
+            temp[0] = *p;
+            chars = 1;
+        }
+
+        if (chars >= (int)remaining) {
+            crt_wcsncpy(out, temp, remaining - 1);
+            buf[bufSize - 1] = L'\0';
+            return -1;
+        }
+
+        for (int i = 0; i < chars; i++) {
+            *out++ = temp[i];
+            remaining--;
+            total++;
+        }
+
+        p = next;
+    }
+
+    *out = L'\0';
+    return total;
+}
+
+//=============================================================================
+// UTILITY FUNCTIONS
+//=============================================================================
 
 void __cdecl crt_srand(unsigned int seed) {
     unsigned int rand_seed = 1;

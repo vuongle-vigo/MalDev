@@ -160,7 +160,7 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash) {
 			char* p = crt_strchr((char*)addr, pattern);
 			size_t size = (DWORD64)p - (DWORD64)addr;
 			crt_strncpy(sDllName, (char*)addr, size + 1);
-			char dll[] = { 'd', 'l', 'l' };
+			char dll[] = { 'd', 'l', 'l', '\0' };
 			crt_strcpy(sDllName + size + 1, dll);
 			crt_strlwr(sDllName);
 			unsigned int hashDll = ComplexHashForAnsi(sDllName);

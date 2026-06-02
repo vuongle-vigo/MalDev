@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{639ee4f4-04c7-45d5-92a5-107abbb38fa7}</ProjectGuid>
-    <RootNamespace>APIResolve</RootNamespace>
+    <ProjectGuid>{84de4f4f-52db-4fba-8908-3d773e82615b}</ProjectGuid>
+    <RootNamespace>HttpsLibAR</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,9 +70,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -85,6 +82,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -100,6 +100,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -108,13 +111,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\APIResolve;C:\Users\vuong\Documents\GitHub\MalDev\CRT\CRT</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -125,21 +129,21 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\APIResolve</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\CRT\CRT\CRT.cpp" />
-    <ClCompile Include="ApiResolve.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClInclude Include="HttpClient.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ApiResolve.h" />
-    <ClInclude Include="HashString.h" />
+    <ClCompile Include="HttpClient.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

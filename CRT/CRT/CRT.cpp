@@ -1,14 +1,37 @@
 #include "CRT.h"
+#include "HashString.h"
+#include "ApiResolve.h"
 
 //=============================================================================
 // MEMORY ALLOCATION FUNCTIONS
 //=============================================================================
 
-void*    crt_malloc(SIZE_T Size) {
+void* __cdecl crt_malloc(SIZE_T Size) {
     if (Size == 0) {
         Size = 1;
     }
-    return HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, Size);
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    constexpr unsigned int hashGetProcessHeap = ComplexHashForAnsi("GetProcessHeap");
+    typedef HANDLE
+        (WINAPI*
+        _GetProcessHeap)(
+            VOID
+        );
+
+    _GetProcessHeap pGetProcessHeap = (_GetProcessHeap)apiResolve.GetApiAddress(lpKernel32, hashGetProcessHeap);
+    typedef LPVOID
+        (WINAPI*
+        _HeapAlloc)(
+            _In_ HANDLE hHeap,
+            _In_ DWORD dwFlags,
+            _In_ SIZE_T dwBytes
+        );
+    constexpr unsigned int hashHeapAlloc = ComplexHashForAnsi("HeapAlloc");
+    _HeapAlloc pHeapAlloc = (_HeapAlloc)apiResolve.GetApiAddress(lpKernel32, hashHeapAlloc);
+    return pHeapAlloc(pGetProcessHeap(), HEAP_ZERO_MEMORY, Size);
 }
 
 void* __cdecl crt_calloc(SIZE_T Count, SIZE_T Size) {
@@ -19,7 +42,27 @@ void* __cdecl crt_calloc(SIZE_T Count, SIZE_T Size) {
     if (totalSize / Count != Size) {
         return NULL;
     }
-    return HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, totalSize);
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    constexpr unsigned int hashGetProcessHeap = ComplexHashForAnsi("GetProcessHeap");
+    typedef HANDLE
+    (WINAPI*
+        _GetProcessHeap)(
+            VOID
+            );
+    _GetProcessHeap pGetProcessHeap = (_GetProcessHeap)apiResolve.GetApiAddress(lpKernel32, hashGetProcessHeap);
+    typedef LPVOID
+    (WINAPI*
+        _HeapAlloc)(
+            _In_ HANDLE hHeap,
+            _In_ DWORD dwFlags,
+            _In_ SIZE_T dwBytes
+            );
+    constexpr unsigned int hashHeapAlloc = ComplexHashForAnsi("HeapAlloc");
+    _HeapAlloc pHeapAlloc = (_HeapAlloc)apiResolve.GetApiAddress(lpKernel32, hashHeapAlloc);
+    return pHeapAlloc(pGetProcessHeap(), HEAP_ZERO_MEMORY, totalSize);
 }
 
 void* __cdecl crt_realloc(void* Block, SIZE_T NewSize) {
@@ -31,8 +74,36 @@ void* __cdecl crt_realloc(void* Block, SIZE_T NewSize) {
         return NULL;
     }
     
-    SIZE_T oldSize = HeapSize(GetProcessHeap(), 0, Block);
-    void* newBlock = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, NewSize);
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    constexpr unsigned int hashGetProcessHeap = ComplexHashForAnsi("GetProcessHeap");
+    typedef HANDLE
+    (WINAPI*
+        _GetProcessHeap)(
+            VOID
+            );
+    _GetProcessHeap pGetProcessHeap = (_GetProcessHeap)apiResolve.GetApiAddress(lpKernel32, hashGetProcessHeap);
+    typedef SIZE_T
+        (WINAPI*
+        _HeapSize)(
+            _In_ HANDLE hHeap,
+            _In_ DWORD dwFlags,
+            _In_ LPCVOID lpMem
+        );
+    constexpr unsigned int hashHeapSize = ComplexHashForAnsi("HeapSize");
+    _HeapSize pHeapSize = (_HeapSize)apiResolve.GetApiAddress(lpKernel32, hashHeapSize);
+    SIZE_T oldSize = pHeapSize(pGetProcessHeap(), 0, Block);
+    typedef LPVOID
+    (WINAPI*
+        _HeapAlloc)(
+            _In_ HANDLE hHeap,
+            _In_ DWORD dwFlags,
+            _In_ SIZE_T dwBytes
+            );
+    constexpr unsigned int hashHeapAlloc = ComplexHashForAnsi("HeapAlloc");
+    _HeapAlloc pHeapAlloc = (_HeapAlloc)apiResolve.GetApiAddress(lpKernel32, hashHeapAlloc);
+    void* newBlock = pHeapAlloc(pGetProcessHeap(), HEAP_ZERO_MEMORY, NewSize);
     
     if (newBlock == NULL) {
         return NULL;
@@ -41,7 +112,16 @@ void* __cdecl crt_realloc(void* Block, SIZE_T NewSize) {
     if (oldSize != (SIZE_T)-1) {
         SIZE_T copySize = (oldSize < NewSize) ? oldSize : NewSize;
         crt_memcpy(newBlock, Block, copySize);
-        HeapFree(GetProcessHeap(), 0, Block);
+        typedef BOOL
+            (WINAPI*
+            _HeapFree)(
+                _Inout_ HANDLE hHeap,
+                _In_ DWORD dwFlags,
+                __drv_freesMem(Mem) _Frees_ptr_opt_ LPVOID lpMem
+            );
+        constexpr unsigned int hashHeapFree = ComplexHashForAnsi("HeapFree");
+        _HeapFree pHeapFree = (_HeapFree)apiResolve.GetApiAddress(lpKernel32, hashHeapFree);
+        pHeapFree(pGetProcessHeap(), 0, Block);
     }
     
     return newBlock;
@@ -49,7 +129,26 @@ void* __cdecl crt_realloc(void* Block, SIZE_T NewSize) {
 
 void __cdecl crt_free(void* Block) {
     if (Block != NULL) {
-        HeapFree(GetProcessHeap(), 0, Block);
+        ApiResolve apiResolve;
+        constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+        LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+        typedef BOOL
+        (WINAPI*
+            _HeapFree)(
+                _Inout_ HANDLE hHeap,
+                _In_ DWORD dwFlags,
+                __drv_freesMem(Mem) _Frees_ptr_opt_ LPVOID lpMem
+                );
+        constexpr unsigned int hashHeapFree = ComplexHashForAnsi("HeapFree");
+        _HeapFree pHeapFree = (_HeapFree)apiResolve.GetApiAddress(lpKernel32, hashHeapFree);
+        constexpr unsigned int hashGetProcessHeap = ComplexHashForAnsi("GetProcessHeap");
+        typedef HANDLE
+        (WINAPI*
+            _GetProcessHeap)(
+                VOID
+                );
+        _GetProcessHeap pGetProcessHeap = (_GetProcessHeap)apiResolve.GetApiAddress(lpKernel32, hashGetProcessHeap);
+        pHeapFree(pGetProcessHeap(), 0, Block);
     }
 }
 
@@ -332,13 +431,14 @@ char* __cdecl crt_strlwr(char* str) {
     return original;
 }
 
-static char* strtok_context = NULL;
+//static char* strtok_context = NULL;
 
 char* __cdecl crt_strtok(char* str, const char* delim) {
     if (delim == NULL) {
         return NULL;
     }
-    
+
+    char* strtok_context = NULL;
     char* token;
     
     if (str != NULL) {
@@ -733,13 +833,14 @@ wchar_t* __cdecl crt_wcslwr(wchar_t* str) {
     return original;
 }
 
-static wchar_t* wcstok_context = NULL;
+//static wchar_t* wcstok_context = NULL;
 
 wchar_t* __cdecl crt_wcstok(wchar_t* str, const wchar_t* delim) {
     if (delim == NULL) {
         return NULL;
     }
     
+    wchar_t* wcstok_context = NULL;
     wchar_t* token;
     
     if (str != NULL) {
@@ -808,7 +909,22 @@ wchar_t* __cdecl crt_atowc(const char* str) {
         return NULL;
     }
     
-    MultiByteToWideChar(CP_ACP, 0, str, -1, result, (int)len);
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef int
+        (WINAPI*
+        _MultiByteToWideChar)(
+            _In_ UINT CodePage,
+            _In_ DWORD dwFlags,
+            _In_NLS_string_(cbMultiByte) LPCCH lpMultiByteStr,
+            _In_ int cbMultiByte,
+            _Out_writes_to_opt_(cchWideChar, return) LPWSTR lpWideCharStr,
+            _In_ int cchWideChar
+        );
+    constexpr unsigned int hashMultiByteToWideChar = ComplexHashForAnsi("MultiByteToWideChar");
+    _MultiByteToWideChar pMultiByteToWideChar = (_MultiByteToWideChar)apiResolve.GetApiAddress(lpKernel32, hashMultiByteToWideChar);
+    pMultiByteToWideChar(CP_ACP, 0, str, -1, result, (int)len);
     return result;
 }
 
@@ -817,7 +933,24 @@ char* __cdecl crt_wctoa(const wchar_t* str) {
         return NULL;
     }
     
-    int len = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef int
+    (WINAPI*
+        _WideCharToMultiByte)(
+            _In_ UINT CodePage,
+            _In_ DWORD dwFlags,
+            _In_NLS_string_(cchWideChar) LPCWCH lpWideCharStr,
+            _In_ int cchWideChar,
+            _Out_writes_bytes_to_opt_(cbMultiByte, return) LPSTR lpMultiByteStr,
+            _In_ int cbMultiByte,
+            _In_opt_ LPCCH lpDefaultChar,
+            _Out_opt_ LPBOOL lpUsedDefaultChar
+            );
+    constexpr unsigned int hashWideCharToMultiByte = ComplexHashForAnsi("WideCharToMultiByte");
+    _WideCharToMultiByte pWideCharToMultiByte = (_WideCharToMultiByte)apiResolve.GetApiAddress(lpKernel32, hashWideCharToMultiByte);
+    int len = pWideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);
     if (len == 0) {
         return NULL;
     }
@@ -826,8 +959,8 @@ char* __cdecl crt_wctoa(const wchar_t* str) {
     if (result == NULL) {
         return NULL;
     }
-    
-    WideCharToMultiByte(CP_ACP, 0, str, -1, result, len, NULL, NULL);
+  
+    pWideCharToMultiByte(CP_ACP, 0, str, -1, result, len, NULL, NULL);
     return result;
 }
 
@@ -1169,13 +1302,15 @@ wchar_t* __cdecl crt_ulltow(unsigned long long value, wchar_t* str, int radix) {
 // UTILITY FUNCTIONS
 //=============================================================================
 
-static unsigned int rand_seed = 1;
+//static unsigned int rand_seed = 1;
 
 void __cdecl crt_srand(unsigned int seed) {
+    unsigned int rand_seed = 1;
     rand_seed = seed;
 }
 
 int __cdecl crt_rand(void) {
+    unsigned int rand_seed = 1;
     rand_seed = rand_seed * 1103515245 + 12345;
     return (int)((rand_seed >> 16) & 0x7FFF);
 }

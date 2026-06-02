@@ -153,7 +153,24 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash) {
 
 		WORD ordinal = *(WORD*)((DWORD64)pAddressOfOrdinal + i * sizeof(BYTE) * 2);
 		DWORD rvaFunction = *(DWORD*)((DWORD64)pAddressOfFunction + ordinal * sizeof(DWORD));
-		return (LPVOID)((DWORD64)lpBaseAddress + rvaFunction);
+		LPVOID addr = (LPVOID)((DWORD64)lpBaseAddress + rvaFunction);
+		if (addr == sName + crt_strlen(sName) + 1) {
+			char sDllName[50] = { 0 };
+			char pattern = '.';
+			char* p = crt_strchr((char*)addr, pattern);
+			size_t size = (DWORD64)p - (DWORD64)addr;
+			crt_strncpy(sDllName, (char*)addr, size + 1);
+			char dll[] = { 'd', 'l', 'l' };
+			crt_strcpy(sDllName + size + 1, dll);
+			crt_strlwr(sDllName);
+			unsigned int hashDll = ComplexHashForAnsi(sDllName);
+			LPVOID lpDll = GetModuleBaseAddress(hashDll);
+			char* sFuncName = (char*)addr + size + 1;
+			unsigned int hashFuncName = ComplexHashForAnsi(sFuncName);
+			return GetApiAddress(lpDll, hashFuncName);
+		}
+		
+		return addr;
 	}
 
 	return NULL;

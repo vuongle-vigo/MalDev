@@ -11,19 +11,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CRT.cpp">
+    <ClInclude Include="HttpClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="HttpClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\APIResolve\APIResolve\ApiResolve.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CRT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

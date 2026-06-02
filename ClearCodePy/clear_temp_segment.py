@@ -21,6 +21,8 @@ def clear_segments(input_file):
     for line in lines:
         # Thay thế 'gs:96' thành 'gs:[96]'
         line = line.replace('gs:96', 'gs:[96]')
+        # Bỏ tiền tố FLAT trong toán hạng OFFSET của ASM
+        line = line.replace('OFFSET FLAT:', 'OFFSET ')
         
         # Bắt đầu bỏ qua khi gặp SEGMENT
         for segment in segments_to_remove:

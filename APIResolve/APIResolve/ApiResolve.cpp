@@ -155,7 +155,7 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash) {
 		DWORD rvaFunction = *(DWORD*)((DWORD64)pAddressOfFunction + ordinal * sizeof(DWORD));
 		LPVOID addr = (LPVOID)((DWORD64)lpBaseAddress + rvaFunction);
 		if (addr == sName + crt_strlen(sName) + 1) {
-			char sDllName[50] = { 0 };
+			char sDllName[50];
 			char pattern = '.';
 			char* p = crt_strchr((char*)addr, pattern);
 			size_t size = (DWORD64)p - (DWORD64)addr;

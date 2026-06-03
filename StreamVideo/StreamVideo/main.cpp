@@ -35,7 +35,7 @@ int main() {
     H264WebSocketClient wsClient;
 
     //wsClient.Connect("ws://103.90.224.132:8080/agent/stream");
-    wsClient.Connect("ws://127.0.0.1:8080/agent/123/stream");
+    wsClient.Connect("ws://69.48.228.229:8080/agent/123/stream");
 
     std::cout << "Waiting WebSocket connection...\n";
 

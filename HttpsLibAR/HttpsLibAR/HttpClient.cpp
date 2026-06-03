@@ -450,11 +450,14 @@ namespace HttpLib {
         INTERNET_PORT* port, HttpScheme* scheme) {
         if (!url || !host || !path || !port || !scheme) return FALSE;
 
-        URL_COMPONENTS urlComp = {};
+        URL_COMPONENTS urlComp;
+        crt_memset(&urlComp, 0, sizeof(urlComp));
         urlComp.dwStructSize = sizeof(urlComp);
 
-        wchar_t hostBuffer[256] = {};
-        wchar_t pathBuffer[2048] = {};
+        wchar_t hostBuffer[256];
+        crt_memset(hostBuffer, 0, 256);
+        wchar_t pathBuffer[2048];
+        crt_memset(pathBuffer, 0, 2048);
 
         urlComp.lpszHostName = hostBuffer;
         urlComp.dwHostNameLength = 256;
@@ -712,8 +715,10 @@ namespace HttpLib {
         HttpResponse_Init(response);
         response->success = FALSE;
 
-        wchar_t host[256] = {};
-        wchar_t path[2048] = {};
+        wchar_t host[256];
+        crt_memset(host, 0, 256);
+        wchar_t path[2048];
+        crt_memset(path, 0, 2048);
         INTERNET_PORT port = 0;
         HttpScheme scheme = HTTP_SCHEME_HTTPS;
         ApiResolve apiResolve;
@@ -768,7 +773,8 @@ namespace HttpLib {
             return;
         }
 
-        wchar_t bufferMethod[10] = { 0 };
+        wchar_t bufferMethod[10];
+        crt_memset(bufferMethod, 0, 10);
         HttpMethodToString(method, bufferMethod, 10);
         typedef HINTERNET
             (WINAPI*
@@ -814,7 +820,8 @@ namespace HttpLib {
             ApplySslIgnoreOption(hRequest);
         }
 
-        wchar_t headersStr[8192] = {};
+        wchar_t headersStr[8192];
+        crt_memset(headersStr, 0, 8192);
         if (headers && headerCount > 0) {
             int offset = 0;
             for (int i = 0; i < headerCount && offset < 8000; i++) {
@@ -916,7 +923,8 @@ namespace HttpLib {
             response->headerCount = 0;
 
             DWORD headerIndex = 0;
-            wchar_t headerBuffer[1024] = {};
+            wchar_t headerBuffer[1024];
+            crt_memset(headerBuffer, 0, 1024);
             DWORD headerBufferSize = sizeof(headerBuffer);
             typedef BOOL
                 (WINAPI*
@@ -995,8 +1003,8 @@ namespace HttpLib {
                 }
 
                 DWORD dwDownloaded = 0;
-                char chunk[4096] = {};
-
+                char chunk[4096];
+                crt_memset(chunk, 0, 4096);
                 if (dwSize > 4095) dwSize = 4095;
 
                 if (pWinHttpReadData(hRequest, chunk, dwSize, &dwDownloaded)) {

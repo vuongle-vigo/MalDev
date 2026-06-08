@@ -246,6 +246,7 @@ def _step_compile_cl(
         cmd_parts = [
             'cl',
             '/c',
+            '/Od',
             '/GS-',
             '/FA',
             f'/Fo"{output_dir}"',

@@ -1,7 +1,7 @@
 #pragma once
 
-#define CRT_VERSION "1.0.0"
 #define CRT_EOF (-1)
+#define CRT_WEOF ((wint_t)(-1))
 
 #include <windows.h>
 
@@ -115,6 +115,11 @@ unsigned int __cdecl crt_atoui(const char* str);
 unsigned long __cdecl crt_atoul(const char* str);
 unsigned long long __cdecl crt_atoull(const char* str);
 
+// String to Float conversion (char)
+float __cdecl crt_strtof(const char* str, char** endptr);
+double __cdecl crt_strtod(const char* str, char** endptr);
+long double __cdecl crt_strtold(const char* str, char** endptr);
+
 // String to Number conversion (wchar)
 int __cdecl crt_wtoi(const wchar_t* str);
 long __cdecl crt_wtol(const wchar_t* str);
@@ -138,6 +143,24 @@ wchar_t* __cdecl crt_lltow(long long value, wchar_t* str, int radix);
 wchar_t* __cdecl crt_uwtow(unsigned int value, wchar_t* str, int radix);
 wchar_t* __cdecl crt_ultow(unsigned long value, wchar_t* str, int radix);
 wchar_t* __cdecl crt_ulltow(unsigned long long value, wchar_t* str, int radix);
+
+//=============================================================================
+// CHARACTER CLASSIFICATION FUNCTIONS (CHAR)
+//=============================================================================
+
+int __cdecl crt_isdigit(int ch);
+int __cdecl crt_isalpha(int ch);
+int __cdecl crt_isalnum(int ch);
+int __cdecl crt_isspace(int ch);
+int __cdecl crt_isupper(int ch);
+int __cdecl crt_islower(int ch);
+int __cdecl crt_isxdigit(int ch);
+int __cdecl crt_isprint(int ch);
+int __cdecl crt_ispunct(int ch);
+int __cdecl crt_iscntrl(int ch);
+int __cdecl crt_isgraph(int ch);
+int __cdecl crt_toupper(int ch);
+int __cdecl crt_tolower(int ch);
 
 //=============================================================================
 // WIDE-CHARACTER CLASSIFICATION FUNCTIONS

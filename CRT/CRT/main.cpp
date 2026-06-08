@@ -6,6 +6,7 @@ void test_memory_allocation();
 void test_string_char();
 void test_string_wchar();
 void test_string_conversion();
+void test_string_float_conversion();
 void test_memory_functions();
 void test_utilities();
 void test_file_io();
@@ -171,8 +172,8 @@ void test_string_char() {
     // Test strstr
     printf("\nTesting crt_strstr...\n");
     found = crt_strstr("Hello World", "World");
-    printf("[%s] strstr(\"Hello World\", \"World\") found at \"%s\"\n", 
-           found != NULL && found == str + 6 ? "PASS" : "FAIL", found ? found : "NULL");
+    printf("[%s] strstr(\"Hello World\", \"World\") found at \"%s\"\n",
+           found != NULL && found == strchr("Hello World", 'W') ? "PASS" : "FAIL", found ? found : "NULL");
     
     // Test strupr
     printf("\nTesting crt_strupr...\n");
@@ -340,6 +341,165 @@ void test_string_conversion() {
 }
 
 //=============================================================================
+// TEST STRING TO FLOAT CONVERSION
+//=============================================================================
+
+void test_string_float_conversion() {
+    print_separator("STRING TO FLOAT CONVERSION TESTS");
+    char* endptr = NULL;
+
+    //========================================
+    // TEST strtof
+    //========================================
+    printf("Testing crt_strtof...\n");
+
+    // Basic positive float
+    float f1 = crt_strtof("123.456", &endptr);
+    printf("[%s] strtof(\"123.456\") = %.3f (expected: 123.456)\n",
+           (f1 > 123.455f && f1 < 123.457f) ? "PASS" : "FAIL", f1);
+
+    // Negative float
+    float f2 = crt_strtof("-456.789", &endptr);
+    printf("[%s] strtof(\"-456.789\") = %.3f (expected: -456.789)\n",
+           (f2 > -456.790f && f2 < -456.788f) ? "PASS" : "FAIL", f2);
+
+    // Float with exponent (positive)
+    float f3 = crt_strtof("3.14e2", &endptr);
+    printf("[%s] strtof(\"3.14e2\") = %.2f (expected: 314.00)\n",
+           (f3 > 313.99f && f3 < 314.01f) ? "PASS" : "FAIL", f3);
+
+    // Float with exponent (negative)
+    float f4 = crt_strtof("1.5e-1", &endptr);
+    printf("[%s] strtof(\"1.5e-1\") = %.2f (expected: 0.15)\n",
+           (f4 > 0.149f && f4 < 0.151f) ? "PASS" : "FAIL", f4);
+
+    // Integer only
+    float f5 = crt_strtof("42", &endptr);
+    printf("[%s] strtof(\"42\") = %.0f (expected: 42)\n",
+           (f5 > 41.9f && f5 < 42.1f) ? "PASS" : "FAIL", f5);
+
+    // Leading whitespace
+    float f6 = crt_strtof("   99.5", &endptr);
+    printf("[%s] strtof(\"   99.5\") = %.1f (expected: 99.5)\n",
+           (f6 > 99.49f && f6 < 99.51f) ? "PASS" : "FAIL", f6);
+
+    // Uppercase E exponent
+    float f7 = crt_strtof("2.5E3", &endptr);
+    printf("[%s] strtof(\"2.5E3\") = %.0f (expected: 2500)\n",
+           (f7 > 2499.9f && f7 < 2500.1f) ? "PASS" : "FAIL", f7);
+
+    // Positive sign
+    float f8 = crt_strtof("+10.5", &endptr);
+    printf("[%s] strtof(\"+10.5\") = %.1f (expected: 10.5)\n",
+           (f8 > 10.49f && f8 < 10.51f) ? "PASS" : "FAIL", f8);
+
+    // No digits after decimal
+    float f9 = crt_strtof("123.", &endptr);
+    printf("[%s] strtof(\"123.\") = %.0f (expected: 123)\n",
+           (f9 > 122.9f && f9 < 123.1f) ? "PASS" : "FAIL", f9);
+
+    // Empty string - endptr should point to start of string (no conversion)
+    float f10 = crt_strtof("", &endptr);
+    printf("[%s] strtof(\"\") = %.0f, endptr=start: %s\n",
+           (f10 == 0.0f && endptr != NULL) ? "PASS" : "FAIL", f10,
+           endptr == NULL ? "NULL" : "valid");
+
+    // No conversion - endptr should point to 'a'
+    float f11 = crt_strtof("abc", &endptr);
+    printf("[%s] strtof(\"abc\") = %.0f, endptr at 'a': %s\n",
+           (f11 == 0.0f && endptr != NULL && *endptr == 'a') ? "PASS" : "FAIL", f11,
+           (endptr && *endptr == 'a') ? "yes" : "no");
+
+    //========================================
+    // TEST strtod
+    //========================================
+    printf("\nTesting crt_strtod...\n");
+
+    // Basic positive double
+    double d1 = crt_strtod("456.789", &endptr);
+    printf("[%s] strtod(\"456.789\") = %.3f (expected: 456.789)\n",
+           (d1 > 456.788 && d1 < 456.790) ? "PASS" : "FAIL", d1);
+
+    // Negative double
+    double d2 = crt_strtod("-456.789", &endptr);
+    printf("[%s] strtod(\"-456.789\") = %.3f (expected: -456.789)\n",
+           (d2 > -456.790 && d2 < -456.788) ? "PASS" : "FAIL", d2);
+
+    // Double with large exponent
+    double d3 = crt_strtod("1.23e10", &endptr);
+    printf("[%s] strtod(\"1.23e10\") = %.0e (expected: 1.23e10)\n",
+           (d3 > 1.22e10 && d3 < 1.24e10) ? "PASS" : "FAIL", d3);
+
+    // Negative exponent
+    double d4 = crt_strtod("5.5e-5", &endptr);
+    printf("[%s] strtod(\"5.5e-5\") = %.6f (expected: 0.000055)\n",
+           (d4 > 0.000054 && d4 < 0.000056) ? "PASS" : "FAIL", d4);
+
+    // Double precision
+    double d5 = crt_strtod("3.14159265358979", &endptr);
+    printf("[%s] strtod(\"3.14159265358979\") = %.14f\n",
+           (d5 > 3.1415926535 && d5 < 3.1415926536) ? "PASS" : "FAIL", d5);
+
+    // Leading whitespace and sign
+    double d6 = crt_strtod("  -273.15", &endptr);
+    printf("[%s] strtod(\"  -273.15\") = %.2f (expected: -273.15)\n",
+           (d6 > -273.16 && d6 < -273.14) ? "PASS" : "FAIL", d6);
+
+    // Overflow
+    double d7 = crt_strtod("1e309", &endptr);
+    int is_inf = (d7 != d7 || d7 > 1e308); // NaN check or huge value
+    printf("[%s] strtod(\"1e309\") overflow = %s\n",
+           is_inf ? "PASS" : "FAIL", is_inf ? "inf/nan" : "not overflow");
+
+    // Very small positive
+    double d8 = crt_strtod("0.0000001", &endptr);
+    printf("[%s] strtod(\"0.0000001\") = %.7f (expected: 0.0000001)\n",
+           (d8 > 0.00000009 && d8 < 0.00000011) ? "PASS" : "FAIL", d8);
+
+    // Zero
+    double d9 = crt_strtod("0", &endptr);
+    printf("[%s] strtod(\"0\") = %.1f (expected: 0.0)\n",
+           d9 == 0.0 ? "PASS" : "FAIL", d9);
+
+    // Negative zero
+    double d10 = crt_strtod("-0", &endptr);
+    printf("[%s] strtod(\"-0\") = %.1f (expected: -0.0)\n",
+           d10 == 0.0 ? "PASS" : "FAIL", d10);
+
+    //========================================
+    // TEST strtold (long double)
+    //========================================
+    printf("\nTesting crt_strtold...\n");
+
+    long double ld1 = crt_strtold("123.456789012345", &endptr);
+    printf("[%s] strtold(\"123.456789012345\") = %.15Lf\n",
+           (ld1 > 123.4567890123 && ld1 < 123.4567890124) ? "PASS" : "FAIL", ld1);
+
+    //========================================
+    // TEST endptr behavior
+    //========================================
+    printf("\nTesting endptr behavior...\n");
+
+    const char* test_str = "123.45abc";
+    double d11 = crt_strtod(test_str, &endptr);
+    printf("[%s] endptr points to 'a': \"%s\"\n",
+           (endptr == test_str + 6) ? "PASS" : "FAIL", endptr);
+
+    // NULL endptr should not crash
+    double d12 = crt_strtod("999.99", NULL);
+    printf("[%s] strtod with NULL endptr doesn't crash: %.2f\n",
+           (d12 > 999.98 && d12 < 1000.0) ? "PASS" : "FAIL", d12);
+
+    // NULL input
+    double d13 = crt_strtod(NULL, &endptr);
+    printf("[%s] strtod(NULL) = 0.0, endptr = NULL: %s\n",
+           (d13 == 0.0 && endptr == NULL) ? "PASS" : "FAIL",
+           (d13 == 0.0 && endptr == NULL) ? "PASS" : "FAIL");
+
+    printf("\nAll float conversion tests completed!\n");
+}
+
+//=============================================================================
 // TEST MEMORY FUNCTIONS
 //=============================================================================
 
@@ -474,13 +634,13 @@ void test_utilities() {
 int main() {
     printf("=================================================\n");
     printf("    CRT Library - Custom Implementation Test\n");
-    printf("    Version: %s\n", CRT_VERSION);
     printf("=================================================\n");
     
     test_memory_allocation();
     test_string_char();
     test_string_wchar();
     test_string_conversion();
+    test_string_float_conversion();
     test_memory_functions();
     test_utilities();
     test_file_io();
@@ -654,8 +814,8 @@ void test_formatted_print() {
     // Test snprintf
     printf("\nTesting crt_snprintf...\n");
     len = crt_snprintf(buf, 10, "Hello World!");
-    printf("[%s] snprintf truncated: \"%s\" (len=%d, expected 11)\n",
-           len == 11 ? "PASS" : "FAIL", buf, len);
+    printf("[%s] snprintf truncated: \"%s\" (len=%d, expected 12)\n",
+           len == 12 ? "PASS" : "FAIL", buf, len);
 
     len = crt_snprintf(buf, sizeof(buf), "Decimal: %d, Unsigned: %u, Octal: %o, Hex: %x", -999, 999, 255, 255);
     printf("[%s] snprintf full: \"%s\"\n",

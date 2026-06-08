@@ -15,14 +15,14 @@ static const char* skipWhitespace(const char* p) {
 }
 
 static void setError(const char* msg) {
-    size_t len = strlen(msg);
+    size_t len = crt_strlen(msg);
     if (len >= sizeof(g_errorMsg)) len = sizeof(g_errorMsg) - 1;
-    memcpy(g_errorMsg, msg, len);
+    crt_memcpy(g_errorMsg, msg, len);
     g_errorMsg[len] = '\0';
 }
 
 static JsonNode* allocNode(JsonType type) {
-    JsonNode* node = (JsonNode*)calloc(1, sizeof(JsonNode));
+    JsonNode* node = (JsonNode*)crt_calloc(1, sizeof(JsonNode));
     if (node) node->type = type;
     return node;
 }
@@ -41,7 +41,7 @@ static int parseString(const char** p, char** outStr, int* outLen) {
     const char* ptr = start + 1;
     int capacity = 64;
     int length = 0;
-    char* buffer = (char*)malloc(capacity);
+    char* buffer = (char*)crt_malloc(capacity);
     if (!buffer) return 0;
 
     while (ptr < g_parseEnd && *ptr != '"') {
@@ -102,14 +102,14 @@ static int parseString(const char** p, char** outStr, int* outLen) {
                             continue;
                         }
                     }
-                    free(buffer);
+                    crt_free(buffer);
                     return 0;
                 default:
-                    free(buffer);
+                    crt_free(buffer);
                     return 0;
             }
         } else if ((unsigned char)*ptr < 0x20) {
-            free(buffer);
+            crt_free(buffer);
             return 0;
         } else {
             buffer[length++] = *ptr;
@@ -117,15 +117,15 @@ static int parseString(const char** p, char** outStr, int* outLen) {
 
         if (length >= capacity - 4) {
             capacity *= 2;
-            char* tmp = (char*)realloc(buffer, capacity);
-            if (!tmp) { free(buffer); return 0; }
+            char* tmp = (char*)crt_realloc(buffer, capacity);
+            if (!tmp) { crt_free(buffer); return 0; }
             buffer = tmp;
         }
         ptr++;
     }
 
     if (ptr >= g_parseEnd || *ptr != '"') {
-        free(buffer);
+        crt_free(buffer);
         return 0;
     }
 
@@ -144,7 +144,7 @@ static int parseNumber(const char** p, double* outVal) {
     if (ptr >= g_parseEnd) return 0;
 
     int hasDigits = 0;
-    while (ptr < g_parseEnd && isdigit((unsigned char)*ptr)) {
+    while (ptr < g_parseEnd && crt_isdigit((unsigned char)*ptr)) {
         hasDigits = 1;
         ptr++;
     }
@@ -154,7 +154,7 @@ static int parseNumber(const char** p, double* outVal) {
     if (ptr < g_parseEnd && *ptr == '.') {
         ptr++;
         hasDigits = 0;
-        while (ptr < g_parseEnd && isdigit((unsigned char)*ptr)) {
+        while (ptr < g_parseEnd && crt_isdigit((unsigned char)*ptr)) {
             hasDigits = 1;
             ptr++;
         }
@@ -165,7 +165,7 @@ static int parseNumber(const char** p, double* outVal) {
         ptr++;
         if (ptr < g_parseEnd && (*ptr == '+' || *ptr == '-')) ptr++;
         int expDigits = 0;
-        while (ptr < g_parseEnd && isdigit((unsigned char)*ptr)) {
+        while (ptr < g_parseEnd && crt_isdigit((unsigned char)*ptr)) {
             expDigits = 1;
             ptr++;
         }
@@ -175,11 +175,11 @@ static int parseNumber(const char** p, double* outVal) {
     char buf[64];
     int len = (int)(ptr - start);
     if (len >= (int)sizeof(buf)) len = sizeof(buf) - 1;
-    memcpy(buf, start, len);
+    crt_memcpy(buf, start, len);
     buf[len] = '\0';
 
     char* endptr;
-    *outVal = strtod(buf, &endptr);
+    *outVal = crt_strtod(buf, &endptr);
     *p = ptr;
     return endptr != buf;
 }
@@ -199,7 +199,7 @@ static int parseArray(const char** p, JsonNode** outNode) {
 
     int capacity = 4;
     int count = 0;
-    node->value.arrayValue.items = (JsonNode**)calloc(capacity, sizeof(JsonNode*));
+    node->value.arrayValue.items = (JsonNode**)crt_calloc(capacity, sizeof(JsonNode*));
 
     *p = skipWhitespace(*p);
     if (**p != ']') {
@@ -211,7 +211,7 @@ static int parseArray(const char** p, JsonNode** outNode) {
             }
             if (count >= capacity) {
                 capacity *= 2;
-                JsonNode** tmp = (JsonNode**)realloc(node->value.arrayValue.items, capacity * sizeof(JsonNode*));
+                JsonNode** tmp = (JsonNode**)crt_realloc(node->value.arrayValue.items, capacity * sizeof(JsonNode*));
                 if (!tmp) { Json_Free(node); return 0; }
                 node->value.arrayValue.items = tmp;
             }
@@ -242,8 +242,8 @@ static int parseObject(const char** p, JsonNode** outNode) {
 
     int capacity = 4;
     int count = 0;
-    node->value.objectValue.keys = (char**)calloc(capacity, sizeof(char*));
-    node->value.objectValue.values = (JsonNode**)calloc(capacity, sizeof(JsonNode*));
+    node->value.objectValue.keys = (char**)crt_calloc(capacity, sizeof(char*));
+    node->value.objectValue.values = (JsonNode**)crt_calloc(capacity, sizeof(JsonNode*));
 
     *p = skipWhitespace(*p);
     if (**p != '}') {
@@ -252,21 +252,21 @@ static int parseObject(const char** p, JsonNode** outNode) {
             int keyLen = 0;
             if (!parseString(p, &key, &keyLen)) { Json_Free(node); return 0; }
             *p = skipWhitespace(*p);
-            if (**p != ':') { free(key); Json_Free(node); return 0; }
+            if (**p != ':') { crt_free(key); Json_Free(node); return 0; }
             (*p)++;
             *p = skipWhitespace(*p);
 
             JsonNode* value = NULL;
-            if (!parseValue(p, &value)) { free(key); Json_Free(node); return 0; }
+            if (!parseValue(p, &value)) { crt_free(key); Json_Free(node); return 0; }
 
             if (count >= capacity) {
                 capacity *= 2;
-                char** tmpKeys = (char**)realloc(node->value.objectValue.keys, capacity * sizeof(char*));
-                JsonNode** tmpVals = (JsonNode**)realloc(node->value.objectValue.values, capacity * sizeof(JsonNode*));
+                char** tmpKeys = (char**)crt_realloc(node->value.objectValue.keys, capacity * sizeof(char*));
+                JsonNode** tmpVals = (JsonNode**)crt_realloc(node->value.objectValue.values, capacity * sizeof(JsonNode*));
                 if (!tmpKeys || !tmpVals) {
-                    free(key); Json_Free(node);
-                    if (tmpKeys) free(tmpKeys);
-                    if (tmpVals) free(tmpVals);
+                    crt_free(key); Json_Free(node);
+                    if (tmpKeys) crt_free(tmpKeys);
+                    if (tmpVals) crt_free(tmpVals);
                     return 0;
                 }
                 node->value.objectValue.keys = tmpKeys;
@@ -303,20 +303,20 @@ static int parseValue(const char** p, JsonNode** outNode) {
 
     const char ch = **p;
 
-    if (ch == 'n' && strncmp(*p, "null", 4) == 0 && ((*p)[4] == ',' || (*p)[4] == ']' || (*p)[4] == '}' || isWhitespace((*p)[4]) || (*p)[4] == '\0' || (*p)[4] == ':')) {
+    if (ch == 'n' && crt_strncmp(*p, "null", 4) == 0 && ((*p)[4] == ',' || (*p)[4] == ']' || (*p)[4] == '}' || isWhitespace((*p)[4]) || (*p)[4] == '\0' || (*p)[4] == ':')) {
         JsonNode* node = allocNode(JSON_NULL);
         *p += 4;
         *outNode = node;
         return 1;
     }
-    if (ch == 't' && strncmp(*p, "true", 4) == 0 && ((*p)[4] == ',' || (*p)[4] == ']' || (*p)[4] == '}' || isWhitespace((*p)[4]) || (*p)[4] == '\0' || (*p)[4] == ':')) {
+    if (ch == 't' && crt_strncmp(*p, "true", 4) == 0 && ((*p)[4] == ',' || (*p)[4] == ']' || (*p)[4] == '}' || isWhitespace((*p)[4]) || (*p)[4] == '\0' || (*p)[4] == ':')) {
         JsonNode* node = allocNode(JSON_BOOL);
         node->value.boolValue = 1;
         *p += 4;
         *outNode = node;
         return 1;
     }
-    if (ch == 'f' && strncmp(*p, "false", 5) == 0 && ((*p)[5] == ',' || (*p)[5] == ']' || (*p)[5] == '}' || isWhitespace((*p)[5]) || (*p)[5] == '\0' || (*p)[5] == ':')) {
+    if (ch == 'f' && crt_strncmp(*p, "false", 5) == 0 && ((*p)[5] == ',' || (*p)[5] == ']' || (*p)[5] == '}' || isWhitespace((*p)[5]) || (*p)[5] == '\0' || (*p)[5] == ':')) {
         JsonNode* node = allocNode(JSON_BOOL);
         node->value.boolValue = 0;
         *p += 5;
@@ -329,7 +329,7 @@ static int parseValue(const char** p, JsonNode** outNode) {
         int len = 0;
         if (!parseString(p, &str, &len)) return 0;
         JsonNode* node = allocNode(JSON_STRING);
-        if (!node) { free(str); return 0; }
+        if (!node) { crt_free(str); return 0; }
         node->value.stringValue.data = str;
         node->value.stringValue.length = len;
         *outNode = node;
@@ -339,7 +339,7 @@ static int parseValue(const char** p, JsonNode** outNode) {
     if (ch == '[') return parseArray(p, outNode);
     if (ch == '{') return parseObject(p, outNode);
 
-    if (ch == '-' || isdigit((unsigned char)ch)) {
+    if (ch == '-' || crt_isdigit((unsigned char)ch)) {
         double num = 0;
         if (!parseNumber(p, &num)) return 0;
         JsonNode* node = allocNode(JSON_NUMBER);
@@ -355,7 +355,7 @@ static int parseValue(const char** p, JsonNode** outNode) {
 JsonNode* Json_Parse(const char* jsonStr) {
     if (!jsonStr) return NULL;
     g_parsePos = jsonStr;
-    g_parseEnd = jsonStr + strlen(jsonStr);
+    g_parseEnd = jsonStr + crt_strlen(jsonStr);
     memset(g_errorMsg, 0, sizeof(g_errorMsg));
 
     g_parsePos = skipWhitespace(g_parsePos);
@@ -371,26 +371,26 @@ void Json_Free(JsonNode* node) {
     if (!node) return;
     switch (node->type) {
         case JSON_STRING:
-        free(node->value.stringValue.data);
+        crt_free(node->value.stringValue.data);
         break;
         case JSON_ARRAY:
         for (int i = 0; i < node->value.arrayValue.count; i++) {
             Json_Free(node->value.arrayValue.items[i]);
         }
-        free(node->value.arrayValue.items);
+        crt_free(node->value.arrayValue.items);
         break;
         case JSON_OBJECT:
         for (int i = 0; i < node->value.objectValue.count; i++) {
-            free(node->value.objectValue.keys[i]);
+            crt_free(node->value.objectValue.keys[i]);
             Json_Free(node->value.objectValue.values[i]);
         }
-        free(node->value.objectValue.keys);
-        free(node->value.objectValue.values);
+        crt_free(node->value.objectValue.keys);
+        crt_free(node->value.objectValue.values);
         break;
         default:
         break;
     }
-    free(node);
+    crt_free(node);
 }
 
 const char* Json_TypeName(JsonType type) {
@@ -408,7 +408,7 @@ const char* Json_TypeName(JsonType type) {
 static void appendChar(char** buf, int* pos, int* cap, char c) {
     if (*pos >= *cap - 1) {
         *cap *= 2;
-        char* tmp = (char*)realloc(*buf, *cap);
+        char* tmp = (char*)crt_realloc(*buf, *cap);
         if (!tmp) return;
         *buf = tmp;
     }
@@ -419,7 +419,7 @@ static void appendStr(char** buf, int* pos, int* cap, const char* s, int len) {
     for (int i = 0; i < len; i++) {
         if (*pos >= *cap - 2) {
             *cap *= 2;
-            char* tmp = (char*)realloc(*buf, *cap);
+            char* tmp = (char*)crt_realloc(*buf, *cap);
             if (!tmp) return;
             *buf = tmp;
         }
@@ -491,7 +491,7 @@ static int toStringRecursive(JsonNode* node, char** buf, int* pos, int* cap) {
             for (int i = 0; i < node->value.objectValue.count; i++) {
                 if (i > 0) appendChar(buf, pos, cap, ',');
                 appendChar(buf, pos, cap, '"');
-                appendStr(buf, pos, cap, node->value.objectValue.keys[i], strlen(node->value.objectValue.keys[i]));
+                appendStr(buf, pos, cap, node->value.objectValue.keys[i], crt_strlen(node->value.objectValue.keys[i]));
                 appendChar(buf, pos, cap, '"');
                 appendChar(buf, pos, cap, ':');
                 toStringRecursive(node->value.objectValue.values[i], buf, pos, cap);
@@ -507,10 +507,10 @@ const char* Json_ToString(JsonNode* node, int* outLength) {
     static char* g_staticBuf = NULL;
     static int   g_staticCap = 0;
 
-    if (g_staticBuf) { free(g_staticBuf); g_staticBuf = NULL; g_staticCap = 0; }
+    if (g_staticBuf) { crt_free(g_staticBuf); g_staticBuf = NULL; g_staticCap = 0; }
 
     int cap = 256;
-    g_staticBuf = (char*)malloc(cap);
+    g_staticBuf = (char*)crt_malloc(cap);
     if (!g_staticBuf) return NULL;
 
     int pos = 0;
@@ -531,7 +531,7 @@ JsonNode* Json_GetArrayItem(JsonNode* array, int index) {
 JsonNode* Json_GetObjectItem(JsonNode* object, const char* key) {
     if (!object || object->type != JSON_OBJECT || !key) return NULL;
     for (int i = 0; i < object->value.objectValue.count; i++) {
-        if (strcmp(object->value.objectValue.keys[i], key) == 0) {
+        if (crt_strcmp(object->value.objectValue.keys[i], key) == 0) {
             return object->value.objectValue.values[i];
         }
     }

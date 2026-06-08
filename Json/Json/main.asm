@@ -5,1093 +5,1089 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	_Avx2WmemEnabledWeakValue
-;	COMDAT _Avx2WmemEnabledWeakValue
-_BSS	SEGMENT
-_Avx2WmemEnabledWeakValue DD 01H DUP (?)
-_BSS	ENDS
 CONST	SEGMENT
-$SG81921 DB	'verified', 00H
-$SG81930 DB	00H
-$SG81122 DB	00H
-$SG81130 DB	00H
-$SG81138 DB	00H
-$SG81246 DB	00H
-$SG81278 DB	00H
-$SG81448 DB	00H
-$SG81922 DB	'  data.user.profile.verified == true', 00H
-$SG81472 DB	00H
-$SG81502 DB	00H
-$SG81510 DB	00H
-$SG81923 DB	'[PASS] %s', 0aH, 00H
-$SG81526 DB	00H
-$SG81576 DB	00H
-$SG81841 DB	00H
-$SG81858 DB	00H
-$SG81889 DB	00H
-$SG81924 DB	'  data.user.profile.verified == true', 00H
-$SG81913 DB	00H
-	ORG $+2
-$SG81925 DB	'[FAIL] %s', 0aH, 00H
+$SG96473 DB	0aH, '=== Test: Basic Types ===', 0aH, 00H
+$SG96474 DB	'null', 00H
+$SG96675 DB	00H
+$SG96683 DB	00H
+$SG96691 DB	00H
+$SG96799 DB	00H
+$SG96831 DB	00H
+$SG97001 DB	00H
+$SG97025 DB	00H
+$SG96477 DB	'Parse null', 00H
+$SG97055 DB	00H
+$SG97063 DB	00H
+$SG97079 DB	00H
+$SG97129 DB	00H
+$SG97394 DB	00H
+$SG96478 DB	'[PASS] %s', 0aH, 00H
+$SG97411 DB	00H
+$SG97442 DB	00H
+$SG97466 DB	00H
+$SG97483 DB	00H
+	ORG $+1
+$SG96479 DB	'Parse null', 00H
 	ORG $+5
-$SG81926 DB	'settings', 00H
+$SG96480 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96481 DB	'true', 00H
+	ORG $+7
+$SG96484 DB	'Parse true', 00H
+	ORG $+5
+$SG96485 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96486 DB	'Parse true', 00H
+	ORG $+5
+$SG96487 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96488 DB	'false', 00H
+	ORG $+6
+$SG96491 DB	'Parse false', 00H
+	ORG $+4
+$SG96492 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96493 DB	'Parse false', 00H
+	ORG $+4
+$SG96494 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96495 DB	'123', 00H
+$SG96498 DB	'Parse integer', 00H
+	ORG $+2
+$SG96499 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96500 DB	'Parse integer', 00H
+	ORG $+2
+$SG96501 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96502 DB	'-456.789', 00H
+	ORG $+7
+$SG96505 DB	'Parse negative float', 00H
 	ORG $+3
-$SG81929 DB	'dark', 00H
+$SG96506 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96507 DB	'Parse negative float', 00H
 	ORG $+3
-$SG81931 DB	'theme', 00H
-	ORG $+6
-$SG81932 DB	'  settings.theme == dark', 00H
-	ORG $+7
-$SG81933 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81934 DB	'  settings.theme == dark', 00H
-	ORG $+7
-$SG81935 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81938 DB	'notifications', 00H
-	ORG $+2
-$SG81939 DB	'  settings.notifications == false', 00H
-	ORG $+6
-$SG81940 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81941 DB	'  settings.notifications == false', 00H
-	ORG $+6
-$SG81942 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81973 DB	0aH, '=== Test: Getter Defaults ===', 0aH, 00H
-$SG81974 DB	'"hello"', 00H
-$SG81977 DB	'hello', 00H
-	ORG $+2
-$SG81978 DB	'default', 00H
-$SG81979 DB	'GetString default on string', 00H
-	ORG $+4
-$SG81980 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81981 DB	'GetString default on string', 00H
-	ORG $+4
-$SG81982 DB	'[FAIL] %s', 0aH, 00H
+$SG96508 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81983 DB	'123', 00H
-$SG81986 DB	'GetNumber default on number', 00H
+$SG96509 DB	'1.5e10', 00H
+	ORG $+5
+$SG96512 DB	'Parse scientific notation', 00H
+	ORG $+6
+$SG96513 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96514 DB	'Parse scientific notation', 00H
+	ORG $+6
+$SG96515 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96516 DB	'"hello world"', 00H
+	ORG $+2
+$SG96519 DB	'hello world', 00H
 	ORG $+4
-$SG81987 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81988 DB	'GetNumber default on number', 00H
-	ORG $+4
-$SG81989 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81990 DB	'true', 00H
-	ORG $+7
-$SG81993 DB	'GetBool default on bool', 00H
-$SG81994 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81995 DB	'GetBool default on bool', 00H
-$SG81996 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81999 DB	'GetBool default on null node', 00H
+$SG96520 DB	'Parse string', 00H
 	ORG $+3
-$SG82000 DB	'[PASS] %s', 0aH, 00H
+$SG96521 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG82001 DB	'GetBool default on null node', 00H
+$SG96522 DB	'Parse string', 00H
 	ORG $+3
-$SG82002 DB	'[FAIL] %s', 0aH, 00H
+$SG96523 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG82005 DB	'GetNumber default on null node', 00H
+$SG96524 DB	'"hello\nworld"', 00H
 	ORG $+1
-$SG82006 DB	'[PASS] %s', 0aH, 00H
+$SG96527 DB	'Parse escaped newline', 00H
+	ORG $+2
+$SG96528 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG82007 DB	'GetNumber default on null node', 00H
-	ORG $+1
-$SG82008 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG82011 DB	'nope', 00H
+$SG96529 DB	'Parse escaped newline', 00H
+	ORG $+2
+$SG96530 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96531 DB	'"escape: \\" \\/ \\b \\f \\n \\r \\t"', 00H
+	ORG $+2
+$SG96534 DB	'Parse all escapes', 00H
+	ORG $+6
+$SG96535 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96536 DB	'Parse all escapes', 00H
+	ORG $+6
+$SG96537 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96538 DB	'"\u0041\u0042\u0043"', 00H
 	ORG $+3
-$SG82012 DB	'nope', 00H
-	ORG $+7
-$SG82013 DB	'GetString default on null node', 00H
-	ORG $+1
-$SG82014 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG82015 DB	'GetString default on null node', 00H
-	ORG $+1
-$SG82016 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG82017 DB	'{"x":1}', 00H
-$SG82020 DB	'nonexistent', 00H
+$SG96541 DB	'ABC', 00H
 	ORG $+4
-$SG82021 DB	'GetObjectItem missing key returns null', 00H
-	ORG $+1
-$SG82022 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG82023 DB	'GetObjectItem missing key returns null', 00H
-	ORG $+1
-$SG82024 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG82025 DB	'[1,2,3]', 00H
-$SG82028 DB	'GetArrayItem out of bounds returns null', 00H
-$SG82029 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG82030 DB	'GetArrayItem out of bounds returns null', 00H
-$SG82031 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG82034 DB	'GetArrayItem out of bounds returns null (end)', 00H
+$SG96542 DB	'Parse unicode escapes (ASCII)', 00H
 	ORG $+2
-$SG82035 DB	'[PASS] %s', 0aH, 00H
+$SG96543 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG82036 DB	'GetArrayItem out of bounds returns null (end)', 00H
+$SG96544 DB	'Parse unicode escapes (ASCII)', 00H
 	ORG $+2
-$SG82037 DB	'[FAIL] %s', 0aH, 00H
+$SG96545 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG82040 DB	'========================================', 0aH, 00H
-	ORG $+6
-$SG82041 DB	'   JSON Parser Test Suite', 0aH, 00H
-	ORG $+5
-$SG82042 DB	'========================================', 0aH, 00H
-	ORG $+6
-$SG82043 DB	0aH, '========================================', 0aH, 00H
-	ORG $+5
-$SG82044 DB	'   Results: %d passed, %d failed', 0aH, 00H
-	ORG $+6
-$SG82045 DB	'========================================', 0aH, 00H
-	ORG $+6
-$SG80920 DB	0aH, '=== Test: Basic Types ===', 0aH, 00H
-$SG80921 DB	'null', 00H
+$SG96546 DB	'"\u00E9"', 00H
 	ORG $+7
-$SG80924 DB	'Parse null', 00H
-	ORG $+5
-$SG80925 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG80926 DB	'Parse null', 00H
-	ORG $+5
-$SG80927 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG80928 DB	'true', 00H
-	ORG $+7
-$SG80931 DB	'Parse true', 00H
-	ORG $+5
-$SG80932 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG80933 DB	'Parse true', 00H
-	ORG $+5
-$SG80934 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG80935 DB	'false', 00H
-	ORG $+6
-$SG80938 DB	'Parse false', 00H
-	ORG $+4
-$SG80939 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG80940 DB	'Parse false', 00H
-	ORG $+4
-$SG80941 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG80942 DB	'123', 00H
-$SG80945 DB	'Parse integer', 00H
-	ORG $+2
-$SG80946 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG80947 DB	'Parse integer', 00H
-	ORG $+2
-$SG80948 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG80949 DB	'-456.789', 00H
-	ORG $+7
-$SG80952 DB	'Parse negative float', 00H
+$SG96549 DB	'Parse unicode escape (UTF-8)', 00H
 	ORG $+3
-$SG80953 DB	'[PASS] %s', 0aH, 00H
+$SG96550 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG80954 DB	'Parse negative float', 00H
+$SG96551 DB	'Parse unicode escape (UTF-8)', 00H
 	ORG $+3
-$SG80955 DB	'[FAIL] %s', 0aH, 00H
+$SG96552 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG80956 DB	'1.5e10', 00H
+$SG96555 DB	'abc', 00H
+$SG96556 DB	'Parse invalid: abc', 00H
 	ORG $+5
-$SG80959 DB	'Parse scientific notation', 00H
+$SG96557 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96558 DB	'Parse invalid: abc', 00H
+	ORG $+5
+$SG96559 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96562 DB	'"unclosed', 00H
 	ORG $+6
-$SG80960 DB	'[PASS] %s', 0aH, 00H
+$SG96563 DB	'Parse invalid: "unclosed', 00H
+	ORG $+7
+$SG96564 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG80961 DB	'Parse scientific notation', 00H
-	ORG $+6
-$SG80962 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG80963 DB	'"hello world"', 00H
+$SG96565 DB	'Parse invalid: "unclosed', 00H
+	ORG $+7
+$SG96566 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96569 DB	'{', 00H
 	ORG $+2
-$SG80966 DB	'hello world', 00H
-	ORG $+4
-$SG80967 DB	'Parse string', 00H
+$SG96570 DB	'Parse invalid: {', 00H
+	ORG $+7
+$SG96571 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96572 DB	'Parse invalid: {', 00H
+	ORG $+7
+$SG96573 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96576 DB	'[', 00H
+	ORG $+2
+$SG96577 DB	'Parse invalid: [', 00H
+	ORG $+7
+$SG96578 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96579 DB	'Parse invalid: [', 00H
+	ORG $+7
+$SG96580 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96630 DB	0aH, '=== Test: Array ===', 0aH, 00H
+	ORG $+2
+$SG96631 DB	'[]', 00H
+	ORG $+5
+$SG96634 DB	'Parse empty array', 00H
+	ORG $+6
+$SG96635 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96636 DB	'Parse empty array', 00H
+	ORG $+6
+$SG96637 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96638 DB	'[1, 2, 3]', 00H
+	ORG $+6
+$SG96641 DB	'Parse array of numbers', 00H
+	ORG $+1
+$SG96642 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96643 DB	'Parse array of numbers', 00H
+	ORG $+1
+$SG96644 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96648 DB	'  item[0] == 1', 00H
+	ORG $+1
+$SG96649 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96650 DB	'  item[0] == 1', 00H
+	ORG $+1
+$SG96651 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96654 DB	'  item[1] == 2', 00H
+	ORG $+1
+$SG96655 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96656 DB	'  item[1] == 2', 00H
+	ORG $+1
+$SG96657 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96660 DB	'  item[2] == 3', 00H
+	ORG $+1
+$SG96661 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96662 DB	'  item[2] == 3', 00H
+	ORG $+1
+$SG96663 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96664 DB	'["a", "b", "c"]', 00H
+$SG96667 DB	'Parse array of strings', 00H
+	ORG $+1
+$SG96668 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96669 DB	'Parse array of strings', 00H
+	ORG $+1
+$SG96670 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96674 DB	'a', 00H
+	ORG $+2
+$SG96676 DB	'  item[0] == a', 00H
+	ORG $+1
+$SG96677 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96678 DB	'  item[0] == a', 00H
+	ORG $+1
+$SG96679 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96682 DB	'b', 00H
+	ORG $+2
+$SG96684 DB	'  item[1] == b', 00H
+	ORG $+1
+$SG96685 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96686 DB	'  item[1] == b', 00H
+	ORG $+1
+$SG96687 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96690 DB	'c', 00H
+	ORG $+2
+$SG96692 DB	'  item[2] == c', 00H
+	ORG $+1
+$SG96693 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96694 DB	'  item[2] == c', 00H
+	ORG $+1
+$SG96695 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96696 DB	'[[1, 2], [3, 4]]', 00H
+	ORG $+7
+$SG96699 DB	'Parse nested array', 00H
+	ORG $+5
+$SG96700 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96701 DB	'Parse nested array', 00H
+	ORG $+5
+$SG96702 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96706 DB	'  inner[0] size == 2', 00H
 	ORG $+3
-$SG80968 DB	'[PASS] %s', 0aH, 00H
+$SG96707 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG80969 DB	'Parse string', 00H
+$SG96708 DB	'  inner[0] size == 2', 00H
 	ORG $+3
-$SG80970 DB	'[FAIL] %s', 0aH, 00H
+$SG96709 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG80971 DB	'"hello\nworld"', 00H
+$SG96712 DB	'  inner[0][0] == 1', 00H
+	ORG $+5
+$SG96713 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96714 DB	'  inner[0][0] == 1', 00H
+	ORG $+5
+$SG96715 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96716 DB	'  [ 1 , 2 , 3 ]  ', 00H
+	ORG $+6
+$SG96719 DB	'Parse array with whitespace', 00H
+	ORG $+4
+$SG96720 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96721 DB	'Parse array with whitespace', 00H
+	ORG $+4
+$SG96722 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG80974 DB	'Parse escaped newline', 00H
-	ORG $+2
-$SG80975 DB	'[PASS] %s', 0aH, 00H
+$SG96725 DB	'[1,]', 00H
+	ORG $+7
+$SG96726 DB	'Parse invalid: [1,]', 00H
+	ORG $+4
+$SG96727 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG80976 DB	'Parse escaped newline', 00H
-	ORG $+2
-$SG80977 DB	'[FAIL] %s', 0aH, 00H
+$SG96728 DB	'Parse invalid: [1,]', 00H
+	ORG $+4
+$SG96729 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96732 DB	'[,1]', 00H
+	ORG $+7
+$SG96733 DB	'Parse invalid: [,1]', 00H
+	ORG $+4
+$SG96734 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG80978 DB	'"escape: \\" \\/ \\b \\f \\n \\r \\t"', 00H
-	ORG $+2
-$SG80981 DB	'Parse all escapes', 00H
-	ORG $+6
-$SG80982 DB	'[PASS] %s', 0aH, 00H
+$SG96735 DB	'Parse invalid: [,1]', 00H
+	ORG $+4
+$SG96736 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG80983 DB	'Parse all escapes', 00H
-	ORG $+6
-$SG80984 DB	'[FAIL] %s', 0aH, 00H
+$SG96780 DB	0aH, '=== Test: Object ===', 0aH, 00H
+	ORG $+1
+$SG96781 DB	'{}', 00H
 	ORG $+5
-$SG80985 DB	'"\u0041\u0042\u0043"', 00H
+$SG96784 DB	'Parse empty object', 00H
+	ORG $+5
+$SG96785 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96786 DB	'Parse empty object', 00H
+	ORG $+5
+$SG96787 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96788 DB	'{"name": "John", "age": 30}', 00H
+	ORG $+4
+$SG96791 DB	'Parse simple object', 00H
+	ORG $+4
+$SG96792 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96793 DB	'Parse simple object', 00H
+	ORG $+4
+$SG96794 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96798 DB	'John', 00H
 	ORG $+3
-$SG80988 DB	'ABC', 00H
-	ORG $+4
-$SG80989 DB	'Parse unicode escapes (ASCII)', 00H
-	ORG $+2
-$SG80990 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG80991 DB	'Parse unicode escapes (ASCII)', 00H
-	ORG $+2
-$SG80992 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG80993 DB	'"\u00E9"', 00H
+$SG96800 DB	'name', 00H
 	ORG $+7
-$SG80996 DB	'Parse unicode escape (UTF-8)', 00H
+$SG96801 DB	'  name == John', 00H
+	ORG $+1
+$SG96802 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96803 DB	'  name == John', 00H
+	ORG $+1
+$SG96804 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96807 DB	'age', 00H
+$SG96808 DB	'  age == 30', 00H
+	ORG $+4
+$SG96809 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96810 DB	'  age == 30', 00H
+	ORG $+4
+$SG96811 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96812 DB	'{"nested": {"key": "value"}}', 00H
 	ORG $+3
-$SG80997 DB	'[PASS] %s', 0aH, 00H
+$SG96815 DB	'Parse nested object', 00H
+	ORG $+4
+$SG96816 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG80998 DB	'Parse unicode escape (UTF-8)', 00H
+$SG96817 DB	'Parse nested object', 00H
+	ORG $+4
+$SG96818 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96820 DB	'nested', 00H
+	ORG $+5
+$SG96823 DB	'  nested.type == object', 00H
+$SG96824 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96825 DB	'  nested.type == object', 00H
+$SG96826 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96830 DB	'value', 00H
+	ORG $+2
+$SG96832 DB	'key', 00H
+$SG96833 DB	'  nested.key == value', 00H
+	ORG $+2
+$SG96834 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96835 DB	'  nested.key == value', 00H
+	ORG $+2
+$SG96836 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG96837 DB	'{"active": true, "count": 0}', 00H
 	ORG $+3
-$SG80999 DB	'[FAIL] %s', 0aH, 00H
+$SG96840 DB	'Parse object with bool and zero', 00H
+$SG96841 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG96842 DB	'Parse object with bool and zero', 00H
+$SG96843 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81002 DB	'abc', 00H
-$SG81003 DB	'Parse invalid: abc', 00H
+$SG96847 DB	'active', 00H
 	ORG $+5
-$SG81004 DB	'[PASS] %s', 0aH, 00H
+$SG96848 DB	'  active == true', 00H
+	ORG $+7
+$SG96849 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81005 DB	'Parse invalid: abc', 00H
-	ORG $+5
-$SG81006 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81009 DB	'"unclosed', 00H
+$SG96850 DB	'  active == true', 00H
+	ORG $+7
+$SG96851 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG96854 DB	'count', 00H
 	ORG $+6
-$SG81010 DB	'Parse invalid: "unclosed', 00H
-	ORG $+7
-$SG81011 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81012 DB	'Parse invalid: "unclosed', 00H
-	ORG $+7
-$SG81013 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81016 DB	'{', 00H
-	ORG $+2
-$SG81017 DB	'Parse invalid: {', 00H
-	ORG $+7
-$SG81018 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81019 DB	'Parse invalid: {', 00H
-	ORG $+7
-$SG81020 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81023 DB	'[', 00H
-	ORG $+2
-$SG81024 DB	'Parse invalid: [', 00H
-	ORG $+7
-$SG81025 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81026 DB	'Parse invalid: [', 00H
-	ORG $+7
-$SG81027 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81077 DB	0aH, '=== Test: Array ===', 0aH, 00H
-	ORG $+2
-$SG81078 DB	'[]', 00H
-	ORG $+5
-$SG81081 DB	'Parse empty array', 00H
-	ORG $+6
-$SG81082 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81083 DB	'Parse empty array', 00H
-	ORG $+6
-$SG81084 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81085 DB	'[1, 2, 3]', 00H
-	ORG $+6
-$SG81088 DB	'Parse array of numbers', 00H
-	ORG $+1
-$SG81089 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81090 DB	'Parse array of numbers', 00H
-	ORG $+1
-$SG81091 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81095 DB	'  item[0] == 1', 00H
-	ORG $+1
-$SG81096 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81097 DB	'  item[0] == 1', 00H
-	ORG $+1
-$SG81098 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81101 DB	'  item[1] == 2', 00H
-	ORG $+1
-$SG81102 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81103 DB	'  item[1] == 2', 00H
-	ORG $+1
-$SG81104 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81107 DB	'  item[2] == 3', 00H
-	ORG $+1
-$SG81108 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81109 DB	'  item[2] == 3', 00H
-	ORG $+1
-$SG81110 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81111 DB	'["a", "b", "c"]', 00H
-$SG81114 DB	'Parse array of strings', 00H
-	ORG $+1
-$SG81115 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81116 DB	'Parse array of strings', 00H
-	ORG $+1
-$SG81117 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81121 DB	'a', 00H
-	ORG $+2
-$SG81123 DB	'  item[0] == a', 00H
-	ORG $+1
-$SG81124 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81125 DB	'  item[0] == a', 00H
-	ORG $+1
-$SG81126 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81129 DB	'b', 00H
-	ORG $+2
-$SG81131 DB	'  item[1] == b', 00H
-	ORG $+1
-$SG81132 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81133 DB	'  item[1] == b', 00H
-	ORG $+1
-$SG81134 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81137 DB	'c', 00H
-	ORG $+2
-$SG81139 DB	'  item[2] == c', 00H
-	ORG $+1
-$SG81140 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81141 DB	'  item[2] == c', 00H
-	ORG $+1
-$SG81142 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81143 DB	'[[1, 2], [3, 4]]', 00H
-	ORG $+7
-$SG81146 DB	'Parse nested array', 00H
-	ORG $+5
-$SG81147 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81148 DB	'Parse nested array', 00H
-	ORG $+5
-$SG81149 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81153 DB	'  inner[0] size == 2', 00H
+$SG96855 DB	'  count == 0', 00H
 	ORG $+3
-$SG81154 DB	'[PASS] %s', 0aH, 00H
+$SG96856 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81155 DB	'  inner[0] size == 2', 00H
+$SG96857 DB	'  count == 0', 00H
 	ORG $+3
-$SG81156 DB	'[FAIL] %s', 0aH, 00H
+$SG96858 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81159 DB	'  inner[0][0] == 1', 00H
+$SG96861 DB	'{"key"}', 00H
+$SG96862 DB	'Parse invalid: {"key"}', 00H
+	ORG $+1
+$SG96863 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81160 DB	'[PASS] %s', 0aH, 00H
+$SG96864 DB	'Parse invalid: {"key"}', 00H
+	ORG $+1
+$SG96865 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81161 DB	'  inner[0][0] == 1', 00H
-	ORG $+5
-$SG81162 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81163 DB	'  [ 1 , 2 , 3 ]  ', 00H
+$SG96868 DB	'{": val"}', 00H
 	ORG $+6
-$SG81166 DB	'Parse array with whitespace', 00H
-	ORG $+4
-$SG81167 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81168 DB	'Parse array with whitespace', 00H
-	ORG $+4
-$SG81169 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81172 DB	'[1,]', 00H
+$SG96869 DB	'Parse invalid: {": val"}', 00H
 	ORG $+7
-$SG81173 DB	'Parse invalid: [1,]', 00H
-	ORG $+4
-$SG81174 DB	'[PASS] %s', 0aH, 00H
+$SG96870 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81175 DB	'Parse invalid: [1,]', 00H
-	ORG $+4
-$SG81176 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81179 DB	'[,1]', 00H
+$SG96871 DB	'Parse invalid: {": val"}', 00H
 	ORG $+7
-$SG81180 DB	'Parse invalid: [,1]', 00H
-	ORG $+4
-$SG81181 DB	'[PASS] %s', 0aH, 00H
+$SG96872 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81182 DB	'Parse invalid: [,1]', 00H
-	ORG $+4
-$SG81183 DB	'[FAIL] %s', 0aH, 00H
+$SG96875 DB	'{key: val}', 00H
 	ORG $+5
-$SG81227 DB	0aH, '=== Test: Object ===', 0aH, 00H
-	ORG $+1
-$SG81228 DB	'{}', 00H
-	ORG $+5
-$SG81231 DB	'Parse empty object', 00H
-	ORG $+5
-$SG81232 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81233 DB	'Parse empty object', 00H
-	ORG $+5
-$SG81234 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81235 DB	'{"name": "John", "age": 30}', 00H
-	ORG $+4
-$SG81238 DB	'Parse simple object', 00H
-	ORG $+4
-$SG81239 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81240 DB	'Parse simple object', 00H
-	ORG $+4
-$SG81241 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81245 DB	'John', 00H
-	ORG $+3
-$SG81247 DB	'name', 00H
-	ORG $+7
-$SG81248 DB	'  name == John', 00H
-	ORG $+1
-$SG81249 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81250 DB	'  name == John', 00H
-	ORG $+1
-$SG81251 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81254 DB	'age', 00H
-$SG81255 DB	'  age == 30', 00H
-	ORG $+4
-$SG81256 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81257 DB	'  age == 30', 00H
-	ORG $+4
-$SG81258 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81259 DB	'{"nested": {"key": "value"}}', 00H
-	ORG $+3
-$SG81262 DB	'Parse nested object', 00H
-	ORG $+4
-$SG81263 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81264 DB	'Parse nested object', 00H
-	ORG $+4
-$SG81265 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81267 DB	'nested', 00H
-	ORG $+5
-$SG81270 DB	'  nested.type == object', 00H
-$SG81271 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81272 DB	'  nested.type == object', 00H
-$SG81273 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81277 DB	'value', 00H
-	ORG $+2
-$SG81279 DB	'key', 00H
-$SG81280 DB	'  nested.key == value', 00H
-	ORG $+2
-$SG81281 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81282 DB	'  nested.key == value', 00H
-	ORG $+2
-$SG81283 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81284 DB	'{"active": true, "count": 0}', 00H
-	ORG $+3
-$SG81287 DB	'Parse object with bool and zero', 00H
-$SG81288 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81289 DB	'Parse object with bool and zero', 00H
-$SG81290 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81294 DB	'active', 00H
-	ORG $+5
-$SG81295 DB	'  active == true', 00H
-	ORG $+7
-$SG81296 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81297 DB	'  active == true', 00H
-	ORG $+7
-$SG81298 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+1
-$SG81301 DB	'count', 00H
+$SG96876 DB	'Parse invalid: {key: val}', 00H
 	ORG $+6
-$SG81302 DB	'  count == 0', 00H
-	ORG $+3
-$SG81303 DB	'[PASS] %s', 0aH, 00H
+$SG96877 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81304 DB	'  count == 0', 00H
-	ORG $+3
-$SG81305 DB	'[FAIL] %s', 0aH, 00H
+$SG96878 DB	'Parse invalid: {key: val}', 00H
+	ORG $+6
+$SG96879 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81308 DB	'{"key"}', 00H
-$SG81309 DB	'Parse invalid: {"key"}', 00H
+$SG96982 DB	0aH, '=== Test: Complex Nested ===', 0aH, 00H
 	ORG $+1
-$SG81310 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81311 DB	'Parse invalid: {"key"}', 00H
-	ORG $+1
-$SG81312 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81315 DB	'{": val"}', 00H
-	ORG $+6
-$SG81316 DB	'Parse invalid: {": val"}', 00H
-	ORG $+7
-$SG81317 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81318 DB	'Parse invalid: {": val"}', 00H
-	ORG $+7
-$SG81319 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81322 DB	'{key: val}', 00H
-	ORG $+5
-$SG81323 DB	'Parse invalid: {key: val}', 00H
-	ORG $+6
-$SG81324 DB	'[PASS] %s', 0aH, 00H
-	ORG $+5
-$SG81325 DB	'Parse invalid: {key: val}', 00H
-	ORG $+6
-$SG81326 DB	'[FAIL] %s', 0aH, 00H
-	ORG $+5
-$SG81429 DB	0aH, '=== Test: Complex Nested ===', 0aH, 00H
-	ORG $+9
-$SG81430 DB	'{"status": 200,"message": "success","data": {"id": 42,"n'
+$SG96983 DB	'{"status": 200,"message": "success","data": {"id": 42,"n'
 	DB	'ame": "test","active": true,"tags": ["api", "v1", "rest"],"me'
 	DB	'ta": {"version": "1.0","count": 3,"levels": [1, 2, 3, 4, 5]},'
 	DB	'"mixed": [1, "two", true, null, {"x": 9}]},"list": [{"id": 1}'
 	DB	',{"id": 2},{"id": 3}],"empty_arr": [],"empty_obj": {}}', 00H
 	ORG $+2
-$SG81433 DB	'Parse complex JSON', 00H
+$SG96986 DB	'Parse complex JSON', 00H
 	ORG $+5
-$SG81434 DB	'[PASS] %s', 0aH, 00H
+$SG96987 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81435 DB	'Parse complex JSON', 00H
+$SG96988 DB	'Parse complex JSON', 00H
 	ORG $+5
-$SG81436 DB	'[FAIL] %s', 0aH, 00H
+$SG96989 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81440 DB	'status', 00H
+$SG96993 DB	'status', 00H
 	ORG $+5
-$SG81441 DB	'  status == 200', 00H
-$SG81442 DB	'[PASS] %s', 0aH, 00H
+$SG96994 DB	'  status == 200', 00H
+$SG96995 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81443 DB	'  status == 200', 00H
-$SG81444 DB	'[FAIL] %s', 0aH, 00H
+$SG96996 DB	'  status == 200', 00H
+$SG96997 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81447 DB	'success', 00H
-$SG81449 DB	'message', 00H
-$SG81450 DB	'  message == success', 00H
+$SG97000 DB	'success', 00H
+$SG97002 DB	'message', 00H
+$SG97003 DB	'  message == success', 00H
 	ORG $+3
-$SG81451 DB	'[PASS] %s', 0aH, 00H
+$SG97004 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81452 DB	'  message == success', 00H
+$SG97005 DB	'  message == success', 00H
 	ORG $+3
-$SG81453 DB	'[FAIL] %s', 0aH, 00H
+$SG97006 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81454 DB	'data', 00H
+$SG97007 DB	'data', 00H
 	ORG $+7
-$SG81457 DB	'  data exists', 00H
+$SG97010 DB	'  data exists', 00H
 	ORG $+2
-$SG81458 DB	'[PASS] %s', 0aH, 00H
+$SG97011 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81459 DB	'  data exists', 00H
+$SG97012 DB	'  data exists', 00H
 	ORG $+2
-$SG81460 DB	'[FAIL] %s', 0aH, 00H
+$SG97013 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81464 DB	'id', 00H
+$SG97017 DB	'id', 00H
 	ORG $+1
-$SG81465 DB	'  data.id == 42', 00H
-$SG81466 DB	'[PASS] %s', 0aH, 00H
+$SG97018 DB	'  data.id == 42', 00H
+$SG97019 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81467 DB	'  data.id == 42', 00H
-$SG81468 DB	'[FAIL] %s', 0aH, 00H
+$SG97020 DB	'  data.id == 42', 00H
+$SG97021 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81471 DB	'test', 00H
+$SG97024 DB	'test', 00H
 	ORG $+3
-$SG81473 DB	'name', 00H
+$SG97026 DB	'name', 00H
 	ORG $+7
-$SG81474 DB	'  data.name == test', 00H
+$SG97027 DB	'  data.name == test', 00H
 	ORG $+4
-$SG81475 DB	'[PASS] %s', 0aH, 00H
+$SG97028 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81476 DB	'  data.name == test', 00H
+$SG97029 DB	'  data.name == test', 00H
 	ORG $+4
-$SG81477 DB	'[FAIL] %s', 0aH, 00H
+$SG97030 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81480 DB	'active', 00H
+$SG97033 DB	'active', 00H
 	ORG $+5
-$SG81481 DB	'  data.active == true', 00H
+$SG97034 DB	'  data.active == true', 00H
 	ORG $+2
-$SG81482 DB	'[PASS] %s', 0aH, 00H
+$SG97035 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81483 DB	'  data.active == true', 00H
+$SG97036 DB	'  data.active == true', 00H
 	ORG $+2
-$SG81484 DB	'[FAIL] %s', 0aH, 00H
+$SG97037 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81485 DB	'tags', 00H
+$SG97038 DB	'tags', 00H
 	ORG $+7
-$SG81488 DB	'  data.tags is array', 00H
+$SG97041 DB	'  data.tags is array', 00H
 	ORG $+3
-$SG81489 DB	'[PASS] %s', 0aH, 00H
+$SG97042 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81490 DB	'  data.tags is array', 00H
+$SG97043 DB	'  data.tags is array', 00H
 	ORG $+3
-$SG81491 DB	'[FAIL] %s', 0aH, 00H
+$SG97044 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81495 DB	'  data.tags size == 3', 00H
+$SG97048 DB	'  data.tags size == 3', 00H
 	ORG $+2
-$SG81496 DB	'[PASS] %s', 0aH, 00H
+$SG97049 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81497 DB	'  data.tags size == 3', 00H
+$SG97050 DB	'  data.tags size == 3', 00H
 	ORG $+2
-$SG81498 DB	'[FAIL] %s', 0aH, 00H
+$SG97051 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81501 DB	'api', 00H
-$SG81503 DB	'  data.tags[0] == api', 00H
+$SG97054 DB	'api', 00H
+$SG97056 DB	'  data.tags[0] == api', 00H
 	ORG $+2
-$SG81504 DB	'[PASS] %s', 0aH, 00H
+$SG97057 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81505 DB	'  data.tags[0] == api', 00H
+$SG97058 DB	'  data.tags[0] == api', 00H
 	ORG $+2
-$SG81506 DB	'[FAIL] %s', 0aH, 00H
+$SG97059 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81509 DB	'rest', 00H
+$SG97062 DB	'rest', 00H
 	ORG $+7
-$SG81511 DB	'  data.tags[2] == rest', 00H
+$SG97064 DB	'  data.tags[2] == rest', 00H
 	ORG $+1
-$SG81512 DB	'[PASS] %s', 0aH, 00H
+$SG97065 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81513 DB	'  data.tags[2] == rest', 00H
+$SG97066 DB	'  data.tags[2] == rest', 00H
 	ORG $+1
-$SG81514 DB	'[FAIL] %s', 0aH, 00H
+$SG97067 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81515 DB	'meta', 00H
+$SG97068 DB	'meta', 00H
 	ORG $+7
-$SG81518 DB	'  data.meta exists', 00H
+$SG97071 DB	'  data.meta exists', 00H
 	ORG $+5
-$SG81519 DB	'[PASS] %s', 0aH, 00H
+$SG97072 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81520 DB	'  data.meta exists', 00H
+$SG97073 DB	'  data.meta exists', 00H
 	ORG $+5
-$SG81521 DB	'[FAIL] %s', 0aH, 00H
+$SG97074 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81525 DB	'1.0', 00H
-$SG81527 DB	'version', 00H
-$SG81528 DB	'  data.meta.version == 1.0', 00H
+$SG97078 DB	'1.0', 00H
+$SG97080 DB	'version', 00H
+$SG97081 DB	'  data.meta.version == 1.0', 00H
 	ORG $+5
-$SG81529 DB	'[PASS] %s', 0aH, 00H
+$SG97082 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81530 DB	'  data.meta.version == 1.0', 00H
+$SG97083 DB	'  data.meta.version == 1.0', 00H
 	ORG $+5
-$SG81531 DB	'[FAIL] %s', 0aH, 00H
+$SG97084 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81534 DB	'count', 00H
+$SG97087 DB	'count', 00H
 	ORG $+6
-$SG81535 DB	'  data.meta.count == 3', 00H
+$SG97088 DB	'  data.meta.count == 3', 00H
 	ORG $+1
-$SG81536 DB	'[PASS] %s', 0aH, 00H
+$SG97089 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81537 DB	'  data.meta.count == 3', 00H
+$SG97090 DB	'  data.meta.count == 3', 00H
 	ORG $+1
-$SG81538 DB	'[FAIL] %s', 0aH, 00H
+$SG97091 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81539 DB	'levels', 00H
+$SG97092 DB	'levels', 00H
 	ORG $+5
-$SG81542 DB	'  data.meta.levels is array', 00H
+$SG97095 DB	'  data.meta.levels is array', 00H
 	ORG $+4
-$SG81543 DB	'[PASS] %s', 0aH, 00H
+$SG97096 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81544 DB	'  data.meta.levels is array', 00H
+$SG97097 DB	'  data.meta.levels is array', 00H
 	ORG $+4
-$SG81545 DB	'[FAIL] %s', 0aH, 00H
+$SG97098 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81549 DB	'  data.meta.levels size == 5', 00H
+$SG97102 DB	'  data.meta.levels size == 5', 00H
 	ORG $+3
-$SG81550 DB	'[PASS] %s', 0aH, 00H
+$SG97103 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81551 DB	'  data.meta.levels size == 5', 00H
+$SG97104 DB	'  data.meta.levels size == 5', 00H
 	ORG $+3
-$SG81552 DB	'[FAIL] %s', 0aH, 00H
+$SG97105 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81555 DB	'  data.meta.levels[4] == 5', 00H
+$SG97108 DB	'  data.meta.levels[4] == 5', 00H
 	ORG $+5
-$SG81556 DB	'[PASS] %s', 0aH, 00H
+$SG97109 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81557 DB	'  data.meta.levels[4] == 5', 00H
+$SG97110 DB	'  data.meta.levels[4] == 5', 00H
 	ORG $+5
-$SG81558 DB	'[FAIL] %s', 0aH, 00H
+$SG97111 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81559 DB	'mixed', 00H
+$SG97112 DB	'mixed', 00H
 	ORG $+6
-$SG81562 DB	'  data.mixed size == 5', 00H
+$SG97115 DB	'  data.mixed size == 5', 00H
 	ORG $+1
-$SG81563 DB	'[PASS] %s', 0aH, 00H
+$SG97116 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81564 DB	'  data.mixed size == 5', 00H
+$SG97117 DB	'  data.mixed size == 5', 00H
 	ORG $+1
-$SG81565 DB	'[FAIL] %s', 0aH, 00H
+$SG97118 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81569 DB	'  data.mixed[0] == 1', 00H
+$SG97122 DB	'  data.mixed[0] == 1', 00H
 	ORG $+3
-$SG81570 DB	'[PASS] %s', 0aH, 00H
+$SG97123 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81571 DB	'  data.mixed[0] == 1', 00H
+$SG97124 DB	'  data.mixed[0] == 1', 00H
 	ORG $+3
-$SG81572 DB	'[FAIL] %s', 0aH, 00H
+$SG97125 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81575 DB	'two', 00H
-$SG81577 DB	'  data.mixed[1] == two', 00H
+$SG97128 DB	'two', 00H
+$SG97130 DB	'  data.mixed[1] == two', 00H
 	ORG $+1
-$SG81578 DB	'[PASS] %s', 0aH, 00H
+$SG97131 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81579 DB	'  data.mixed[1] == two', 00H
+$SG97132 DB	'  data.mixed[1] == two', 00H
 	ORG $+1
-$SG81580 DB	'[FAIL] %s', 0aH, 00H
+$SG97133 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81583 DB	'  data.mixed[2] == true', 00H
-$SG81584 DB	'[PASS] %s', 0aH, 00H
+$SG97136 DB	'  data.mixed[2] == true', 00H
+$SG97137 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81585 DB	'  data.mixed[2] == true', 00H
-$SG81586 DB	'[FAIL] %s', 0aH, 00H
+$SG97138 DB	'  data.mixed[2] == true', 00H
+$SG97139 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81589 DB	'  data.mixed[3] == null', 00H
-$SG81590 DB	'[PASS] %s', 0aH, 00H
+$SG97142 DB	'  data.mixed[3] == null', 00H
+$SG97143 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81591 DB	'  data.mixed[3] == null', 00H
-$SG81592 DB	'[FAIL] %s', 0aH, 00H
+$SG97144 DB	'  data.mixed[3] == null', 00H
+$SG97145 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81595 DB	'x', 00H
+$SG97148 DB	'x', 00H
 	ORG $+2
-$SG81596 DB	'  data.mixed[4].x == 9', 00H
+$SG97149 DB	'  data.mixed[4].x == 9', 00H
 	ORG $+1
-$SG81597 DB	'[PASS] %s', 0aH, 00H
+$SG97150 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81598 DB	'  data.mixed[4].x == 9', 00H
+$SG97151 DB	'  data.mixed[4].x == 9', 00H
 	ORG $+1
-$SG81599 DB	'[FAIL] %s', 0aH, 00H
+$SG97152 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81600 DB	'list', 00H
+$SG97153 DB	'list', 00H
 	ORG $+7
-$SG81603 DB	'  list size == 3', 00H
+$SG97156 DB	'  list size == 3', 00H
 	ORG $+7
-$SG81604 DB	'[PASS] %s', 0aH, 00H
+$SG97157 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81605 DB	'  list size == 3', 00H
+$SG97158 DB	'  list size == 3', 00H
 	ORG $+7
-$SG81606 DB	'[FAIL] %s', 0aH, 00H
+$SG97159 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81608 DB	'  list[%d].id == %d', 00H
-$SG81609 DB	'%d', 00H
+$SG97161 DB	'  list[%d].id == %d', 00H
+$SG97162 DB	'%d', 00H
 	ORG $+1
-$SG81612 DB	'id', 00H
+$SG97165 DB	'id', 00H
 	ORG $+5
-$SG81613 DB	'[PASS] %s', 0aH, 00H
+$SG97166 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81614 DB	'[FAIL] %s', 0aH, 00H
+$SG97167 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81615 DB	'empty_arr', 00H
+$SG97168 DB	'empty_arr', 00H
 	ORG $+6
-$SG81618 DB	'  empty_arr size == 0', 00H
+$SG97171 DB	'  empty_arr size == 0', 00H
 	ORG $+2
-$SG81619 DB	'[PASS] %s', 0aH, 00H
+$SG97172 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81620 DB	'  empty_arr size == 0', 00H
+$SG97173 DB	'  empty_arr size == 0', 00H
 	ORG $+2
-$SG81621 DB	'[FAIL] %s', 0aH, 00H
+$SG97174 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81622 DB	'empty_obj', 00H
+$SG97175 DB	'empty_obj', 00H
 	ORG $+6
-$SG81625 DB	'  empty_obj size == 0', 00H
+$SG97178 DB	'  empty_obj size == 0', 00H
 	ORG $+2
-$SG81626 DB	'[PASS] %s', 0aH, 00H
+$SG97179 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81627 DB	'  empty_obj size == 0', 00H
+$SG97180 DB	'  empty_obj size == 0', 00H
 	ORG $+2
-$SG81628 DB	'[FAIL] %s', 0aH, 00H
+$SG97181 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81671 DB	0aH, '=== Test: ToString ===', 0aH, 00H
+$SG97224 DB	0aH, '=== Test: ToString ===', 0aH, 00H
 	ORG $+3
-$SG81672 DB	'null', 00H
+$SG97225 DB	'null', 00H
 	ORG $+3
-$SG81675 DB	'null', 00H
+$SG97228 DB	'null', 00H
 	ORG $+7
-$SG81676 DB	'ToString null', 00H
+$SG97229 DB	'ToString null', 00H
 	ORG $+2
-$SG81677 DB	'[PASS] %s', 0aH, 00H
+$SG97230 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81678 DB	'ToString null', 00H
+$SG97231 DB	'ToString null', 00H
 	ORG $+2
-$SG81679 DB	'[FAIL] %s', 0aH, 00H
+$SG97232 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81680 DB	'true', 00H
+$SG97233 DB	'true', 00H
 	ORG $+3
-$SG81683 DB	'true', 00H
+$SG97236 DB	'true', 00H
 	ORG $+7
-$SG81684 DB	'ToString true', 00H
+$SG97237 DB	'ToString true', 00H
 	ORG $+2
-$SG81685 DB	'[PASS] %s', 0aH, 00H
+$SG97238 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81686 DB	'ToString true', 00H
+$SG97239 DB	'ToString true', 00H
 	ORG $+2
-$SG81687 DB	'[FAIL] %s', 0aH, 00H
+$SG97240 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81688 DB	'false', 00H
+$SG97241 DB	'false', 00H
 	ORG $+2
-$SG81691 DB	'false', 00H
+$SG97244 DB	'false', 00H
 	ORG $+6
-$SG81692 DB	'ToString false', 00H
+$SG97245 DB	'ToString false', 00H
 	ORG $+1
-$SG81693 DB	'[PASS] %s', 0aH, 00H
+$SG97246 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81694 DB	'ToString false', 00H
+$SG97247 DB	'ToString false', 00H
 	ORG $+1
-$SG81695 DB	'[FAIL] %s', 0aH, 00H
+$SG97248 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81696 DB	'123', 00H
-$SG81699 DB	'123', 00H
+$SG97249 DB	'123', 00H
+$SG97252 DB	'123', 00H
 	ORG $+4
-$SG81700 DB	'ToString number', 00H
-$SG81701 DB	'[PASS] %s', 0aH, 00H
+$SG97253 DB	'ToString number', 00H
+$SG97254 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81702 DB	'ToString number', 00H
-$SG81703 DB	'[FAIL] %s', 0aH, 00H
+$SG97255 DB	'ToString number', 00H
+$SG97256 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81704 DB	'"hello"', 00H
-$SG81707 DB	'"hello"', 00H
-$SG81708 DB	'ToString string', 00H
-$SG81709 DB	'[PASS] %s', 0aH, 00H
+$SG97257 DB	'"hello"', 00H
+$SG97260 DB	'"hello"', 00H
+$SG97261 DB	'ToString string', 00H
+$SG97262 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81710 DB	'ToString string', 00H
-$SG81711 DB	'[FAIL] %s', 0aH, 00H
+$SG97263 DB	'ToString string', 00H
+$SG97264 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81712 DB	'"hello\nworld"', 00H
+$SG97265 DB	'"hello\nworld"', 00H
 	ORG $+1
-$SG81715 DB	'ToString escaped string', 00H
-$SG81716 DB	'[PASS] %s', 0aH, 00H
+$SG97268 DB	'ToString escaped string', 00H
+$SG97269 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81717 DB	'ToString escaped string', 00H
-$SG81718 DB	'[FAIL] %s', 0aH, 00H
+$SG97270 DB	'ToString escaped string', 00H
+$SG97271 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81719 DB	'[1, 2, 3]', 00H
+$SG97272 DB	'[1, 2, 3]', 00H
 	ORG $+6
-$SG81722 DB	'[1,2,3]', 00H
-$SG81723 DB	'ToString array', 00H
+$SG97275 DB	'[1,2,3]', 00H
+$SG97276 DB	'ToString array', 00H
 	ORG $+1
-$SG81724 DB	'[PASS] %s', 0aH, 00H
+$SG97277 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81725 DB	'ToString array', 00H
+$SG97278 DB	'ToString array', 00H
 	ORG $+1
-$SG81726 DB	'[FAIL] %s', 0aH, 00H
+$SG97279 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81727 DB	'{"a": 1, "b": 2}', 00H
+$SG97280 DB	'{"a": 1, "b": 2}', 00H
 	ORG $+7
-$SG81730 DB	'{"a":1,"b":2}', 00H
+$SG97283 DB	'{"a":1,"b":2}', 00H
 	ORG $+2
-$SG81731 DB	'ToString object', 00H
-$SG81732 DB	'[PASS] %s', 0aH, 00H
+$SG97284 DB	'ToString object', 00H
+$SG97285 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81733 DB	'ToString object', 00H
-$SG81734 DB	'[FAIL] %s', 0aH, 00H
+$SG97286 DB	'ToString object', 00H
+$SG97287 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81735 DB	'[]', 00H
+$SG97288 DB	'[]', 00H
 	ORG $+1
-$SG81738 DB	'[]', 00H
+$SG97291 DB	'[]', 00H
 	ORG $+5
-$SG81739 DB	'ToString empty array', 00H
+$SG97292 DB	'ToString empty array', 00H
 	ORG $+3
-$SG81740 DB	'[PASS] %s', 0aH, 00H
+$SG97293 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81741 DB	'ToString empty array', 00H
+$SG97294 DB	'ToString empty array', 00H
 	ORG $+3
-$SG81742 DB	'[FAIL] %s', 0aH, 00H
+$SG97295 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81743 DB	'{}', 00H
+$SG97296 DB	'{}', 00H
 	ORG $+1
-$SG81746 DB	'{}', 00H
+$SG97299 DB	'{}', 00H
 	ORG $+5
-$SG81747 DB	'ToString empty object', 00H
+$SG97300 DB	'ToString empty object', 00H
 	ORG $+2
-$SG81748 DB	'[PASS] %s', 0aH, 00H
+$SG97301 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81749 DB	'ToString empty object', 00H
+$SG97302 DB	'ToString empty object', 00H
 	ORG $+2
-$SG81750 DB	'[FAIL] %s', 0aH, 00H
+$SG97303 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81751 DB	'"quote\"here"', 00H
+$SG97304 DB	'"quote\"here"', 00H
 	ORG $+2
-$SG81754 DB	'\"', 00H
+$SG97307 DB	'\"', 00H
 	ORG $+5
-$SG81755 DB	'ToString quote in string', 00H
+$SG97308 DB	'ToString quote in string', 00H
 	ORG $+7
-$SG81756 DB	'[PASS] %s', 0aH, 00H
+$SG97309 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81757 DB	'ToString quote in string', 00H
+$SG97310 DB	'ToString quote in string', 00H
 	ORG $+7
-$SG81758 DB	'[FAIL] %s', 0aH, 00H
+$SG97311 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81759 DB	'{"x":1}', 00H
-$SG81762 DB	'ToString with length', 00H
+$SG97312 DB	'{"x":1}', 00H
+$SG97315 DB	'ToString with length', 00H
 	ORG $+3
-$SG81763 DB	'[PASS] %s', 0aH, 00H
+$SG97316 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81764 DB	'ToString with length', 00H
+$SG97317 DB	'ToString with length', 00H
 	ORG $+3
-$SG81765 DB	'[FAIL] %s', 0aH, 00H
+$SG97318 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81821 DB	0aH, '=== Test: HTTP Response Simulation ===', 0aH, 00H
+$SG97374 DB	0aH, '=== Test: HTTP Response Simulation ===', 0aH, 00H
 	ORG $+15
-$SG81822 DB	'HTTP/1.1 200 OK', 0dH, 0aH, 'Content-Type: application/j'
+$SG97375 DB	'HTTP/1.1 200 OK', 0dH, 0aH, 'Content-Type: application/j'
 	DB	'son', 0dH, 0aH, 'Content-Length: 186', 0dH, 0aH, 0dH, 0aH, '{'
 	DB	'"status":200,"message":"success","data":{"token":"abc123xyz",'
 	DB	'"expires_in":3600,"user":{"id":1,"username":"admin","roles":['
 	DB	'"admin","user"],"profile":{"email":"admin@test.com","verified'
 	DB	'":true}},"settings":{"theme":"dark","notifications":false}}}', 00H
 	ORG $+3
-$SG81823 DB	'{', 00H
+$SG97376 DB	'{', 00H
 	ORG $+6
-$SG81826 DB	'Parse HTTP response body', 00H
+$SG97379 DB	'Parse HTTP response body', 00H
 	ORG $+7
-$SG81827 DB	'[PASS] %s', 0aH, 00H
+$SG97380 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81828 DB	'Parse HTTP response body', 00H
+$SG97381 DB	'Parse HTTP response body', 00H
 	ORG $+7
-$SG81829 DB	'[FAIL] %s', 0aH, 00H
+$SG97382 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81833 DB	'status', 00H
+$SG97386 DB	'status', 00H
 	ORG $+5
-$SG81834 DB	'  status == 200', 00H
-$SG81835 DB	'[PASS] %s', 0aH, 00H
+$SG97387 DB	'  status == 200', 00H
+$SG97388 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81836 DB	'  status == 200', 00H
-$SG81837 DB	'[FAIL] %s', 0aH, 00H
+$SG97389 DB	'  status == 200', 00H
+$SG97390 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81840 DB	'success', 00H
-$SG81842 DB	'message', 00H
-$SG81843 DB	'  message == success', 00H
+$SG97393 DB	'success', 00H
+$SG97395 DB	'message', 00H
+$SG97396 DB	'  message == success', 00H
 	ORG $+3
-$SG81844 DB	'[PASS] %s', 0aH, 00H
+$SG97397 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81845 DB	'  message == success', 00H
+$SG97398 DB	'  message == success', 00H
 	ORG $+3
-$SG81846 DB	'[FAIL] %s', 0aH, 00H
+$SG97399 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81847 DB	'data', 00H
+$SG97400 DB	'data', 00H
 	ORG $+7
-$SG81850 DB	'  data exists', 00H
+$SG97403 DB	'  data exists', 00H
 	ORG $+2
-$SG81851 DB	'[PASS] %s', 0aH, 00H
+$SG97404 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81852 DB	'  data exists', 00H
+$SG97405 DB	'  data exists', 00H
 	ORG $+2
-$SG81853 DB	'[FAIL] %s', 0aH, 00H
+$SG97406 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81857 DB	'abc123xyz', 00H
+$SG97410 DB	'abc123xyz', 00H
 	ORG $+2
-$SG81859 DB	'token', 00H
+$SG97412 DB	'token', 00H
 	ORG $+6
-$SG81860 DB	'  data.token', 00H
+$SG97413 DB	'  data.token', 00H
 	ORG $+3
-$SG81861 DB	'[PASS] %s', 0aH, 00H
+$SG97414 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81862 DB	'  data.token', 00H
+$SG97415 DB	'  data.token', 00H
 	ORG $+3
-$SG81863 DB	'[FAIL] %s', 0aH, 00H
+$SG97416 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81866 DB	'expires_in', 00H
+$SG97419 DB	'expires_in', 00H
 	ORG $+5
-$SG81867 DB	'  data.expires_in == 3600', 00H
+$SG97420 DB	'  data.expires_in == 3600', 00H
 	ORG $+6
-$SG81868 DB	'[PASS] %s', 0aH, 00H
+$SG97421 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81869 DB	'  data.expires_in == 3600', 00H
+$SG97422 DB	'  data.expires_in == 3600', 00H
 	ORG $+6
-$SG81870 DB	'[FAIL] %s', 0aH, 00H
+$SG97423 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81871 DB	'user', 00H
+$SG97424 DB	'user', 00H
 	ORG $+7
-$SG81874 DB	'  data.user exists', 00H
+$SG97427 DB	'  data.user exists', 00H
 	ORG $+5
-$SG81875 DB	'[PASS] %s', 0aH, 00H
+$SG97428 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81876 DB	'  data.user exists', 00H
+$SG97429 DB	'  data.user exists', 00H
 	ORG $+5
-$SG81877 DB	'[FAIL] %s', 0aH, 00H
+$SG97430 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81881 DB	'id', 00H
+$SG97434 DB	'id', 00H
 	ORG $+1
-$SG81882 DB	'  data.user.id == 1', 00H
+$SG97435 DB	'  data.user.id == 1', 00H
 	ORG $+4
-$SG81883 DB	'[PASS] %s', 0aH, 00H
+$SG97436 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81884 DB	'  data.user.id == 1', 00H
+$SG97437 DB	'  data.user.id == 1', 00H
 	ORG $+4
-$SG81885 DB	'[FAIL] %s', 0aH, 00H
+$SG97438 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81888 DB	'admin', 00H
+$SG97441 DB	'admin', 00H
 	ORG $+6
-$SG81890 DB	'username', 00H
+$SG97443 DB	'username', 00H
 	ORG $+7
-$SG81891 DB	'  data.user.username == admin', 00H
+$SG97444 DB	'  data.user.username == admin', 00H
 	ORG $+2
-$SG81892 DB	'[PASS] %s', 0aH, 00H
+$SG97445 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81893 DB	'  data.user.username == admin', 00H
+$SG97446 DB	'  data.user.username == admin', 00H
 	ORG $+2
-$SG81894 DB	'[FAIL] %s', 0aH, 00H
+$SG97447 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+1
-$SG81895 DB	'roles', 00H
+$SG97448 DB	'roles', 00H
 	ORG $+6
-$SG81898 DB	'  data.user.roles size == 2', 00H
+$SG97451 DB	'  data.user.roles size == 2', 00H
 	ORG $+4
-$SG81899 DB	'[PASS] %s', 0aH, 00H
+$SG97452 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81900 DB	'  data.user.roles size == 2', 00H
+$SG97453 DB	'  data.user.roles size == 2', 00H
 	ORG $+4
-$SG81901 DB	'[FAIL] %s', 0aH, 00H
+$SG97454 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81902 DB	'profile', 00H
-$SG81905 DB	'  data.user.profile exists', 00H
+$SG97455 DB	'profile', 00H
+$SG97458 DB	'  data.user.profile exists', 00H
 	ORG $+5
-$SG81906 DB	'[PASS] %s', 0aH, 00H
+$SG97459 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81907 DB	'  data.user.profile exists', 00H
+$SG97460 DB	'  data.user.profile exists', 00H
 	ORG $+5
-$SG81908 DB	'[FAIL] %s', 0aH, 00H
+$SG97461 DB	'[FAIL] %s', 0aH, 00H
 	ORG $+5
-$SG81912 DB	'admin@test.com', 00H
+$SG97465 DB	'admin@test.com', 00H
 	ORG $+1
-$SG81914 DB	'email', 00H
+$SG97467 DB	'email', 00H
 	ORG $+2
-$SG81915 DB	'  data.user.profile.email', 00H
+$SG97468 DB	'  data.user.profile.email', 00H
 	ORG $+6
-$SG81916 DB	'[PASS] %s', 0aH, 00H
+$SG97469 DB	'[PASS] %s', 0aH, 00H
 	ORG $+5
-$SG81917 DB	'  data.user.profile.email', 00H
+$SG97470 DB	'  data.user.profile.email', 00H
 	ORG $+6
-$SG81918 DB	'[FAIL] %s', 0aH, 00H
+$SG97471 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97474 DB	'verified', 00H
+	ORG $+7
+$SG97475 DB	'  data.user.profile.verified == true', 00H
+	ORG $+3
+$SG97476 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97477 DB	'  data.user.profile.verified == true', 00H
+	ORG $+3
+$SG97478 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97479 DB	'settings', 00H
+	ORG $+3
+$SG97482 DB	'dark', 00H
+	ORG $+3
+$SG97484 DB	'theme', 00H
+	ORG $+6
+$SG97485 DB	'  settings.theme == dark', 00H
+	ORG $+7
+$SG97486 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97487 DB	'  settings.theme == dark', 00H
+	ORG $+7
+$SG97488 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97491 DB	'notifications', 00H
+	ORG $+2
+$SG97492 DB	'  settings.notifications == false', 00H
+	ORG $+6
+$SG97493 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97494 DB	'  settings.notifications == false', 00H
+	ORG $+6
+$SG97495 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97526 DB	0aH, '=== Test: Getter Defaults ===', 0aH, 00H
+$SG97527 DB	'"hello"', 00H
+$SG97530 DB	'hello', 00H
+	ORG $+2
+$SG97531 DB	'default', 00H
+$SG97532 DB	'GetString default on string', 00H
+	ORG $+4
+$SG97533 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97534 DB	'GetString default on string', 00H
+	ORG $+4
+$SG97535 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG97536 DB	'123', 00H
+$SG97539 DB	'GetNumber default on number', 00H
+	ORG $+4
+$SG97540 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97541 DB	'GetNumber default on number', 00H
+	ORG $+4
+$SG97542 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG97543 DB	'true', 00H
+	ORG $+7
+$SG97546 DB	'GetBool default on bool', 00H
+$SG97547 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97548 DB	'GetBool default on bool', 00H
+$SG97549 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97552 DB	'GetBool default on null node', 00H
+	ORG $+3
+$SG97553 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97554 DB	'GetBool default on null node', 00H
+	ORG $+3
+$SG97555 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97558 DB	'GetNumber default on null node', 00H
+	ORG $+1
+$SG97559 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97560 DB	'GetNumber default on null node', 00H
+	ORG $+1
+$SG97561 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+1
+$SG97564 DB	'nope', 00H
+	ORG $+3
+$SG97565 DB	'nope', 00H
+	ORG $+7
+$SG97566 DB	'GetString default on null node', 00H
+	ORG $+1
+$SG97567 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97568 DB	'GetString default on null node', 00H
+	ORG $+1
+$SG97569 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97570 DB	'{"x":1}', 00H
+$SG97573 DB	'nonexistent', 00H
+	ORG $+4
+$SG97574 DB	'GetObjectItem missing key returns null', 00H
+	ORG $+1
+$SG97575 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97576 DB	'GetObjectItem missing key returns null', 00H
+	ORG $+1
+$SG97577 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97578 DB	'[1,2,3]', 00H
+$SG97581 DB	'GetArrayItem out of bounds returns null', 00H
+$SG97582 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97583 DB	'GetArrayItem out of bounds returns null', 00H
+$SG97584 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97587 DB	'GetArrayItem out of bounds returns null (end)', 00H
+	ORG $+2
+$SG97588 DB	'[PASS] %s', 0aH, 00H
+	ORG $+5
+$SG97589 DB	'GetArrayItem out of bounds returns null (end)', 00H
+	ORG $+2
+$SG97590 DB	'[FAIL] %s', 0aH, 00H
+	ORG $+5
+$SG97593 DB	'========================================', 0aH, 00H
+	ORG $+6
+$SG97594 DB	'   JSON Parser Test Suite', 0aH, 00H
+	ORG $+5
+$SG97595 DB	'========================================', 0aH, 00H
+	ORG $+6
+$SG97596 DB	0aH, '========================================', 0aH, 00H
+	ORG $+5
+$SG97597 DB	'   Results: %d passed, %d failed', 0aH, 00H
+	ORG $+6
+$SG97598 DB	'========================================', 0aH, 00H
 CONST	ENDS
 PUBLIC	__local_stdio_printf_options
 PUBLIC	_vfprintf_l
@@ -1122,6 +1118,9 @@ PUBLIC	__real@408f380000000000
 PUBLIC	__real@40ac200000000000
 PUBLIC	__real@bff0000000000000
 PUBLIC	__real@c07c8c9fbe76c8b4
+EXTRN	strstr:PROC
+EXTRN	strcmp:PROC
+EXTRN	strlen:PROC
 EXTRN	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z:PROC	; Json_Parse
 EXTRN	?Json_Free@@YAXPEAUJsonNode@@@Z:PROC		; Json_Free
 EXTRN	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z:PROC	; Json_ToString
@@ -1135,9 +1134,6 @@ EXTRN	?Json_GetObjectSize@@YAHPEAUJsonNode@@@Z:PROC	; Json_GetObjectSize
 EXTRN	__acrt_iob_func:PROC
 EXTRN	__stdio_common_vfprintf:PROC
 EXTRN	__stdio_common_vsprintf:PROC
-EXTRN	strstr:PROC
-EXTRN	strcmp:PROC
-EXTRN	strlen:PROC
 EXTRN	_fltused:DWORD
 ;	COMDAT ?_OptionsStorage@?1??__local_stdio_printf_options@@9@4_KA
 _BSS	SEGMENT
@@ -1384,18 +1380,18 @@ _TEXT	SEGMENT
 n$ = 32
 ?test_basic_types@@YAXXZ PROC				; test_basic_types
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\Json\Json\main.cpp
-; Line 16
+; Line 15
 $LN78:
 	sub	rsp, 56					; 00000038H
-; Line 17
-	lea	rcx, OFFSET $SG80920
+; Line 16
+	lea	rcx, OFFSET $SG96473
 	call	printf
-; Line 19
-	lea	rcx, OFFSET $SG80921
+; Line 18
+	lea	rcx, OFFSET $SG96474
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN4@test_basic:
-; Line 20
+; Line 19
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN47@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1404,8 +1400,8 @@ $LN4@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80924
-	lea	rcx, OFFSET $SG80925
+	lea	rdx, OFFSET $SG96477
+	lea	rcx, OFFSET $SG96478
 	call	printf
 	npad	1
 	jmp	SHORT $LN48@test_basic
@@ -1413,23 +1409,23 @@ $LN47@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80926
-	lea	rcx, OFFSET $SG80927
+	lea	rdx, OFFSET $SG96479
+	lea	rcx, OFFSET $SG96480
 	call	printf
 	npad	1
 $LN48@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN4@test_basic
-; Line 21
+; Line 20
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 23
-	lea	rcx, OFFSET $SG80928
+; Line 22
+	lea	rcx, OFFSET $SG96481
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN7@test_basic:
-; Line 24
+; Line 23
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN49@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1441,8 +1437,8 @@ $LN7@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80931
-	lea	rcx, OFFSET $SG80932
+	lea	rdx, OFFSET $SG96484
+	lea	rcx, OFFSET $SG96485
 	call	printf
 	npad	1
 	jmp	SHORT $LN50@test_basic
@@ -1450,23 +1446,23 @@ $LN49@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80933
-	lea	rcx, OFFSET $SG80934
+	lea	rdx, OFFSET $SG96486
+	lea	rcx, OFFSET $SG96487
 	call	printf
 	npad	1
 $LN50@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN7@test_basic
-; Line 25
+; Line 24
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 27
-	lea	rcx, OFFSET $SG80935
+; Line 26
+	lea	rcx, OFFSET $SG96488
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN10@test_basic:
-; Line 28
+; Line 27
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN51@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1478,8 +1474,8 @@ $LN10@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80938
-	lea	rcx, OFFSET $SG80939
+	lea	rdx, OFFSET $SG96491
+	lea	rcx, OFFSET $SG96492
 	call	printf
 	npad	1
 	jmp	SHORT $LN52@test_basic
@@ -1487,23 +1483,23 @@ $LN51@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80940
-	lea	rcx, OFFSET $SG80941
+	lea	rdx, OFFSET $SG96493
+	lea	rcx, OFFSET $SG96494
 	call	printf
 	npad	1
 $LN52@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN10@test_basic
-; Line 29
+; Line 28
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 31
-	lea	rcx, OFFSET $SG80942
+; Line 30
+	lea	rcx, OFFSET $SG96495
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN13@test_basic:
-; Line 32
+; Line 31
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN53@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1517,8 +1513,8 @@ $LN13@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80945
-	lea	rcx, OFFSET $SG80946
+	lea	rdx, OFFSET $SG96498
+	lea	rcx, OFFSET $SG96499
 	call	printf
 	npad	1
 	jmp	SHORT $LN54@test_basic
@@ -1526,23 +1522,23 @@ $LN53@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80947
-	lea	rcx, OFFSET $SG80948
+	lea	rdx, OFFSET $SG96500
+	lea	rcx, OFFSET $SG96501
 	call	printf
 	npad	1
 $LN54@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN13@test_basic
-; Line 33
+; Line 32
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 35
-	lea	rcx, OFFSET $SG80949
+; Line 34
+	lea	rcx, OFFSET $SG96502
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN16@test_basic:
-; Line 36
+; Line 35
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN55@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1556,8 +1552,8 @@ $LN16@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80952
-	lea	rcx, OFFSET $SG80953
+	lea	rdx, OFFSET $SG96505
+	lea	rcx, OFFSET $SG96506
 	call	printf
 	npad	1
 	jmp	SHORT $LN56@test_basic
@@ -1565,23 +1561,23 @@ $LN55@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80954
-	lea	rcx, OFFSET $SG80955
+	lea	rdx, OFFSET $SG96507
+	lea	rcx, OFFSET $SG96508
 	call	printf
 	npad	1
 $LN56@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN16@test_basic
-; Line 37
+; Line 36
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 39
-	lea	rcx, OFFSET $SG80956
+; Line 38
+	lea	rcx, OFFSET $SG96509
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN19@test_basic:
-; Line 40
+; Line 39
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN57@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1590,8 +1586,8 @@ $LN19@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80959
-	lea	rcx, OFFSET $SG80960
+	lea	rdx, OFFSET $SG96512
+	lea	rcx, OFFSET $SG96513
 	call	printf
 	npad	1
 	jmp	SHORT $LN58@test_basic
@@ -1599,29 +1595,29 @@ $LN57@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80961
-	lea	rcx, OFFSET $SG80962
+	lea	rdx, OFFSET $SG96514
+	lea	rcx, OFFSET $SG96515
 	call	printf
 	npad	1
 $LN58@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN19@test_basic
-; Line 41
+; Line 40
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 43
-	lea	rcx, OFFSET $SG80963
+; Line 42
+	lea	rcx, OFFSET $SG96516
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN22@test_basic:
-; Line 44
+; Line 43
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN59@test_basic
 	mov	rax, QWORD PTR n$[rsp]
 	cmp	DWORD PTR [rax], 3
 	jne	SHORT $LN59@test_basic
-	lea	rdx, OFFSET $SG80966
+	lea	rdx, OFFSET $SG96519
 	mov	rax, QWORD PTR n$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
 	call	strcmp
@@ -1630,8 +1626,8 @@ $LN22@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80967
-	lea	rcx, OFFSET $SG80968
+	lea	rdx, OFFSET $SG96520
+	lea	rcx, OFFSET $SG96521
 	call	printf
 	npad	1
 	jmp	SHORT $LN60@test_basic
@@ -1639,23 +1635,23 @@ $LN59@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80969
-	lea	rcx, OFFSET $SG80970
+	lea	rdx, OFFSET $SG96522
+	lea	rcx, OFFSET $SG96523
 	call	printf
 	npad	1
 $LN60@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN22@test_basic
-; Line 45
+; Line 44
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 47
-	lea	rcx, OFFSET $SG80971
+; Line 46
+	lea	rcx, OFFSET $SG96524
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN25@test_basic:
-; Line 48
+; Line 47
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN61@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1667,8 +1663,8 @@ $LN25@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80974
-	lea	rcx, OFFSET $SG80975
+	lea	rdx, OFFSET $SG96527
+	lea	rcx, OFFSET $SG96528
 	call	printf
 	npad	1
 	jmp	SHORT $LN62@test_basic
@@ -1676,23 +1672,23 @@ $LN61@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80976
-	lea	rcx, OFFSET $SG80977
+	lea	rdx, OFFSET $SG96529
+	lea	rcx, OFFSET $SG96530
 	call	printf
 	npad	1
 $LN62@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN25@test_basic
-; Line 49
+; Line 48
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 51
-	lea	rcx, OFFSET $SG80978
+; Line 50
+	lea	rcx, OFFSET $SG96531
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN28@test_basic:
-; Line 52
+; Line 51
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN63@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1701,8 +1697,8 @@ $LN28@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80981
-	lea	rcx, OFFSET $SG80982
+	lea	rdx, OFFSET $SG96534
+	lea	rcx, OFFSET $SG96535
 	call	printf
 	npad	1
 	jmp	SHORT $LN64@test_basic
@@ -1710,29 +1706,29 @@ $LN63@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80983
-	lea	rcx, OFFSET $SG80984
+	lea	rdx, OFFSET $SG96536
+	lea	rcx, OFFSET $SG96537
 	call	printf
 	npad	1
 $LN64@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN28@test_basic
-; Line 53
+; Line 52
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 55
-	lea	rcx, OFFSET $SG80985
+; Line 54
+	lea	rcx, OFFSET $SG96538
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN31@test_basic:
-; Line 56
+; Line 55
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN65@test_basic
 	mov	rax, QWORD PTR n$[rsp]
 	cmp	DWORD PTR [rax], 3
 	jne	SHORT $LN65@test_basic
-	lea	rdx, OFFSET $SG80988
+	lea	rdx, OFFSET $SG96541
 	mov	rax, QWORD PTR n$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
 	call	strcmp
@@ -1741,8 +1737,8 @@ $LN31@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80989
-	lea	rcx, OFFSET $SG80990
+	lea	rdx, OFFSET $SG96542
+	lea	rcx, OFFSET $SG96543
 	call	printf
 	npad	1
 	jmp	SHORT $LN66@test_basic
@@ -1750,23 +1746,23 @@ $LN65@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80991
-	lea	rcx, OFFSET $SG80992
+	lea	rdx, OFFSET $SG96544
+	lea	rcx, OFFSET $SG96545
 	call	printf
 	npad	1
 $LN66@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN31@test_basic
-; Line 57
+; Line 56
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 59
-	lea	rcx, OFFSET $SG80993
+; Line 58
+	lea	rcx, OFFSET $SG96546
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN34@test_basic:
-; Line 60
+; Line 59
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN67@test_basic
 	mov	rax, QWORD PTR n$[rsp]
@@ -1775,8 +1771,8 @@ $LN34@test_basic:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG80996
-	lea	rcx, OFFSET $SG80997
+	lea	rdx, OFFSET $SG96549
+	lea	rcx, OFFSET $SG96550
 	call	printf
 	npad	1
 	jmp	SHORT $LN68@test_basic
@@ -1784,29 +1780,29 @@ $LN67@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG80998
-	lea	rcx, OFFSET $SG80999
+	lea	rdx, OFFSET $SG96551
+	lea	rcx, OFFSET $SG96552
 	call	printf
 	npad	1
 $LN68@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN34@test_basic
-; Line 61
+; Line 60
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN37@test_basic:
-; Line 63
-	lea	rcx, OFFSET $SG81002
+; Line 62
+	lea	rcx, OFFSET $SG96555
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN69@test_basic
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81003
-	lea	rcx, OFFSET $SG81004
+	lea	rdx, OFFSET $SG96556
+	lea	rcx, OFFSET $SG96557
 	call	printf
 	npad	1
 	jmp	SHORT $LN70@test_basic
@@ -1814,8 +1810,8 @@ $LN69@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81005
-	lea	rcx, OFFSET $SG81006
+	lea	rdx, OFFSET $SG96558
+	lea	rcx, OFFSET $SG96559
 	call	printf
 	npad	1
 $LN70@test_basic:
@@ -1823,16 +1819,16 @@ $LN70@test_basic:
 	test	eax, eax
 	jne	SHORT $LN37@test_basic
 $LN40@test_basic:
-; Line 64
-	lea	rcx, OFFSET $SG81009
+; Line 63
+	lea	rcx, OFFSET $SG96562
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN71@test_basic
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81010
-	lea	rcx, OFFSET $SG81011
+	lea	rdx, OFFSET $SG96563
+	lea	rcx, OFFSET $SG96564
 	call	printf
 	npad	1
 	jmp	SHORT $LN72@test_basic
@@ -1840,8 +1836,8 @@ $LN71@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81012
-	lea	rcx, OFFSET $SG81013
+	lea	rdx, OFFSET $SG96565
+	lea	rcx, OFFSET $SG96566
 	call	printf
 	npad	1
 $LN72@test_basic:
@@ -1849,16 +1845,16 @@ $LN72@test_basic:
 	test	eax, eax
 	jne	SHORT $LN40@test_basic
 $LN43@test_basic:
-; Line 65
-	lea	rcx, OFFSET $SG81016
+; Line 64
+	lea	rcx, OFFSET $SG96569
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN73@test_basic
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81017
-	lea	rcx, OFFSET $SG81018
+	lea	rdx, OFFSET $SG96570
+	lea	rcx, OFFSET $SG96571
 	call	printf
 	npad	1
 	jmp	SHORT $LN74@test_basic
@@ -1866,8 +1862,8 @@ $LN73@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81019
-	lea	rcx, OFFSET $SG81020
+	lea	rdx, OFFSET $SG96572
+	lea	rcx, OFFSET $SG96573
 	call	printf
 	npad	1
 $LN74@test_basic:
@@ -1875,16 +1871,16 @@ $LN74@test_basic:
 	test	eax, eax
 	jne	SHORT $LN43@test_basic
 $LN46@test_basic:
-; Line 66
-	lea	rcx, OFFSET $SG81023
+; Line 65
+	lea	rcx, OFFSET $SG96576
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN75@test_basic
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81024
-	lea	rcx, OFFSET $SG81025
+	lea	rdx, OFFSET $SG96577
+	lea	rcx, OFFSET $SG96578
 	call	printf
 	npad	1
 	jmp	SHORT $LN76@test_basic
@@ -1892,15 +1888,15 @@ $LN75@test_basic:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81026
-	lea	rcx, OFFSET $SG81027
+	lea	rdx, OFFSET $SG96579
+	lea	rcx, OFFSET $SG96580
 	call	printf
 	npad	1
 $LN76@test_basic:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN46@test_basic
-; Line 67
+; Line 66
 	add	rsp, 56					; 00000038H
 	ret	0
 ?test_basic_types@@YAXXZ ENDP				; test_basic_types
@@ -1911,18 +1907,18 @@ n$ = 32
 inner$1 = 40
 ?test_array@@YAXXZ PROC					; test_array
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\Json\Json\main.cpp
-; Line 69
+; Line 68
 $LN81:
 	sub	rsp, 56					; 00000038H
-; Line 70
-	lea	rcx, OFFSET $SG81077
+; Line 69
+	lea	rcx, OFFSET $SG96630
 	call	printf
-; Line 72
-	lea	rcx, OFFSET $SG81078
+; Line 71
+	lea	rcx, OFFSET $SG96631
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN4@test_array:
-; Line 73
+; Line 72
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN47@test_array
 	mov	rax, QWORD PTR n$[rsp]
@@ -1935,8 +1931,8 @@ $LN4@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81081
-	lea	rcx, OFFSET $SG81082
+	lea	rdx, OFFSET $SG96634
+	lea	rcx, OFFSET $SG96635
 	call	printf
 	npad	1
 	jmp	SHORT $LN48@test_array
@@ -1944,23 +1940,23 @@ $LN47@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81083
-	lea	rcx, OFFSET $SG81084
+	lea	rdx, OFFSET $SG96636
+	lea	rcx, OFFSET $SG96637
 	call	printf
 	npad	1
 $LN48@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN4@test_array
-; Line 74
+; Line 73
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 76
-	lea	rcx, OFFSET $SG81085
+; Line 75
+	lea	rcx, OFFSET $SG96638
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN7@test_array:
-; Line 77
+; Line 76
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN49@test_array
 	mov	rax, QWORD PTR n$[rsp]
@@ -1973,8 +1969,8 @@ $LN7@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81088
-	lea	rcx, OFFSET $SG81089
+	lea	rdx, OFFSET $SG96641
+	lea	rcx, OFFSET $SG96642
 	call	printf
 	npad	1
 	jmp	SHORT $LN50@test_array
@@ -1982,19 +1978,19 @@ $LN49@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81090
-	lea	rcx, OFFSET $SG81091
+	lea	rdx, OFFSET $SG96643
+	lea	rcx, OFFSET $SG96644
 	call	printf
 	npad	1
 $LN50@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN7@test_array
-; Line 78
+; Line 77
 	cmp	QWORD PTR n$[rsp], 0
 	je	$LN51@test_array
 $LN10@test_array:
-; Line 79
+; Line 78
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -2007,8 +2003,8 @@ $LN10@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81095
-	lea	rcx, OFFSET $SG81096
+	lea	rdx, OFFSET $SG96648
+	lea	rcx, OFFSET $SG96649
 	call	printf
 	npad	1
 	jmp	SHORT $LN53@test_array
@@ -2016,8 +2012,8 @@ $LN52@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81097
-	lea	rcx, OFFSET $SG81098
+	lea	rdx, OFFSET $SG96650
+	lea	rcx, OFFSET $SG96651
 	call	printf
 	npad	1
 $LN53@test_array:
@@ -2025,7 +2021,7 @@ $LN53@test_array:
 	test	eax, eax
 	jne	SHORT $LN10@test_array
 $LN13@test_array:
-; Line 80
+; Line 79
 	mov	edx, 1
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -2038,8 +2034,8 @@ $LN13@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81101
-	lea	rcx, OFFSET $SG81102
+	lea	rdx, OFFSET $SG96654
+	lea	rcx, OFFSET $SG96655
 	call	printf
 	npad	1
 	jmp	SHORT $LN55@test_array
@@ -2047,8 +2043,8 @@ $LN54@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81103
-	lea	rcx, OFFSET $SG81104
+	lea	rdx, OFFSET $SG96656
+	lea	rcx, OFFSET $SG96657
 	call	printf
 	npad	1
 $LN55@test_array:
@@ -2056,7 +2052,7 @@ $LN55@test_array:
 	test	eax, eax
 	jne	SHORT $LN13@test_array
 $LN16@test_array:
-; Line 81
+; Line 80
 	mov	edx, 2
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -2069,8 +2065,8 @@ $LN16@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81107
-	lea	rcx, OFFSET $SG81108
+	lea	rdx, OFFSET $SG96660
+	lea	rcx, OFFSET $SG96661
 	call	printf
 	npad	1
 	jmp	SHORT $LN57@test_array
@@ -2078,25 +2074,25 @@ $LN56@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81109
-	lea	rcx, OFFSET $SG81110
+	lea	rdx, OFFSET $SG96662
+	lea	rcx, OFFSET $SG96663
 	call	printf
 	npad	1
 $LN57@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN16@test_array
-; Line 82
+; Line 81
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN51@test_array:
-; Line 85
-	lea	rcx, OFFSET $SG81111
+; Line 84
+	lea	rcx, OFFSET $SG96664
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN19@test_array:
-; Line 86
+; Line 85
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN58@test_array
 	mov	rax, QWORD PTR n$[rsp]
@@ -2109,8 +2105,8 @@ $LN19@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81114
-	lea	rcx, OFFSET $SG81115
+	lea	rdx, OFFSET $SG96667
+	lea	rcx, OFFSET $SG96668
 	call	printf
 	npad	1
 	jmp	SHORT $LN59@test_array
@@ -2118,26 +2114,26 @@ $LN58@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81116
-	lea	rcx, OFFSET $SG81117
+	lea	rdx, OFFSET $SG96669
+	lea	rcx, OFFSET $SG96670
 	call	printf
 	npad	1
 $LN59@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN19@test_array
-; Line 87
+; Line 86
 	cmp	QWORD PTR n$[rsp], 0
 	je	$LN60@test_array
 $LN22@test_array:
-; Line 88
+; Line 87
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
-	lea	rdx, OFFSET $SG81122
+	lea	rdx, OFFSET $SG96675
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81121
+	lea	rdx, OFFSET $SG96674
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -2145,8 +2141,8 @@ $LN22@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81123
-	lea	rcx, OFFSET $SG81124
+	lea	rdx, OFFSET $SG96676
+	lea	rcx, OFFSET $SG96677
 	call	printf
 	npad	1
 	jmp	SHORT $LN62@test_array
@@ -2154,8 +2150,8 @@ $LN61@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81125
-	lea	rcx, OFFSET $SG81126
+	lea	rdx, OFFSET $SG96678
+	lea	rcx, OFFSET $SG96679
 	call	printf
 	npad	1
 $LN62@test_array:
@@ -2163,14 +2159,14 @@ $LN62@test_array:
 	test	eax, eax
 	jne	SHORT $LN22@test_array
 $LN25@test_array:
-; Line 89
+; Line 88
 	mov	edx, 1
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
-	lea	rdx, OFFSET $SG81130
+	lea	rdx, OFFSET $SG96683
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81129
+	lea	rdx, OFFSET $SG96682
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -2178,8 +2174,8 @@ $LN25@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81131
-	lea	rcx, OFFSET $SG81132
+	lea	rdx, OFFSET $SG96684
+	lea	rcx, OFFSET $SG96685
 	call	printf
 	npad	1
 	jmp	SHORT $LN64@test_array
@@ -2187,8 +2183,8 @@ $LN63@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81133
-	lea	rcx, OFFSET $SG81134
+	lea	rdx, OFFSET $SG96686
+	lea	rcx, OFFSET $SG96687
 	call	printf
 	npad	1
 $LN64@test_array:
@@ -2196,14 +2192,14 @@ $LN64@test_array:
 	test	eax, eax
 	jne	SHORT $LN25@test_array
 $LN28@test_array:
-; Line 90
+; Line 89
 	mov	edx, 2
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
-	lea	rdx, OFFSET $SG81138
+	lea	rdx, OFFSET $SG96691
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81137
+	lea	rdx, OFFSET $SG96690
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -2211,8 +2207,8 @@ $LN28@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81139
-	lea	rcx, OFFSET $SG81140
+	lea	rdx, OFFSET $SG96692
+	lea	rcx, OFFSET $SG96693
 	call	printf
 	npad	1
 	jmp	SHORT $LN66@test_array
@@ -2220,25 +2216,25 @@ $LN65@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81141
-	lea	rcx, OFFSET $SG81142
+	lea	rdx, OFFSET $SG96694
+	lea	rcx, OFFSET $SG96695
 	call	printf
 	npad	1
 $LN66@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN28@test_array
-; Line 91
+; Line 90
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN60@test_array:
-; Line 94
-	lea	rcx, OFFSET $SG81143
+; Line 93
+	lea	rcx, OFFSET $SG96696
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN31@test_array:
-; Line 95
+; Line 94
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN67@test_array
 	mov	rax, QWORD PTR n$[rsp]
@@ -2251,8 +2247,8 @@ $LN31@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81146
-	lea	rcx, OFFSET $SG81147
+	lea	rdx, OFFSET $SG96699
+	lea	rcx, OFFSET $SG96700
 	call	printf
 	npad	1
 	jmp	SHORT $LN68@test_array
@@ -2260,24 +2256,24 @@ $LN67@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81148
-	lea	rcx, OFFSET $SG81149
+	lea	rdx, OFFSET $SG96701
+	lea	rcx, OFFSET $SG96702
 	call	printf
 	npad	1
 $LN68@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN31@test_array
-; Line 96
+; Line 95
 	cmp	QWORD PTR n$[rsp], 0
 	je	$LN69@test_array
-; Line 97
+; Line 96
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
 	mov	QWORD PTR inner$1[rsp], rax
 $LN34@test_array:
-; Line 98
+; Line 97
 	mov	rcx, QWORD PTR inner$1[rsp]
 	call	?Json_GetArraySize@@YAHPEAUJsonNode@@@Z	; Json_GetArraySize
 	cmp	eax, 2
@@ -2285,8 +2281,8 @@ $LN34@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81153
-	lea	rcx, OFFSET $SG81154
+	lea	rdx, OFFSET $SG96706
+	lea	rcx, OFFSET $SG96707
 	call	printf
 	npad	1
 	jmp	SHORT $LN71@test_array
@@ -2294,8 +2290,8 @@ $LN70@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81155
-	lea	rcx, OFFSET $SG81156
+	lea	rdx, OFFSET $SG96708
+	lea	rcx, OFFSET $SG96709
 	call	printf
 	npad	1
 $LN71@test_array:
@@ -2303,7 +2299,7 @@ $LN71@test_array:
 	test	eax, eax
 	jne	SHORT $LN34@test_array
 $LN37@test_array:
-; Line 99
+; Line 98
 	xor	edx, edx
 	mov	rcx, QWORD PTR inner$1[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -2316,8 +2312,8 @@ $LN37@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81159
-	lea	rcx, OFFSET $SG81160
+	lea	rdx, OFFSET $SG96712
+	lea	rcx, OFFSET $SG96713
 	call	printf
 	npad	1
 	jmp	SHORT $LN73@test_array
@@ -2325,25 +2321,25 @@ $LN72@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81161
-	lea	rcx, OFFSET $SG81162
+	lea	rdx, OFFSET $SG96714
+	lea	rcx, OFFSET $SG96715
 	call	printf
 	npad	1
 $LN73@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN37@test_array
-; Line 100
+; Line 99
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN69@test_array:
-; Line 103
-	lea	rcx, OFFSET $SG81163
+; Line 102
+	lea	rcx, OFFSET $SG96716
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN40@test_array:
-; Line 104
+; Line 103
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN74@test_array
 	cmp	QWORD PTR n$[rsp], 0
@@ -2355,8 +2351,8 @@ $LN40@test_array:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81166
-	lea	rcx, OFFSET $SG81167
+	lea	rdx, OFFSET $SG96719
+	lea	rcx, OFFSET $SG96720
 	call	printf
 	npad	1
 	jmp	SHORT $LN75@test_array
@@ -2364,29 +2360,29 @@ $LN74@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81168
-	lea	rcx, OFFSET $SG81169
+	lea	rdx, OFFSET $SG96721
+	lea	rcx, OFFSET $SG96722
 	call	printf
 	npad	1
 $LN75@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN40@test_array
-; Line 105
+; Line 104
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN43@test_array:
-; Line 107
-	lea	rcx, OFFSET $SG81172
+; Line 106
+	lea	rcx, OFFSET $SG96725
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN76@test_array
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81173
-	lea	rcx, OFFSET $SG81174
+	lea	rdx, OFFSET $SG96726
+	lea	rcx, OFFSET $SG96727
 	call	printf
 	npad	1
 	jmp	SHORT $LN77@test_array
@@ -2394,8 +2390,8 @@ $LN76@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81175
-	lea	rcx, OFFSET $SG81176
+	lea	rdx, OFFSET $SG96728
+	lea	rcx, OFFSET $SG96729
 	call	printf
 	npad	1
 $LN77@test_array:
@@ -2403,16 +2399,16 @@ $LN77@test_array:
 	test	eax, eax
 	jne	SHORT $LN43@test_array
 $LN46@test_array:
-; Line 108
-	lea	rcx, OFFSET $SG81179
+; Line 107
+	lea	rcx, OFFSET $SG96732
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN78@test_array
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81180
-	lea	rcx, OFFSET $SG81181
+	lea	rdx, OFFSET $SG96733
+	lea	rcx, OFFSET $SG96734
 	call	printf
 	npad	1
 	jmp	SHORT $LN79@test_array
@@ -2420,15 +2416,15 @@ $LN78@test_array:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81182
-	lea	rcx, OFFSET $SG81183
+	lea	rdx, OFFSET $SG96735
+	lea	rcx, OFFSET $SG96736
 	call	printf
 	npad	1
 $LN79@test_array:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN46@test_array
-; Line 109
+; Line 108
 	add	rsp, 56					; 00000038H
 	ret	0
 ?test_array@@YAXXZ ENDP					; test_array
@@ -2439,18 +2435,18 @@ n$ = 32
 nested$1 = 40
 ?test_object@@YAXXZ PROC				; test_object
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\Json\Json\main.cpp
-; Line 111
+; Line 110
 $LN72:
 	sub	rsp, 56					; 00000038H
-; Line 112
-	lea	rcx, OFFSET $SG81227
+; Line 111
+	lea	rcx, OFFSET $SG96780
 	call	printf
-; Line 114
-	lea	rcx, OFFSET $SG81228
+; Line 113
+	lea	rcx, OFFSET $SG96781
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN4@test_objec:
-; Line 115
+; Line 114
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN41@test_objec
 	mov	rax, QWORD PTR n$[rsp]
@@ -2463,8 +2459,8 @@ $LN4@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81231
-	lea	rcx, OFFSET $SG81232
+	lea	rdx, OFFSET $SG96784
+	lea	rcx, OFFSET $SG96785
 	call	printf
 	npad	1
 	jmp	SHORT $LN42@test_objec
@@ -2472,23 +2468,23 @@ $LN41@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81233
-	lea	rcx, OFFSET $SG81234
+	lea	rdx, OFFSET $SG96786
+	lea	rcx, OFFSET $SG96787
 	call	printf
 	npad	1
 $LN42@test_objec:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN4@test_objec
-; Line 116
+; Line 115
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 118
-	lea	rcx, OFFSET $SG81235
+; Line 117
+	lea	rcx, OFFSET $SG96788
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN7@test_objec:
-; Line 119
+; Line 118
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN43@test_objec
 	mov	rax, QWORD PTR n$[rsp]
@@ -2501,8 +2497,8 @@ $LN7@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81238
-	lea	rcx, OFFSET $SG81239
+	lea	rdx, OFFSET $SG96791
+	lea	rcx, OFFSET $SG96792
 	call	printf
 	npad	1
 	jmp	SHORT $LN44@test_objec
@@ -2510,26 +2506,26 @@ $LN43@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81240
-	lea	rcx, OFFSET $SG81241
+	lea	rdx, OFFSET $SG96793
+	lea	rcx, OFFSET $SG96794
 	call	printf
 	npad	1
 $LN44@test_objec:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN7@test_objec
-; Line 120
+; Line 119
 	cmp	QWORD PTR n$[rsp], 0
 	je	$LN45@test_objec
 $LN10@test_objec:
-; Line 121
-	lea	rdx, OFFSET $SG81247
+; Line 120
+	lea	rdx, OFFSET $SG96800
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81246
+	lea	rdx, OFFSET $SG96799
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81245
+	lea	rdx, OFFSET $SG96798
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -2537,8 +2533,8 @@ $LN10@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81248
-	lea	rcx, OFFSET $SG81249
+	lea	rdx, OFFSET $SG96801
+	lea	rcx, OFFSET $SG96802
 	call	printf
 	npad	1
 	jmp	SHORT $LN47@test_objec
@@ -2546,8 +2542,8 @@ $LN46@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81250
-	lea	rcx, OFFSET $SG81251
+	lea	rdx, OFFSET $SG96803
+	lea	rcx, OFFSET $SG96804
 	call	printf
 	npad	1
 $LN47@test_objec:
@@ -2555,8 +2551,8 @@ $LN47@test_objec:
 	test	eax, eax
 	jne	SHORT $LN10@test_objec
 $LN13@test_objec:
-; Line 122
-	lea	rdx, OFFSET $SG81254
+; Line 121
+	lea	rdx, OFFSET $SG96807
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -2568,8 +2564,8 @@ $LN13@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81255
-	lea	rcx, OFFSET $SG81256
+	lea	rdx, OFFSET $SG96808
+	lea	rcx, OFFSET $SG96809
 	call	printf
 	npad	1
 	jmp	SHORT $LN49@test_objec
@@ -2577,25 +2573,25 @@ $LN48@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81257
-	lea	rcx, OFFSET $SG81258
+	lea	rdx, OFFSET $SG96810
+	lea	rcx, OFFSET $SG96811
 	call	printf
 	npad	1
 $LN49@test_objec:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN13@test_objec
-; Line 123
+; Line 122
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN45@test_objec:
-; Line 126
-	lea	rcx, OFFSET $SG81259
+; Line 125
+	lea	rcx, OFFSET $SG96812
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN16@test_objec:
-; Line 127
+; Line 126
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN50@test_objec
 	mov	rax, QWORD PTR n$[rsp]
@@ -2604,8 +2600,8 @@ $LN16@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81262
-	lea	rcx, OFFSET $SG81263
+	lea	rdx, OFFSET $SG96815
+	lea	rcx, OFFSET $SG96816
 	call	printf
 	npad	1
 	jmp	SHORT $LN51@test_objec
@@ -2613,24 +2609,24 @@ $LN50@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81264
-	lea	rcx, OFFSET $SG81265
+	lea	rdx, OFFSET $SG96817
+	lea	rcx, OFFSET $SG96818
 	call	printf
 	npad	1
 $LN51@test_objec:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN16@test_objec
-; Line 128
+; Line 127
 	cmp	QWORD PTR n$[rsp], 0
 	je	$LN52@test_objec
-; Line 129
-	lea	rdx, OFFSET $SG81267
+; Line 128
+	lea	rdx, OFFSET $SG96820
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR nested$1[rsp], rax
 $LN19@test_objec:
-; Line 130
+; Line 129
 	cmp	QWORD PTR nested$1[rsp], 0
 	je	SHORT $LN53@test_objec
 	mov	rax, QWORD PTR nested$1[rsp]
@@ -2639,8 +2635,8 @@ $LN19@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81270
-	lea	rcx, OFFSET $SG81271
+	lea	rdx, OFFSET $SG96823
+	lea	rcx, OFFSET $SG96824
 	call	printf
 	npad	1
 	jmp	SHORT $LN54@test_objec
@@ -2648,26 +2644,26 @@ $LN53@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81272
-	lea	rcx, OFFSET $SG81273
+	lea	rdx, OFFSET $SG96825
+	lea	rcx, OFFSET $SG96826
 	call	printf
 	npad	1
 $LN54@test_objec:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN19@test_objec
-; Line 131
+; Line 130
 	cmp	QWORD PTR nested$1[rsp], 0
 	je	SHORT $LN55@test_objec
 $LN22@test_objec:
-; Line 132
-	lea	rdx, OFFSET $SG81279
+; Line 131
+	lea	rdx, OFFSET $SG96832
 	mov	rcx, QWORD PTR nested$1[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81278
+	lea	rdx, OFFSET $SG96831
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81277
+	lea	rdx, OFFSET $SG96830
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -2675,8 +2671,8 @@ $LN22@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81280
-	lea	rcx, OFFSET $SG81281
+	lea	rdx, OFFSET $SG96833
+	lea	rcx, OFFSET $SG96834
 	call	printf
 	npad	1
 	jmp	SHORT $LN57@test_objec
@@ -2684,8 +2680,8 @@ $LN56@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81282
-	lea	rcx, OFFSET $SG81283
+	lea	rdx, OFFSET $SG96835
+	lea	rcx, OFFSET $SG96836
 	call	printf
 	npad	1
 $LN57@test_objec:
@@ -2693,17 +2689,17 @@ $LN57@test_objec:
 	test	eax, eax
 	jne	SHORT $LN22@test_objec
 $LN55@test_objec:
-; Line 134
+; Line 133
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN52@test_objec:
-; Line 137
-	lea	rcx, OFFSET $SG81284
+; Line 136
+	lea	rcx, OFFSET $SG96837
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN25@test_objec:
-; Line 138
+; Line 137
 	cmp	QWORD PTR n$[rsp], 0
 	je	SHORT $LN58@test_objec
 	mov	rax, QWORD PTR n$[rsp]
@@ -2712,8 +2708,8 @@ $LN25@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81287
-	lea	rcx, OFFSET $SG81288
+	lea	rdx, OFFSET $SG96840
+	lea	rcx, OFFSET $SG96841
 	call	printf
 	npad	1
 	jmp	SHORT $LN59@test_objec
@@ -2721,20 +2717,20 @@ $LN58@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81289
-	lea	rcx, OFFSET $SG81290
+	lea	rdx, OFFSET $SG96842
+	lea	rcx, OFFSET $SG96843
 	call	printf
 	npad	1
 $LN59@test_objec:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN25@test_objec
-; Line 139
+; Line 138
 	cmp	QWORD PTR n$[rsp], 0
 	je	$LN60@test_objec
 $LN28@test_objec:
-; Line 140
-	lea	rdx, OFFSET $SG81294
+; Line 139
+	lea	rdx, OFFSET $SG96847
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xor	edx, edx
@@ -2745,8 +2741,8 @@ $LN28@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81295
-	lea	rcx, OFFSET $SG81296
+	lea	rdx, OFFSET $SG96848
+	lea	rcx, OFFSET $SG96849
 	call	printf
 	npad	1
 	jmp	SHORT $LN62@test_objec
@@ -2754,8 +2750,8 @@ $LN61@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81297
-	lea	rcx, OFFSET $SG81298
+	lea	rdx, OFFSET $SG96850
+	lea	rcx, OFFSET $SG96851
 	call	printf
 	npad	1
 $LN62@test_objec:
@@ -2763,8 +2759,8 @@ $LN62@test_objec:
 	test	eax, eax
 	jne	SHORT $LN28@test_objec
 $LN31@test_objec:
-; Line 141
-	lea	rdx, OFFSET $SG81301
+; Line 140
+	lea	rdx, OFFSET $SG96854
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	movsd	xmm1, QWORD PTR __real@bff0000000000000
@@ -2776,8 +2772,8 @@ $LN31@test_objec:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81302
-	lea	rcx, OFFSET $SG81303
+	lea	rdx, OFFSET $SG96855
+	lea	rcx, OFFSET $SG96856
 	call	printf
 	npad	1
 	jmp	SHORT $LN64@test_objec
@@ -2785,30 +2781,30 @@ $LN63@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81304
-	lea	rcx, OFFSET $SG81305
+	lea	rdx, OFFSET $SG96857
+	lea	rcx, OFFSET $SG96858
 	call	printf
 	npad	1
 $LN64@test_objec:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN31@test_objec
-; Line 142
+; Line 141
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN60@test_objec:
 $LN34@test_objec:
-; Line 145
-	lea	rcx, OFFSET $SG81308
+; Line 144
+	lea	rcx, OFFSET $SG96861
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN65@test_objec
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81309
-	lea	rcx, OFFSET $SG81310
+	lea	rdx, OFFSET $SG96862
+	lea	rcx, OFFSET $SG96863
 	call	printf
 	npad	1
 	jmp	SHORT $LN66@test_objec
@@ -2816,8 +2812,8 @@ $LN65@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81311
-	lea	rcx, OFFSET $SG81312
+	lea	rdx, OFFSET $SG96864
+	lea	rcx, OFFSET $SG96865
 	call	printf
 	npad	1
 $LN66@test_objec:
@@ -2825,16 +2821,16 @@ $LN66@test_objec:
 	test	eax, eax
 	jne	SHORT $LN34@test_objec
 $LN37@test_objec:
-; Line 146
-	lea	rcx, OFFSET $SG81315
+; Line 145
+	lea	rcx, OFFSET $SG96868
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN67@test_objec
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81316
-	lea	rcx, OFFSET $SG81317
+	lea	rdx, OFFSET $SG96869
+	lea	rcx, OFFSET $SG96870
 	call	printf
 	npad	1
 	jmp	SHORT $LN68@test_objec
@@ -2842,8 +2838,8 @@ $LN67@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81318
-	lea	rcx, OFFSET $SG81319
+	lea	rdx, OFFSET $SG96871
+	lea	rcx, OFFSET $SG96872
 	call	printf
 	npad	1
 $LN68@test_objec:
@@ -2851,16 +2847,16 @@ $LN68@test_objec:
 	test	eax, eax
 	jne	SHORT $LN37@test_objec
 $LN40@test_objec:
-; Line 147
-	lea	rcx, OFFSET $SG81322
+; Line 146
+	lea	rcx, OFFSET $SG96875
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	test	rax, rax
 	jne	SHORT $LN69@test_objec
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81323
-	lea	rcx, OFFSET $SG81324
+	lea	rdx, OFFSET $SG96876
+	lea	rcx, OFFSET $SG96877
 	call	printf
 	npad	1
 	jmp	SHORT $LN70@test_objec
@@ -2868,15 +2864,15 @@ $LN69@test_objec:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81325
-	lea	rcx, OFFSET $SG81326
+	lea	rdx, OFFSET $SG96878
+	lea	rcx, OFFSET $SG96879
 	call	printf
 	npad	1
 $LN70@test_objec:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN40@test_objec
-; Line 148
+; Line 147
 	add	rsp, 56					; 00000038H
 	ret	0
 ?test_object@@YAXXZ ENDP				; test_object
@@ -2900,21 +2896,21 @@ buf$8 = 152
 exp$9 = 184
 ?test_complex@@YAXXZ PROC				; test_complex
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\Json\Json\main.cpp
-; Line 150
+; Line 149
 $LN148:
 	sub	rsp, 232				; 000000e8H
-; Line 151
-	lea	rcx, OFFSET $SG81429
+; Line 150
+	lea	rcx, OFFSET $SG96982
 	call	printf
-; Line 153
-	lea	rax, OFFSET $SG81430
+; Line 152
+	lea	rax, OFFSET $SG96983
 	mov	QWORD PTR json$[rsp], rax
-; Line 178
+; Line 177
 	mov	rcx, QWORD PTR json$[rsp]
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR root$[rsp], rax
 $LN4@test_compl:
-; Line 179
+; Line 178
 	cmp	QWORD PTR root$[rsp], 0
 	je	SHORT $LN86@test_compl
 	mov	rax, QWORD PTR root$[rsp]
@@ -2923,8 +2919,8 @@ $LN4@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81433
-	lea	rcx, OFFSET $SG81434
+	lea	rdx, OFFSET $SG96986
+	lea	rcx, OFFSET $SG96987
 	call	printf
 	npad	1
 	jmp	SHORT $LN87@test_compl
@@ -2932,22 +2928,22 @@ $LN86@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81435
-	lea	rcx, OFFSET $SG81436
+	lea	rdx, OFFSET $SG96988
+	lea	rcx, OFFSET $SG96989
 	call	printf
 	npad	1
 $LN87@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN4@test_compl
-; Line 180
+; Line 179
 	cmp	QWORD PTR root$[rsp], 0
 	jne	SHORT $LN88@test_compl
 	jmp	$LN1@test_compl
 $LN88@test_compl:
 $LN7@test_compl:
-; Line 182
-	lea	rdx, OFFSET $SG81440
+; Line 181
+	lea	rdx, OFFSET $SG96993
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -2959,8 +2955,8 @@ $LN7@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81441
-	lea	rcx, OFFSET $SG81442
+	lea	rdx, OFFSET $SG96994
+	lea	rcx, OFFSET $SG96995
 	call	printf
 	npad	1
 	jmp	SHORT $LN90@test_compl
@@ -2968,8 +2964,8 @@ $LN89@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81443
-	lea	rcx, OFFSET $SG81444
+	lea	rdx, OFFSET $SG96996
+	lea	rcx, OFFSET $SG96997
 	call	printf
 	npad	1
 $LN90@test_compl:
@@ -2977,14 +2973,14 @@ $LN90@test_compl:
 	test	eax, eax
 	jne	SHORT $LN7@test_compl
 $LN10@test_compl:
-; Line 183
-	lea	rdx, OFFSET $SG81449
+; Line 182
+	lea	rdx, OFFSET $SG97002
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81448
+	lea	rdx, OFFSET $SG97001
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81447
+	lea	rdx, OFFSET $SG97000
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -2992,8 +2988,8 @@ $LN10@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81450
-	lea	rcx, OFFSET $SG81451
+	lea	rdx, OFFSET $SG97003
+	lea	rcx, OFFSET $SG97004
 	call	printf
 	npad	1
 	jmp	SHORT $LN92@test_compl
@@ -3001,21 +2997,21 @@ $LN91@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81452
-	lea	rcx, OFFSET $SG81453
+	lea	rdx, OFFSET $SG97005
+	lea	rcx, OFFSET $SG97006
 	call	printf
 	npad	1
 $LN92@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN10@test_compl
-; Line 185
-	lea	rdx, OFFSET $SG81454
+; Line 184
+	lea	rdx, OFFSET $SG97007
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR data$[rsp], rax
 $LN13@test_compl:
-; Line 186
+; Line 185
 	cmp	QWORD PTR data$[rsp], 0
 	je	SHORT $LN93@test_compl
 	mov	rax, QWORD PTR data$[rsp]
@@ -3024,8 +3020,8 @@ $LN13@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81457
-	lea	rcx, OFFSET $SG81458
+	lea	rdx, OFFSET $SG97010
+	lea	rcx, OFFSET $SG97011
 	call	printf
 	npad	1
 	jmp	SHORT $LN94@test_compl
@@ -3033,20 +3029,20 @@ $LN93@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81459
-	lea	rcx, OFFSET $SG81460
+	lea	rdx, OFFSET $SG97012
+	lea	rcx, OFFSET $SG97013
 	call	printf
 	npad	1
 $LN94@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN13@test_compl
-; Line 187
+; Line 186
 	cmp	QWORD PTR data$[rsp], 0
 	je	$LN95@test_compl
 $LN16@test_compl:
-; Line 188
-	lea	rdx, OFFSET $SG81464
+; Line 187
+	lea	rdx, OFFSET $SG97017
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -3058,8 +3054,8 @@ $LN16@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81465
-	lea	rcx, OFFSET $SG81466
+	lea	rdx, OFFSET $SG97018
+	lea	rcx, OFFSET $SG97019
 	call	printf
 	npad	1
 	jmp	SHORT $LN97@test_compl
@@ -3067,8 +3063,8 @@ $LN96@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81467
-	lea	rcx, OFFSET $SG81468
+	lea	rdx, OFFSET $SG97020
+	lea	rcx, OFFSET $SG97021
 	call	printf
 	npad	1
 $LN97@test_compl:
@@ -3076,14 +3072,14 @@ $LN97@test_compl:
 	test	eax, eax
 	jne	SHORT $LN16@test_compl
 $LN19@test_compl:
-; Line 189
-	lea	rdx, OFFSET $SG81473
+; Line 188
+	lea	rdx, OFFSET $SG97026
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81472
+	lea	rdx, OFFSET $SG97025
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81471
+	lea	rdx, OFFSET $SG97024
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -3091,8 +3087,8 @@ $LN19@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81474
-	lea	rcx, OFFSET $SG81475
+	lea	rdx, OFFSET $SG97027
+	lea	rcx, OFFSET $SG97028
 	call	printf
 	npad	1
 	jmp	SHORT $LN99@test_compl
@@ -3100,8 +3096,8 @@ $LN98@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81476
-	lea	rcx, OFFSET $SG81477
+	lea	rdx, OFFSET $SG97029
+	lea	rcx, OFFSET $SG97030
 	call	printf
 	npad	1
 $LN99@test_compl:
@@ -3109,8 +3105,8 @@ $LN99@test_compl:
 	test	eax, eax
 	jne	SHORT $LN19@test_compl
 $LN22@test_compl:
-; Line 190
-	lea	rdx, OFFSET $SG81480
+; Line 189
+	lea	rdx, OFFSET $SG97033
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xor	edx, edx
@@ -3121,8 +3117,8 @@ $LN22@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81481
-	lea	rcx, OFFSET $SG81482
+	lea	rdx, OFFSET $SG97034
+	lea	rcx, OFFSET $SG97035
 	call	printf
 	npad	1
 	jmp	SHORT $LN101@test_compl
@@ -3130,21 +3126,21 @@ $LN100@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81483
-	lea	rcx, OFFSET $SG81484
+	lea	rdx, OFFSET $SG97036
+	lea	rcx, OFFSET $SG97037
 	call	printf
 	npad	1
 $LN101@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN22@test_compl
-; Line 192
-	lea	rdx, OFFSET $SG81485
+; Line 191
+	lea	rdx, OFFSET $SG97038
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR tags$3[rsp], rax
 $LN25@test_compl:
-; Line 193
+; Line 192
 	cmp	QWORD PTR tags$3[rsp], 0
 	je	SHORT $LN102@test_compl
 	mov	rax, QWORD PTR tags$3[rsp]
@@ -3153,8 +3149,8 @@ $LN25@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81488
-	lea	rcx, OFFSET $SG81489
+	lea	rdx, OFFSET $SG97041
+	lea	rcx, OFFSET $SG97042
 	call	printf
 	npad	1
 	jmp	SHORT $LN103@test_compl
@@ -3162,19 +3158,19 @@ $LN102@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81490
-	lea	rcx, OFFSET $SG81491
+	lea	rdx, OFFSET $SG97043
+	lea	rcx, OFFSET $SG97044
 	call	printf
 	npad	1
 $LN103@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN25@test_compl
-; Line 194
+; Line 193
 	cmp	QWORD PTR tags$3[rsp], 0
 	je	$LN104@test_compl
 $LN28@test_compl:
-; Line 195
+; Line 194
 	mov	rcx, QWORD PTR tags$3[rsp]
 	call	?Json_GetArraySize@@YAHPEAUJsonNode@@@Z	; Json_GetArraySize
 	cmp	eax, 3
@@ -3182,8 +3178,8 @@ $LN28@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81495
-	lea	rcx, OFFSET $SG81496
+	lea	rdx, OFFSET $SG97048
+	lea	rcx, OFFSET $SG97049
 	call	printf
 	npad	1
 	jmp	SHORT $LN106@test_compl
@@ -3191,8 +3187,8 @@ $LN105@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81497
-	lea	rcx, OFFSET $SG81498
+	lea	rdx, OFFSET $SG97050
+	lea	rcx, OFFSET $SG97051
 	call	printf
 	npad	1
 $LN106@test_compl:
@@ -3200,14 +3196,14 @@ $LN106@test_compl:
 	test	eax, eax
 	jne	SHORT $LN28@test_compl
 $LN31@test_compl:
-; Line 196
+; Line 195
 	xor	edx, edx
 	mov	rcx, QWORD PTR tags$3[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
-	lea	rdx, OFFSET $SG81502
+	lea	rdx, OFFSET $SG97055
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81501
+	lea	rdx, OFFSET $SG97054
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -3215,8 +3211,8 @@ $LN31@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81503
-	lea	rcx, OFFSET $SG81504
+	lea	rdx, OFFSET $SG97056
+	lea	rcx, OFFSET $SG97057
 	call	printf
 	npad	1
 	jmp	SHORT $LN108@test_compl
@@ -3224,8 +3220,8 @@ $LN107@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81505
-	lea	rcx, OFFSET $SG81506
+	lea	rdx, OFFSET $SG97058
+	lea	rcx, OFFSET $SG97059
 	call	printf
 	npad	1
 $LN108@test_compl:
@@ -3233,14 +3229,14 @@ $LN108@test_compl:
 	test	eax, eax
 	jne	SHORT $LN31@test_compl
 $LN34@test_compl:
-; Line 197
+; Line 196
 	mov	edx, 2
 	mov	rcx, QWORD PTR tags$3[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
-	lea	rdx, OFFSET $SG81510
+	lea	rdx, OFFSET $SG97063
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81509
+	lea	rdx, OFFSET $SG97062
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -3248,8 +3244,8 @@ $LN34@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81511
-	lea	rcx, OFFSET $SG81512
+	lea	rdx, OFFSET $SG97064
+	lea	rcx, OFFSET $SG97065
 	call	printf
 	npad	1
 	jmp	SHORT $LN110@test_compl
@@ -3257,8 +3253,8 @@ $LN109@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81513
-	lea	rcx, OFFSET $SG81514
+	lea	rdx, OFFSET $SG97066
+	lea	rcx, OFFSET $SG97067
 	call	printf
 	npad	1
 $LN110@test_compl:
@@ -3266,13 +3262,13 @@ $LN110@test_compl:
 	test	eax, eax
 	jne	SHORT $LN34@test_compl
 $LN104@test_compl:
-; Line 200
-	lea	rdx, OFFSET $SG81515
+; Line 199
+	lea	rdx, OFFSET $SG97068
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR meta$4[rsp], rax
 $LN37@test_compl:
-; Line 201
+; Line 200
 	cmp	QWORD PTR meta$4[rsp], 0
 	je	SHORT $LN111@test_compl
 	mov	rax, QWORD PTR meta$4[rsp]
@@ -3281,8 +3277,8 @@ $LN37@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81518
-	lea	rcx, OFFSET $SG81519
+	lea	rdx, OFFSET $SG97071
+	lea	rcx, OFFSET $SG97072
 	call	printf
 	npad	1
 	jmp	SHORT $LN112@test_compl
@@ -3290,26 +3286,26 @@ $LN111@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81520
-	lea	rcx, OFFSET $SG81521
+	lea	rdx, OFFSET $SG97073
+	lea	rcx, OFFSET $SG97074
 	call	printf
 	npad	1
 $LN112@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN37@test_compl
-; Line 202
+; Line 201
 	cmp	QWORD PTR meta$4[rsp], 0
 	je	$LN113@test_compl
 $LN40@test_compl:
-; Line 203
-	lea	rdx, OFFSET $SG81527
+; Line 202
+	lea	rdx, OFFSET $SG97080
 	mov	rcx, QWORD PTR meta$4[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81526
+	lea	rdx, OFFSET $SG97079
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81525
+	lea	rdx, OFFSET $SG97078
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -3317,8 +3313,8 @@ $LN40@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81528
-	lea	rcx, OFFSET $SG81529
+	lea	rdx, OFFSET $SG97081
+	lea	rcx, OFFSET $SG97082
 	call	printf
 	npad	1
 	jmp	SHORT $LN115@test_compl
@@ -3326,8 +3322,8 @@ $LN114@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81530
-	lea	rcx, OFFSET $SG81531
+	lea	rdx, OFFSET $SG97083
+	lea	rcx, OFFSET $SG97084
 	call	printf
 	npad	1
 $LN115@test_compl:
@@ -3335,8 +3331,8 @@ $LN115@test_compl:
 	test	eax, eax
 	jne	SHORT $LN40@test_compl
 $LN43@test_compl:
-; Line 204
-	lea	rdx, OFFSET $SG81534
+; Line 203
+	lea	rdx, OFFSET $SG97087
 	mov	rcx, QWORD PTR meta$4[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -3348,8 +3344,8 @@ $LN43@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81535
-	lea	rcx, OFFSET $SG81536
+	lea	rdx, OFFSET $SG97088
+	lea	rcx, OFFSET $SG97089
 	call	printf
 	npad	1
 	jmp	SHORT $LN117@test_compl
@@ -3357,21 +3353,21 @@ $LN116@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81537
-	lea	rcx, OFFSET $SG81538
+	lea	rdx, OFFSET $SG97090
+	lea	rcx, OFFSET $SG97091
 	call	printf
 	npad	1
 $LN117@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN43@test_compl
-; Line 206
-	lea	rdx, OFFSET $SG81539
+; Line 205
+	lea	rdx, OFFSET $SG97092
 	mov	rcx, QWORD PTR meta$4[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR levels$5[rsp], rax
 $LN46@test_compl:
-; Line 207
+; Line 206
 	cmp	QWORD PTR levels$5[rsp], 0
 	je	SHORT $LN118@test_compl
 	mov	rax, QWORD PTR levels$5[rsp]
@@ -3380,8 +3376,8 @@ $LN46@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81542
-	lea	rcx, OFFSET $SG81543
+	lea	rdx, OFFSET $SG97095
+	lea	rcx, OFFSET $SG97096
 	call	printf
 	npad	1
 	jmp	SHORT $LN119@test_compl
@@ -3389,19 +3385,19 @@ $LN118@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81544
-	lea	rcx, OFFSET $SG81545
+	lea	rdx, OFFSET $SG97097
+	lea	rcx, OFFSET $SG97098
 	call	printf
 	npad	1
 $LN119@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN46@test_compl
-; Line 208
+; Line 207
 	cmp	QWORD PTR levels$5[rsp], 0
 	je	$LN120@test_compl
 $LN49@test_compl:
-; Line 209
+; Line 208
 	mov	rcx, QWORD PTR levels$5[rsp]
 	call	?Json_GetArraySize@@YAHPEAUJsonNode@@@Z	; Json_GetArraySize
 	cmp	eax, 5
@@ -3409,8 +3405,8 @@ $LN49@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81549
-	lea	rcx, OFFSET $SG81550
+	lea	rdx, OFFSET $SG97102
+	lea	rcx, OFFSET $SG97103
 	call	printf
 	npad	1
 	jmp	SHORT $LN122@test_compl
@@ -3418,8 +3414,8 @@ $LN121@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81551
-	lea	rcx, OFFSET $SG81552
+	lea	rdx, OFFSET $SG97104
+	lea	rcx, OFFSET $SG97105
 	call	printf
 	npad	1
 $LN122@test_compl:
@@ -3427,7 +3423,7 @@ $LN122@test_compl:
 	test	eax, eax
 	jne	SHORT $LN49@test_compl
 $LN52@test_compl:
-; Line 210
+; Line 209
 	mov	edx, 4
 	mov	rcx, QWORD PTR levels$5[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -3440,8 +3436,8 @@ $LN52@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81555
-	lea	rcx, OFFSET $SG81556
+	lea	rdx, OFFSET $SG97108
+	lea	rcx, OFFSET $SG97109
 	call	printf
 	npad	1
 	jmp	SHORT $LN124@test_compl
@@ -3449,8 +3445,8 @@ $LN123@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81557
-	lea	rcx, OFFSET $SG81558
+	lea	rdx, OFFSET $SG97110
+	lea	rcx, OFFSET $SG97111
 	call	printf
 	npad	1
 $LN124@test_compl:
@@ -3459,13 +3455,13 @@ $LN124@test_compl:
 	jne	SHORT $LN52@test_compl
 $LN120@test_compl:
 $LN113@test_compl:
-; Line 214
-	lea	rdx, OFFSET $SG81559
+; Line 213
+	lea	rdx, OFFSET $SG97112
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR mixed$2[rsp], rax
 $LN55@test_compl:
-; Line 215
+; Line 214
 	cmp	QWORD PTR mixed$2[rsp], 0
 	je	SHORT $LN125@test_compl
 	mov	rcx, QWORD PTR mixed$2[rsp]
@@ -3475,8 +3471,8 @@ $LN55@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81562
-	lea	rcx, OFFSET $SG81563
+	lea	rdx, OFFSET $SG97115
+	lea	rcx, OFFSET $SG97116
 	call	printf
 	npad	1
 	jmp	SHORT $LN126@test_compl
@@ -3484,19 +3480,19 @@ $LN125@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81564
-	lea	rcx, OFFSET $SG81565
+	lea	rdx, OFFSET $SG97117
+	lea	rcx, OFFSET $SG97118
 	call	printf
 	npad	1
 $LN126@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN55@test_compl
-; Line 216
+; Line 215
 	cmp	QWORD PTR mixed$2[rsp], 0
 	je	$LN127@test_compl
 $LN58@test_compl:
-; Line 217
+; Line 216
 	xor	edx, edx
 	mov	rcx, QWORD PTR mixed$2[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -3509,8 +3505,8 @@ $LN58@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81569
-	lea	rcx, OFFSET $SG81570
+	lea	rdx, OFFSET $SG97122
+	lea	rcx, OFFSET $SG97123
 	call	printf
 	npad	1
 	jmp	SHORT $LN129@test_compl
@@ -3518,8 +3514,8 @@ $LN128@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81571
-	lea	rcx, OFFSET $SG81572
+	lea	rdx, OFFSET $SG97124
+	lea	rcx, OFFSET $SG97125
 	call	printf
 	npad	1
 $LN129@test_compl:
@@ -3527,14 +3523,14 @@ $LN129@test_compl:
 	test	eax, eax
 	jne	SHORT $LN58@test_compl
 $LN61@test_compl:
-; Line 218
+; Line 217
 	mov	edx, 1
 	mov	rcx, QWORD PTR mixed$2[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
-	lea	rdx, OFFSET $SG81576
+	lea	rdx, OFFSET $SG97129
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81575
+	lea	rdx, OFFSET $SG97128
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -3542,8 +3538,8 @@ $LN61@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81577
-	lea	rcx, OFFSET $SG81578
+	lea	rdx, OFFSET $SG97130
+	lea	rcx, OFFSET $SG97131
 	call	printf
 	npad	1
 	jmp	SHORT $LN131@test_compl
@@ -3551,8 +3547,8 @@ $LN130@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81579
-	lea	rcx, OFFSET $SG81580
+	lea	rdx, OFFSET $SG97132
+	lea	rcx, OFFSET $SG97133
 	call	printf
 	npad	1
 $LN131@test_compl:
@@ -3560,7 +3556,7 @@ $LN131@test_compl:
 	test	eax, eax
 	jne	SHORT $LN61@test_compl
 $LN64@test_compl:
-; Line 219
+; Line 218
 	mov	edx, 2
 	mov	rcx, QWORD PTR mixed$2[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -3572,8 +3568,8 @@ $LN64@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81583
-	lea	rcx, OFFSET $SG81584
+	lea	rdx, OFFSET $SG97136
+	lea	rcx, OFFSET $SG97137
 	call	printf
 	npad	1
 	jmp	SHORT $LN133@test_compl
@@ -3581,8 +3577,8 @@ $LN132@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81585
-	lea	rcx, OFFSET $SG81586
+	lea	rdx, OFFSET $SG97138
+	lea	rcx, OFFSET $SG97139
 	call	printf
 	npad	1
 $LN133@test_compl:
@@ -3590,7 +3586,7 @@ $LN133@test_compl:
 	test	eax, eax
 	jne	SHORT $LN64@test_compl
 $LN67@test_compl:
-; Line 220
+; Line 219
 	mov	edx, 3
 	mov	rcx, QWORD PTR mixed$2[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -3604,8 +3600,8 @@ $LN67@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81589
-	lea	rcx, OFFSET $SG81590
+	lea	rdx, OFFSET $SG97142
+	lea	rcx, OFFSET $SG97143
 	call	printf
 	npad	1
 	jmp	SHORT $LN135@test_compl
@@ -3613,24 +3609,24 @@ $LN134@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81591
-	lea	rcx, OFFSET $SG81592
+	lea	rdx, OFFSET $SG97144
+	lea	rcx, OFFSET $SG97145
 	call	printf
 	npad	1
 $LN135@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN67@test_compl
-; Line 221
+; Line 220
 	mov	edx, 4
 	mov	rcx, QWORD PTR mixed$2[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
 	mov	QWORD PTR mObj$6[rsp], rax
 $LN70@test_compl:
-; Line 222
+; Line 221
 	cmp	QWORD PTR mObj$6[rsp], 0
 	je	SHORT $LN136@test_compl
-	lea	rdx, OFFSET $SG81595
+	lea	rdx, OFFSET $SG97148
 	mov	rcx, QWORD PTR mObj$6[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -3642,8 +3638,8 @@ $LN70@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81596
-	lea	rcx, OFFSET $SG81597
+	lea	rdx, OFFSET $SG97149
+	lea	rcx, OFFSET $SG97150
 	call	printf
 	npad	1
 	jmp	SHORT $LN137@test_compl
@@ -3651,8 +3647,8 @@ $LN136@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81598
-	lea	rcx, OFFSET $SG81599
+	lea	rdx, OFFSET $SG97151
+	lea	rcx, OFFSET $SG97152
 	call	printf
 	npad	1
 $LN137@test_compl:
@@ -3661,13 +3657,13 @@ $LN137@test_compl:
 	jne	SHORT $LN70@test_compl
 $LN127@test_compl:
 $LN95@test_compl:
-; Line 226
-	lea	rdx, OFFSET $SG81600
+; Line 225
+	lea	rdx, OFFSET $SG97153
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR list$[rsp], rax
 $LN73@test_compl:
-; Line 227
+; Line 226
 	cmp	QWORD PTR list$[rsp], 0
 	je	SHORT $LN138@test_compl
 	mov	rcx, QWORD PTR list$[rsp]
@@ -3677,8 +3673,8 @@ $LN73@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81603
-	lea	rcx, OFFSET $SG81604
+	lea	rdx, OFFSET $SG97156
+	lea	rcx, OFFSET $SG97157
 	call	printf
 	npad	1
 	jmp	SHORT $LN139@test_compl
@@ -3686,18 +3682,18 @@ $LN138@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81605
-	lea	rcx, OFFSET $SG81606
+	lea	rdx, OFFSET $SG97158
+	lea	rcx, OFFSET $SG97159
 	call	printf
 	npad	1
 $LN139@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN73@test_compl
-; Line 228
+; Line 227
 	cmp	QWORD PTR list$[rsp], 0
 	je	$LN140@test_compl
-; Line 229
+; Line 228
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN76@test_compl
 $LN74@test_compl:
@@ -3707,34 +3703,34 @@ $LN74@test_compl:
 $LN76@test_compl:
 	cmp	DWORD PTR i$1[rsp], 3
 	jge	$LN75@test_compl
-; Line 231
+; Line 230
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR [rsp+32], eax
 	mov	r9d, DWORD PTR i$1[rsp]
-	lea	r8, OFFSET $SG81608
+	lea	r8, OFFSET $SG97161
 	mov	edx, 32					; 00000020H
 	lea	rcx, QWORD PTR buf$8[rsp]
 	call	snprintf
-; Line 232
+; Line 231
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR list$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
 	mov	QWORD PTR item$7[rsp], rax
-; Line 234
+; Line 233
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	r9d, eax
-	lea	r8, OFFSET $SG81609
+	lea	r8, OFFSET $SG97162
 	mov	edx, 32					; 00000020H
 	lea	rcx, QWORD PTR exp$9[rsp]
 	call	snprintf
 	npad	1
 $LN79@test_compl:
-; Line 235
+; Line 234
 	cmp	QWORD PTR item$7[rsp], 0
 	je	SHORT $LN141@test_compl
-	lea	rdx, OFFSET $SG81612
+	lea	rdx, OFFSET $SG97165
 	mov	rcx, QWORD PTR item$7[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -3750,7 +3746,7 @@ $LN79@test_compl:
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
 	lea	rdx, QWORD PTR buf$8[rsp]
-	lea	rcx, OFFSET $SG81613
+	lea	rcx, OFFSET $SG97166
 	call	printf
 	npad	1
 	jmp	SHORT $LN142@test_compl
@@ -3759,24 +3755,24 @@ $LN141@test_compl:
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
 	lea	rdx, QWORD PTR buf$8[rsp]
-	lea	rcx, OFFSET $SG81614
+	lea	rcx, OFFSET $SG97167
 	call	printf
 	npad	1
 $LN142@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	$LN79@test_compl
-; Line 236
+; Line 235
 	jmp	$LN74@test_compl
 $LN75@test_compl:
 $LN140@test_compl:
-; Line 239
-	lea	rdx, OFFSET $SG81615
+; Line 238
+	lea	rdx, OFFSET $SG97168
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR empty_arr$[rsp], rax
 $LN82@test_compl:
-; Line 240
+; Line 239
 	cmp	QWORD PTR empty_arr$[rsp], 0
 	je	SHORT $LN143@test_compl
 	mov	rcx, QWORD PTR empty_arr$[rsp]
@@ -3786,8 +3782,8 @@ $LN82@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81618
-	lea	rcx, OFFSET $SG81619
+	lea	rdx, OFFSET $SG97171
+	lea	rcx, OFFSET $SG97172
 	call	printf
 	npad	1
 	jmp	SHORT $LN144@test_compl
@@ -3795,21 +3791,21 @@ $LN143@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81620
-	lea	rcx, OFFSET $SG81621
+	lea	rdx, OFFSET $SG97173
+	lea	rcx, OFFSET $SG97174
 	call	printf
 	npad	1
 $LN144@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN82@test_compl
-; Line 242
-	lea	rdx, OFFSET $SG81622
+; Line 241
+	lea	rdx, OFFSET $SG97175
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR empty_obj$[rsp], rax
 $LN85@test_compl:
-; Line 243
+; Line 242
 	cmp	QWORD PTR empty_obj$[rsp], 0
 	je	SHORT $LN145@test_compl
 	mov	rcx, QWORD PTR empty_obj$[rsp]
@@ -3819,8 +3815,8 @@ $LN85@test_compl:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81625
-	lea	rcx, OFFSET $SG81626
+	lea	rdx, OFFSET $SG97178
+	lea	rcx, OFFSET $SG97179
 	call	printf
 	npad	1
 	jmp	SHORT $LN146@test_compl
@@ -3828,20 +3824,20 @@ $LN145@test_compl:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81627
-	lea	rcx, OFFSET $SG81628
+	lea	rdx, OFFSET $SG97180
+	lea	rcx, OFFSET $SG97181
 	call	printf
 	npad	1
 $LN146@test_compl:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN85@test_compl
-; Line 245
+; Line 244
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN1@test_compl:
-; Line 246
+; Line 245
 	add	rsp, 232				; 000000e8H
 	ret	0
 ?test_complex@@YAXXZ ENDP				; test_complex
@@ -3853,26 +3849,26 @@ n$ = 40
 s$ = 48
 ?test_tostring@@YAXXZ PROC				; test_tostring
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\Json\Json\main.cpp
-; Line 248
+; Line 247
 $LN63:
 	sub	rsp, 72					; 00000048H
-; Line 249
-	lea	rcx, OFFSET $SG81671
+; Line 248
+	lea	rcx, OFFSET $SG97224
 	call	printf
-; Line 253
-	lea	rcx, OFFSET $SG81672
+; Line 252
+	lea	rcx, OFFSET $SG97225
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 254
+; Line 253
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN4@test_tostr:
-; Line 255
+; Line 254
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN38@test_tostr
-	lea	rdx, OFFSET $SG81675
+	lea	rdx, OFFSET $SG97228
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -3880,8 +3876,8 @@ $LN4@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81676
-	lea	rcx, OFFSET $SG81677
+	lea	rdx, OFFSET $SG97229
+	lea	rcx, OFFSET $SG97230
 	call	printf
 	npad	1
 	jmp	SHORT $LN39@test_tostr
@@ -3889,31 +3885,31 @@ $LN38@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81678
-	lea	rcx, OFFSET $SG81679
+	lea	rdx, OFFSET $SG97231
+	lea	rcx, OFFSET $SG97232
 	call	printf
 	npad	1
 $LN39@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN4@test_tostr
-; Line 256
+; Line 255
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 258
-	lea	rcx, OFFSET $SG81680
+; Line 257
+	lea	rcx, OFFSET $SG97233
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 259
+; Line 258
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN7@test_tostr:
-; Line 260
+; Line 259
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN40@test_tostr
-	lea	rdx, OFFSET $SG81683
+	lea	rdx, OFFSET $SG97236
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -3921,8 +3917,8 @@ $LN7@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81684
-	lea	rcx, OFFSET $SG81685
+	lea	rdx, OFFSET $SG97237
+	lea	rcx, OFFSET $SG97238
 	call	printf
 	npad	1
 	jmp	SHORT $LN41@test_tostr
@@ -3930,31 +3926,31 @@ $LN40@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81686
-	lea	rcx, OFFSET $SG81687
+	lea	rdx, OFFSET $SG97239
+	lea	rcx, OFFSET $SG97240
 	call	printf
 	npad	1
 $LN41@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN7@test_tostr
-; Line 261
+; Line 260
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 263
-	lea	rcx, OFFSET $SG81688
+; Line 262
+	lea	rcx, OFFSET $SG97241
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 264
+; Line 263
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN10@test_tostr:
-; Line 265
+; Line 264
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN42@test_tostr
-	lea	rdx, OFFSET $SG81691
+	lea	rdx, OFFSET $SG97244
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -3962,8 +3958,8 @@ $LN10@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81692
-	lea	rcx, OFFSET $SG81693
+	lea	rdx, OFFSET $SG97245
+	lea	rcx, OFFSET $SG97246
 	call	printf
 	npad	1
 	jmp	SHORT $LN43@test_tostr
@@ -3971,31 +3967,31 @@ $LN42@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81694
-	lea	rcx, OFFSET $SG81695
+	lea	rdx, OFFSET $SG97247
+	lea	rcx, OFFSET $SG97248
 	call	printf
 	npad	1
 $LN43@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN10@test_tostr
-; Line 266
+; Line 265
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 268
-	lea	rcx, OFFSET $SG81696
+; Line 267
+	lea	rcx, OFFSET $SG97249
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 269
+; Line 268
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN13@test_tostr:
-; Line 270
+; Line 269
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN44@test_tostr
-	lea	rdx, OFFSET $SG81699
+	lea	rdx, OFFSET $SG97252
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -4003,8 +3999,8 @@ $LN13@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81700
-	lea	rcx, OFFSET $SG81701
+	lea	rdx, OFFSET $SG97253
+	lea	rcx, OFFSET $SG97254
 	call	printf
 	npad	1
 	jmp	SHORT $LN45@test_tostr
@@ -4012,31 +4008,31 @@ $LN44@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81702
-	lea	rcx, OFFSET $SG81703
+	lea	rdx, OFFSET $SG97255
+	lea	rcx, OFFSET $SG97256
 	call	printf
 	npad	1
 $LN45@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN13@test_tostr
-; Line 271
+; Line 270
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 273
-	lea	rcx, OFFSET $SG81704
+; Line 272
+	lea	rcx, OFFSET $SG97257
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 274
+; Line 273
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN16@test_tostr:
-; Line 275
+; Line 274
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN46@test_tostr
-	lea	rdx, OFFSET $SG81707
+	lea	rdx, OFFSET $SG97260
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -4044,8 +4040,8 @@ $LN16@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81708
-	lea	rcx, OFFSET $SG81709
+	lea	rdx, OFFSET $SG97261
+	lea	rcx, OFFSET $SG97262
 	call	printf
 	npad	1
 	jmp	SHORT $LN47@test_tostr
@@ -4053,35 +4049,35 @@ $LN46@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81710
-	lea	rcx, OFFSET $SG81711
+	lea	rdx, OFFSET $SG97263
+	lea	rcx, OFFSET $SG97264
 	call	printf
 	npad	1
 $LN47@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN16@test_tostr
-; Line 276
+; Line 275
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 278
-	lea	rcx, OFFSET $SG81712
+; Line 277
+	lea	rcx, OFFSET $SG97265
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 279
+; Line 278
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN19@test_tostr:
-; Line 280
+; Line 279
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN48@test_tostr
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81715
-	lea	rcx, OFFSET $SG81716
+	lea	rdx, OFFSET $SG97268
+	lea	rcx, OFFSET $SG97269
 	call	printf
 	npad	1
 	jmp	SHORT $LN49@test_tostr
@@ -4089,31 +4085,31 @@ $LN48@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81717
-	lea	rcx, OFFSET $SG81718
+	lea	rdx, OFFSET $SG97270
+	lea	rcx, OFFSET $SG97271
 	call	printf
 	npad	1
 $LN49@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN19@test_tostr
-; Line 281
+; Line 280
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 283
-	lea	rcx, OFFSET $SG81719
+; Line 282
+	lea	rcx, OFFSET $SG97272
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 284
+; Line 283
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN22@test_tostr:
-; Line 285
+; Line 284
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN50@test_tostr
-	lea	rdx, OFFSET $SG81722
+	lea	rdx, OFFSET $SG97275
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strstr
 	test	rax, rax
@@ -4121,8 +4117,8 @@ $LN22@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81723
-	lea	rcx, OFFSET $SG81724
+	lea	rdx, OFFSET $SG97276
+	lea	rcx, OFFSET $SG97277
 	call	printf
 	npad	1
 	jmp	SHORT $LN51@test_tostr
@@ -4130,31 +4126,31 @@ $LN50@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81725
-	lea	rcx, OFFSET $SG81726
+	lea	rdx, OFFSET $SG97278
+	lea	rcx, OFFSET $SG97279
 	call	printf
 	npad	1
 $LN51@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN22@test_tostr
-; Line 286
+; Line 285
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 288
-	lea	rcx, OFFSET $SG81727
+; Line 287
+	lea	rcx, OFFSET $SG97280
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 289
+; Line 288
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN25@test_tostr:
-; Line 290
+; Line 289
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN52@test_tostr
-	lea	rdx, OFFSET $SG81730
+	lea	rdx, OFFSET $SG97283
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strstr
 	test	rax, rax
@@ -4162,8 +4158,8 @@ $LN25@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81731
-	lea	rcx, OFFSET $SG81732
+	lea	rdx, OFFSET $SG97284
+	lea	rcx, OFFSET $SG97285
 	call	printf
 	npad	1
 	jmp	SHORT $LN53@test_tostr
@@ -4171,31 +4167,31 @@ $LN52@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81733
-	lea	rcx, OFFSET $SG81734
+	lea	rdx, OFFSET $SG97286
+	lea	rcx, OFFSET $SG97287
 	call	printf
 	npad	1
 $LN53@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN25@test_tostr
-; Line 291
+; Line 290
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 293
-	lea	rcx, OFFSET $SG81735
+; Line 292
+	lea	rcx, OFFSET $SG97288
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 294
+; Line 293
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN28@test_tostr:
-; Line 295
+; Line 294
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN54@test_tostr
-	lea	rdx, OFFSET $SG81738
+	lea	rdx, OFFSET $SG97291
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -4203,8 +4199,8 @@ $LN28@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81739
-	lea	rcx, OFFSET $SG81740
+	lea	rdx, OFFSET $SG97292
+	lea	rcx, OFFSET $SG97293
 	call	printf
 	npad	1
 	jmp	SHORT $LN55@test_tostr
@@ -4212,31 +4208,31 @@ $LN54@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81741
-	lea	rcx, OFFSET $SG81742
+	lea	rdx, OFFSET $SG97294
+	lea	rcx, OFFSET $SG97295
 	call	printf
 	npad	1
 $LN55@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN28@test_tostr
-; Line 296
+; Line 295
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 298
-	lea	rcx, OFFSET $SG81743
+; Line 297
+	lea	rcx, OFFSET $SG97296
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 299
+; Line 298
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN31@test_tostr:
-; Line 300
+; Line 299
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN56@test_tostr
-	lea	rdx, OFFSET $SG81746
+	lea	rdx, OFFSET $SG97299
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -4244,8 +4240,8 @@ $LN31@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81747
-	lea	rcx, OFFSET $SG81748
+	lea	rdx, OFFSET $SG97300
+	lea	rcx, OFFSET $SG97301
 	call	printf
 	npad	1
 	jmp	SHORT $LN57@test_tostr
@@ -4253,31 +4249,31 @@ $LN56@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81749
-	lea	rcx, OFFSET $SG81750
+	lea	rdx, OFFSET $SG97302
+	lea	rcx, OFFSET $SG97303
 	call	printf
 	npad	1
 $LN57@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN31@test_tostr
-; Line 301
+; Line 300
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 303
-	lea	rcx, OFFSET $SG81751
+; Line 302
+	lea	rcx, OFFSET $SG97304
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 304
+; Line 303
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN34@test_tostr:
-; Line 305
+; Line 304
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN58@test_tostr
-	lea	rdx, OFFSET $SG81754
+	lea	rdx, OFFSET $SG97307
 	mov	rcx, QWORD PTR s$[rsp]
 	call	strstr
 	test	rax, rax
@@ -4285,8 +4281,8 @@ $LN34@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81755
-	lea	rcx, OFFSET $SG81756
+	lea	rdx, OFFSET $SG97308
+	lea	rcx, OFFSET $SG97309
 	call	printf
 	npad	1
 	jmp	SHORT $LN59@test_tostr
@@ -4294,30 +4290,30 @@ $LN58@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81757
-	lea	rcx, OFFSET $SG81758
+	lea	rdx, OFFSET $SG97310
+	lea	rcx, OFFSET $SG97311
 	call	printf
 	npad	1
 $LN59@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN34@test_tostr
-; Line 306
+; Line 305
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 308
+; Line 307
 	mov	DWORD PTR len$[rsp], 0
-; Line 309
-	lea	rcx, OFFSET $SG81759
+; Line 308
+	lea	rcx, OFFSET $SG97312
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
-; Line 310
+; Line 309
 	lea	rdx, QWORD PTR len$[rsp]
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_ToString@@YAPEBDPEAUJsonNode@@PEAH@Z ; Json_ToString
 	mov	QWORD PTR s$[rsp], rax
 $LN37@test_tostr:
-; Line 311
+; Line 310
 	cmp	QWORD PTR s$[rsp], 0
 	je	SHORT $LN60@test_tostr
 	cmp	DWORD PTR len$[rsp], 0
@@ -4329,8 +4325,8 @@ $LN37@test_tostr:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81762
-	lea	rcx, OFFSET $SG81763
+	lea	rdx, OFFSET $SG97315
+	lea	rcx, OFFSET $SG97316
 	call	printf
 	npad	1
 	jmp	SHORT $LN61@test_tostr
@@ -4338,19 +4334,19 @@ $LN60@test_tostr:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81764
-	lea	rcx, OFFSET $SG81765
+	lea	rdx, OFFSET $SG97317
+	lea	rcx, OFFSET $SG97318
 	call	printf
 	npad	1
 $LN61@test_tostr:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN37@test_tostr
-; Line 312
+; Line 311
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
-; Line 313
+; Line 312
 	add	rsp, 72					; 00000048H
 	ret	0
 ?test_tostring@@YAXXZ ENDP				; test_tostring
@@ -4367,26 +4363,26 @@ httpResponse$ = 80
 jsonStart$ = 88
 ?test_http_response@@YAXXZ PROC				; test_http_response
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\Json\Json\main.cpp
-; Line 315
+; Line 314
 $LN82:
 	sub	rsp, 104				; 00000068H
-; Line 316
-	lea	rcx, OFFSET $SG81821
+; Line 315
+	lea	rcx, OFFSET $SG97374
 	call	printf
-; Line 318
-	lea	rax, OFFSET $SG81822
+; Line 317
+	lea	rax, OFFSET $SG97375
 	mov	QWORD PTR httpResponse$[rsp], rax
-; Line 342
-	lea	rdx, OFFSET $SG81823
+; Line 341
+	lea	rdx, OFFSET $SG97376
 	mov	rcx, QWORD PTR httpResponse$[rsp]
 	call	strstr
 	mov	QWORD PTR jsonStart$[rsp], rax
-; Line 343
+; Line 342
 	mov	rcx, QWORD PTR jsonStart$[rsp]
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR root$[rsp], rax
 $LN4@test_http_:
-; Line 344
+; Line 343
 	cmp	QWORD PTR root$[rsp], 0
 	je	SHORT $LN47@test_http_
 	mov	rax, QWORD PTR root$[rsp]
@@ -4395,8 +4391,8 @@ $LN4@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81826
-	lea	rcx, OFFSET $SG81827
+	lea	rdx, OFFSET $SG97379
+	lea	rcx, OFFSET $SG97380
 	call	printf
 	npad	1
 	jmp	SHORT $LN48@test_http_
@@ -4404,22 +4400,22 @@ $LN47@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81828
-	lea	rcx, OFFSET $SG81829
+	lea	rdx, OFFSET $SG97381
+	lea	rcx, OFFSET $SG97382
 	call	printf
 	npad	1
 $LN48@test_http_:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN4@test_http_
-; Line 345
+; Line 344
 	cmp	QWORD PTR root$[rsp], 0
 	jne	SHORT $LN49@test_http_
 	jmp	$LN1@test_http_
 $LN49@test_http_:
 $LN7@test_http_:
-; Line 347
-	lea	rdx, OFFSET $SG81833
+; Line 346
+	lea	rdx, OFFSET $SG97386
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -4431,8 +4427,8 @@ $LN7@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81834
-	lea	rcx, OFFSET $SG81835
+	lea	rdx, OFFSET $SG97387
+	lea	rcx, OFFSET $SG97388
 	call	printf
 	npad	1
 	jmp	SHORT $LN51@test_http_
@@ -4440,8 +4436,8 @@ $LN50@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81836
-	lea	rcx, OFFSET $SG81837
+	lea	rdx, OFFSET $SG97389
+	lea	rcx, OFFSET $SG97390
 	call	printf
 	npad	1
 $LN51@test_http_:
@@ -4449,14 +4445,14 @@ $LN51@test_http_:
 	test	eax, eax
 	jne	SHORT $LN7@test_http_
 $LN10@test_http_:
-; Line 348
-	lea	rdx, OFFSET $SG81842
+; Line 347
+	lea	rdx, OFFSET $SG97395
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81841
+	lea	rdx, OFFSET $SG97394
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81840
+	lea	rdx, OFFSET $SG97393
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -4464,8 +4460,8 @@ $LN10@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81843
-	lea	rcx, OFFSET $SG81844
+	lea	rdx, OFFSET $SG97396
+	lea	rcx, OFFSET $SG97397
 	call	printf
 	npad	1
 	jmp	SHORT $LN53@test_http_
@@ -4473,28 +4469,28 @@ $LN52@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81845
-	lea	rcx, OFFSET $SG81846
+	lea	rdx, OFFSET $SG97398
+	lea	rcx, OFFSET $SG97399
 	call	printf
 	npad	1
 $LN53@test_http_:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN10@test_http_
-; Line 350
-	lea	rdx, OFFSET $SG81847
+; Line 349
+	lea	rdx, OFFSET $SG97400
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR data$[rsp], rax
 $LN13@test_http_:
-; Line 351
+; Line 350
 	cmp	QWORD PTR data$[rsp], 0
 	je	SHORT $LN54@test_http_
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81850
-	lea	rcx, OFFSET $SG81851
+	lea	rdx, OFFSET $SG97403
+	lea	rcx, OFFSET $SG97404
 	call	printf
 	npad	1
 	jmp	SHORT $LN55@test_http_
@@ -4502,26 +4498,26 @@ $LN54@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81852
-	lea	rcx, OFFSET $SG81853
+	lea	rdx, OFFSET $SG97405
+	lea	rcx, OFFSET $SG97406
 	call	printf
 	npad	1
 $LN55@test_http_:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN13@test_http_
-; Line 352
+; Line 351
 	cmp	QWORD PTR data$[rsp], 0
 	je	$LN56@test_http_
 $LN16@test_http_:
-; Line 353
-	lea	rdx, OFFSET $SG81859
+; Line 352
+	lea	rdx, OFFSET $SG97412
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81858
+	lea	rdx, OFFSET $SG97411
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81857
+	lea	rdx, OFFSET $SG97410
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -4529,8 +4525,8 @@ $LN16@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81860
-	lea	rcx, OFFSET $SG81861
+	lea	rdx, OFFSET $SG97413
+	lea	rcx, OFFSET $SG97414
 	call	printf
 	npad	1
 	jmp	SHORT $LN58@test_http_
@@ -4538,8 +4534,8 @@ $LN57@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81862
-	lea	rcx, OFFSET $SG81863
+	lea	rdx, OFFSET $SG97415
+	lea	rcx, OFFSET $SG97416
 	call	printf
 	npad	1
 $LN58@test_http_:
@@ -4547,8 +4543,8 @@ $LN58@test_http_:
 	test	eax, eax
 	jne	SHORT $LN16@test_http_
 $LN19@test_http_:
-; Line 354
-	lea	rdx, OFFSET $SG81866
+; Line 353
+	lea	rdx, OFFSET $SG97419
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -4560,8 +4556,8 @@ $LN19@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81867
-	lea	rcx, OFFSET $SG81868
+	lea	rdx, OFFSET $SG97420
+	lea	rcx, OFFSET $SG97421
 	call	printf
 	npad	1
 	jmp	SHORT $LN60@test_http_
@@ -4569,28 +4565,28 @@ $LN59@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81869
-	lea	rcx, OFFSET $SG81870
+	lea	rdx, OFFSET $SG97422
+	lea	rcx, OFFSET $SG97423
 	call	printf
 	npad	1
 $LN60@test_http_:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN19@test_http_
-; Line 356
-	lea	rdx, OFFSET $SG81871
+; Line 355
+	lea	rdx, OFFSET $SG97424
 	mov	rcx, QWORD PTR data$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR user$1[rsp], rax
 $LN22@test_http_:
-; Line 357
+; Line 356
 	cmp	QWORD PTR user$1[rsp], 0
 	je	SHORT $LN61@test_http_
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81874
-	lea	rcx, OFFSET $SG81875
+	lea	rdx, OFFSET $SG97427
+	lea	rcx, OFFSET $SG97428
 	call	printf
 	npad	1
 	jmp	SHORT $LN62@test_http_
@@ -4598,20 +4594,20 @@ $LN61@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81876
-	lea	rcx, OFFSET $SG81877
+	lea	rdx, OFFSET $SG97429
+	lea	rcx, OFFSET $SG97430
 	call	printf
 	npad	1
 $LN62@test_http_:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN22@test_http_
-; Line 358
+; Line 357
 	cmp	QWORD PTR user$1[rsp], 0
 	je	$LN63@test_http_
 $LN25@test_http_:
-; Line 359
-	lea	rdx, OFFSET $SG81881
+; Line 358
+	lea	rdx, OFFSET $SG97434
 	mov	rcx, QWORD PTR user$1[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xorps	xmm1, xmm1
@@ -4623,8 +4619,8 @@ $LN25@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81882
-	lea	rcx, OFFSET $SG81883
+	lea	rdx, OFFSET $SG97435
+	lea	rcx, OFFSET $SG97436
 	call	printf
 	npad	1
 	jmp	SHORT $LN65@test_http_
@@ -4632,8 +4628,8 @@ $LN64@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81884
-	lea	rcx, OFFSET $SG81885
+	lea	rdx, OFFSET $SG97437
+	lea	rcx, OFFSET $SG97438
 	call	printf
 	npad	1
 $LN65@test_http_:
@@ -4641,14 +4637,14 @@ $LN65@test_http_:
 	test	eax, eax
 	jne	SHORT $LN25@test_http_
 $LN28@test_http_:
-; Line 360
-	lea	rdx, OFFSET $SG81890
+; Line 359
+	lea	rdx, OFFSET $SG97443
 	mov	rcx, QWORD PTR user$1[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81889
+	lea	rdx, OFFSET $SG97442
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81888
+	lea	rdx, OFFSET $SG97441
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -4656,8 +4652,8 @@ $LN28@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81891
-	lea	rcx, OFFSET $SG81892
+	lea	rdx, OFFSET $SG97444
+	lea	rcx, OFFSET $SG97445
 	call	printf
 	npad	1
 	jmp	SHORT $LN67@test_http_
@@ -4665,21 +4661,21 @@ $LN66@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81893
-	lea	rcx, OFFSET $SG81894
+	lea	rdx, OFFSET $SG97446
+	lea	rcx, OFFSET $SG97447
 	call	printf
 	npad	1
 $LN67@test_http_:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN28@test_http_
-; Line 362
-	lea	rdx, OFFSET $SG81895
+; Line 361
+	lea	rdx, OFFSET $SG97448
 	mov	rcx, QWORD PTR user$1[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR roles$4[rsp], rax
 $LN31@test_http_:
-; Line 363
+; Line 362
 	cmp	QWORD PTR roles$4[rsp], 0
 	je	SHORT $LN68@test_http_
 	mov	rcx, QWORD PTR roles$4[rsp]
@@ -4689,8 +4685,8 @@ $LN31@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81898
-	lea	rcx, OFFSET $SG81899
+	lea	rdx, OFFSET $SG97451
+	lea	rcx, OFFSET $SG97452
 	call	printf
 	npad	1
 	jmp	SHORT $LN69@test_http_
@@ -4698,28 +4694,28 @@ $LN68@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81900
-	lea	rcx, OFFSET $SG81901
+	lea	rdx, OFFSET $SG97453
+	lea	rcx, OFFSET $SG97454
 	call	printf
 	npad	1
 $LN69@test_http_:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN31@test_http_
-; Line 365
-	lea	rdx, OFFSET $SG81902
+; Line 364
+	lea	rdx, OFFSET $SG97455
 	mov	rcx, QWORD PTR user$1[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR profile$2[rsp], rax
 $LN34@test_http_:
-; Line 366
+; Line 365
 	cmp	QWORD PTR profile$2[rsp], 0
 	je	SHORT $LN70@test_http_
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81905
-	lea	rcx, OFFSET $SG81906
+	lea	rdx, OFFSET $SG97458
+	lea	rcx, OFFSET $SG97459
 	call	printf
 	npad	1
 	jmp	SHORT $LN71@test_http_
@@ -4727,26 +4723,26 @@ $LN70@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81907
-	lea	rcx, OFFSET $SG81908
+	lea	rdx, OFFSET $SG97460
+	lea	rcx, OFFSET $SG97461
 	call	printf
 	npad	1
 $LN71@test_http_:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN34@test_http_
-; Line 367
+; Line 366
 	cmp	QWORD PTR profile$2[rsp], 0
 	je	$LN72@test_http_
 $LN37@test_http_:
-; Line 368
-	lea	rdx, OFFSET $SG81914
+; Line 367
+	lea	rdx, OFFSET $SG97467
 	mov	rcx, QWORD PTR profile$2[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81913
+	lea	rdx, OFFSET $SG97466
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81912
+	lea	rdx, OFFSET $SG97465
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -4754,8 +4750,8 @@ $LN37@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81915
-	lea	rcx, OFFSET $SG81916
+	lea	rdx, OFFSET $SG97468
+	lea	rcx, OFFSET $SG97469
 	call	printf
 	npad	1
 	jmp	SHORT $LN74@test_http_
@@ -4763,8 +4759,8 @@ $LN73@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81917
-	lea	rcx, OFFSET $SG81918
+	lea	rdx, OFFSET $SG97470
+	lea	rcx, OFFSET $SG97471
 	call	printf
 	npad	1
 $LN74@test_http_:
@@ -4772,8 +4768,8 @@ $LN74@test_http_:
 	test	eax, eax
 	jne	SHORT $LN37@test_http_
 $LN40@test_http_:
-; Line 369
-	lea	rdx, OFFSET $SG81921
+; Line 368
+	lea	rdx, OFFSET $SG97474
 	mov	rcx, QWORD PTR profile$2[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	xor	edx, edx
@@ -4784,8 +4780,8 @@ $LN40@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81922
-	lea	rcx, OFFSET $SG81923
+	lea	rdx, OFFSET $SG97475
+	lea	rcx, OFFSET $SG97476
 	call	printf
 	npad	1
 	jmp	SHORT $LN76@test_http_
@@ -4793,8 +4789,8 @@ $LN75@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81924
-	lea	rcx, OFFSET $SG81925
+	lea	rdx, OFFSET $SG97477
+	lea	rcx, OFFSET $SG97478
 	call	printf
 	npad	1
 $LN76@test_http_:
@@ -4803,22 +4799,22 @@ $LN76@test_http_:
 	jne	SHORT $LN40@test_http_
 $LN72@test_http_:
 $LN63@test_http_:
-; Line 373
-	lea	rdx, OFFSET $SG81926
+; Line 372
+	lea	rdx, OFFSET $SG97479
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	QWORD PTR settings$3[rsp], rax
 $LN43@test_http_:
-; Line 374
+; Line 373
 	cmp	QWORD PTR settings$3[rsp], 0
 	je	SHORT $LN77@test_http_
-	lea	rdx, OFFSET $SG81931
+	lea	rdx, OFFSET $SG97484
 	mov	rcx, QWORD PTR settings$3[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
-	lea	rdx, OFFSET $SG81930
+	lea	rdx, OFFSET $SG97483
 	mov	rcx, rax
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81929
+	lea	rdx, OFFSET $SG97482
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -4826,8 +4822,8 @@ $LN43@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81932
-	lea	rcx, OFFSET $SG81933
+	lea	rdx, OFFSET $SG97485
+	lea	rcx, OFFSET $SG97486
 	call	printf
 	npad	1
 	jmp	SHORT $LN78@test_http_
@@ -4835,8 +4831,8 @@ $LN77@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81934
-	lea	rcx, OFFSET $SG81935
+	lea	rdx, OFFSET $SG97487
+	lea	rcx, OFFSET $SG97488
 	call	printf
 	npad	1
 $LN78@test_http_:
@@ -4844,10 +4840,10 @@ $LN78@test_http_:
 	test	eax, eax
 	jne	$LN43@test_http_
 $LN46@test_http_:
-; Line 375
+; Line 374
 	cmp	QWORD PTR settings$3[rsp], 0
 	je	SHORT $LN79@test_http_
-	lea	rdx, OFFSET $SG81938
+	lea	rdx, OFFSET $SG97491
 	mov	rcx, QWORD PTR settings$3[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	mov	edx, 1
@@ -4858,8 +4854,8 @@ $LN46@test_http_:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81939
-	lea	rcx, OFFSET $SG81940
+	lea	rdx, OFFSET $SG97492
+	lea	rcx, OFFSET $SG97493
 	call	printf
 	npad	1
 	jmp	SHORT $LN80@test_http_
@@ -4867,8 +4863,8 @@ $LN79@test_http_:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81941
-	lea	rcx, OFFSET $SG81942
+	lea	rdx, OFFSET $SG97494
+	lea	rcx, OFFSET $SG97495
 	call	printf
 	npad	1
 $LN80@test_http_:
@@ -4876,12 +4872,12 @@ $LN80@test_http_:
 	test	eax, eax
 	jne	SHORT $LN46@test_http_
 $LN56@test_http_:
-; Line 378
+; Line 377
 	mov	rcx, QWORD PTR root$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
 $LN1@test_http_:
-; Line 379
+; Line 378
 	add	rsp, 104				; 00000068H
 	ret	0
 ?test_http_response@@YAXXZ ENDP				; test_http_response
@@ -4891,22 +4887,22 @@ _TEXT	SEGMENT
 n$ = 32
 ?test_getter_defaults@@YAXXZ PROC			; test_getter_defaults
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\Json\Json\main.cpp
-; Line 381
+; Line 380
 $LN48:
 	sub	rsp, 56					; 00000038H
-; Line 382
-	lea	rcx, OFFSET $SG81973
+; Line 381
+	lea	rcx, OFFSET $SG97526
 	call	printf
-; Line 384
-	lea	rcx, OFFSET $SG81974
+; Line 383
+	lea	rcx, OFFSET $SG97527
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN4@test_gette:
-; Line 385
-	lea	rdx, OFFSET $SG81978
+; Line 384
+	lea	rdx, OFFSET $SG97531
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG81977
+	lea	rdx, OFFSET $SG97530
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -4914,8 +4910,8 @@ $LN4@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81979
-	lea	rcx, OFFSET $SG81980
+	lea	rdx, OFFSET $SG97532
+	lea	rcx, OFFSET $SG97533
 	call	printf
 	npad	1
 	jmp	SHORT $LN30@test_gette
@@ -4923,23 +4919,23 @@ $LN29@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81981
-	lea	rcx, OFFSET $SG81982
+	lea	rdx, OFFSET $SG97534
+	lea	rcx, OFFSET $SG97535
 	call	printf
 	npad	1
 $LN30@test_gette:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN4@test_gette
-; Line 386
+; Line 385
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 388
-	lea	rcx, OFFSET $SG81983
+; Line 387
+	lea	rcx, OFFSET $SG97536
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN7@test_gette:
-; Line 389
+; Line 388
 	movsd	xmm1, QWORD PTR __real@408f380000000000
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetNumber@@YANPEAUJsonNode@@N@Z	; Json_GetNumber
@@ -4949,8 +4945,8 @@ $LN7@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81986
-	lea	rcx, OFFSET $SG81987
+	lea	rdx, OFFSET $SG97539
+	lea	rcx, OFFSET $SG97540
 	call	printf
 	npad	1
 	jmp	SHORT $LN32@test_gette
@@ -4958,23 +4954,23 @@ $LN31@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81988
-	lea	rcx, OFFSET $SG81989
+	lea	rdx, OFFSET $SG97541
+	lea	rcx, OFFSET $SG97542
 	call	printf
 	npad	1
 $LN32@test_gette:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN7@test_gette
-; Line 390
+; Line 389
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 392
-	lea	rcx, OFFSET $SG81990
+; Line 391
+	lea	rcx, OFFSET $SG97543
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN10@test_gette:
-; Line 393
+; Line 392
 	xor	edx, edx
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetBool@@YAHPEAUJsonNode@@H@Z	; Json_GetBool
@@ -4983,8 +4979,8 @@ $LN10@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81993
-	lea	rcx, OFFSET $SG81994
+	lea	rdx, OFFSET $SG97546
+	lea	rcx, OFFSET $SG97547
 	call	printf
 	npad	1
 	jmp	SHORT $LN34@test_gette
@@ -4992,8 +4988,8 @@ $LN33@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG81995
-	lea	rcx, OFFSET $SG81996
+	lea	rdx, OFFSET $SG97548
+	lea	rcx, OFFSET $SG97549
 	call	printf
 	npad	1
 $LN34@test_gette:
@@ -5001,7 +4997,7 @@ $LN34@test_gette:
 	test	eax, eax
 	jne	SHORT $LN10@test_gette
 $LN13@test_gette:
-; Line 394
+; Line 393
 	mov	edx, 42					; 0000002aH
 	xor	ecx, ecx
 	call	?Json_GetBool@@YAHPEAUJsonNode@@H@Z	; Json_GetBool
@@ -5010,8 +5006,8 @@ $LN13@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG81999
-	lea	rcx, OFFSET $SG82000
+	lea	rdx, OFFSET $SG97552
+	lea	rcx, OFFSET $SG97553
 	call	printf
 	npad	1
 	jmp	SHORT $LN36@test_gette
@@ -5019,8 +5015,8 @@ $LN35@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG82001
-	lea	rcx, OFFSET $SG82002
+	lea	rdx, OFFSET $SG97554
+	lea	rcx, OFFSET $SG97555
 	call	printf
 	npad	1
 $LN36@test_gette:
@@ -5028,7 +5024,7 @@ $LN36@test_gette:
 	test	eax, eax
 	jne	SHORT $LN13@test_gette
 $LN16@test_gette:
-; Line 395
+; Line 394
 	movsd	xmm1, QWORD PTR __real@4058c00000000000
 	xor	ecx, ecx
 	call	?Json_GetNumber@@YANPEAUJsonNode@@N@Z	; Json_GetNumber
@@ -5038,8 +5034,8 @@ $LN16@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG82005
-	lea	rcx, OFFSET $SG82006
+	lea	rdx, OFFSET $SG97558
+	lea	rcx, OFFSET $SG97559
 	call	printf
 	npad	1
 	jmp	SHORT $LN38@test_gette
@@ -5047,8 +5043,8 @@ $LN37@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG82007
-	lea	rcx, OFFSET $SG82008
+	lea	rdx, OFFSET $SG97560
+	lea	rcx, OFFSET $SG97561
 	call	printf
 	npad	1
 $LN38@test_gette:
@@ -5056,11 +5052,11 @@ $LN38@test_gette:
 	test	eax, eax
 	jne	SHORT $LN16@test_gette
 $LN19@test_gette:
-; Line 396
-	lea	rdx, OFFSET $SG82012
+; Line 395
+	lea	rdx, OFFSET $SG97565
 	xor	ecx, ecx
 	call	?Json_GetString@@YAPEBDPEAUJsonNode@@PEBD@Z ; Json_GetString
-	lea	rdx, OFFSET $SG82011
+	lea	rdx, OFFSET $SG97564
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
@@ -5068,8 +5064,8 @@ $LN19@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG82013
-	lea	rcx, OFFSET $SG82014
+	lea	rdx, OFFSET $SG97566
+	lea	rcx, OFFSET $SG97567
 	call	printf
 	npad	1
 	jmp	SHORT $LN40@test_gette
@@ -5077,24 +5073,24 @@ $LN39@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG82015
-	lea	rcx, OFFSET $SG82016
+	lea	rdx, OFFSET $SG97568
+	lea	rcx, OFFSET $SG97569
 	call	printf
 	npad	1
 $LN40@test_gette:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN19@test_gette
-; Line 397
+; Line 396
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 399
-	lea	rcx, OFFSET $SG82017
+; Line 398
+	lea	rcx, OFFSET $SG97570
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN22@test_gette:
-; Line 400
-	lea	rdx, OFFSET $SG82020
+; Line 399
+	lea	rdx, OFFSET $SG97573
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetObjectItem@@YAPEAUJsonNode@@PEAU1@PEBD@Z ; Json_GetObjectItem
 	test	rax, rax
@@ -5102,8 +5098,8 @@ $LN22@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG82021
-	lea	rcx, OFFSET $SG82022
+	lea	rdx, OFFSET $SG97574
+	lea	rcx, OFFSET $SG97575
 	call	printf
 	npad	1
 	jmp	SHORT $LN42@test_gette
@@ -5111,23 +5107,23 @@ $LN41@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG82023
-	lea	rcx, OFFSET $SG82024
+	lea	rdx, OFFSET $SG97576
+	lea	rcx, OFFSET $SG97577
 	call	printf
 	npad	1
 $LN42@test_gette:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN22@test_gette
-; Line 401
+; Line 400
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
-; Line 403
-	lea	rcx, OFFSET $SG82025
+; Line 402
+	lea	rcx, OFFSET $SG97578
 	call	?Json_Parse@@YAPEAUJsonNode@@PEBD@Z	; Json_Parse
 	mov	QWORD PTR n$[rsp], rax
 $LN25@test_gette:
-; Line 404
+; Line 403
 	mov	edx, -1
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -5136,8 +5132,8 @@ $LN25@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG82028
-	lea	rcx, OFFSET $SG82029
+	lea	rdx, OFFSET $SG97581
+	lea	rcx, OFFSET $SG97582
 	call	printf
 	npad	1
 	jmp	SHORT $LN44@test_gette
@@ -5145,8 +5141,8 @@ $LN43@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG82030
-	lea	rcx, OFFSET $SG82031
+	lea	rdx, OFFSET $SG97583
+	lea	rcx, OFFSET $SG97584
 	call	printf
 	npad	1
 $LN44@test_gette:
@@ -5154,7 +5150,7 @@ $LN44@test_gette:
 	test	eax, eax
 	jne	SHORT $LN25@test_gette
 $LN28@test_gette:
-; Line 405
+; Line 404
 	mov	edx, 100				; 00000064H
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_GetArrayItem@@YAPEAUJsonNode@@PEAU1@H@Z ; Json_GetArrayItem
@@ -5163,8 +5159,8 @@ $LN28@test_gette:
 	mov	eax, DWORD PTR ?g_passed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_passed@@3HA, eax
-	lea	rdx, OFFSET $SG82034
-	lea	rcx, OFFSET $SG82035
+	lea	rdx, OFFSET $SG97587
+	lea	rcx, OFFSET $SG97588
 	call	printf
 	npad	1
 	jmp	SHORT $LN46@test_gette
@@ -5172,19 +5168,19 @@ $LN45@test_gette:
 	mov	eax, DWORD PTR ?g_failed@@3HA
 	inc	eax
 	mov	DWORD PTR ?g_failed@@3HA, eax
-	lea	rdx, OFFSET $SG82036
-	lea	rcx, OFFSET $SG82037
+	lea	rdx, OFFSET $SG97589
+	lea	rcx, OFFSET $SG97590
 	call	printf
 	npad	1
 $LN46@test_gette:
 	xor	eax, eax
 	test	eax, eax
 	jne	SHORT $LN28@test_gette
-; Line 406
+; Line 405
 	mov	rcx, QWORD PTR n$[rsp]
 	call	?Json_Free@@YAXPEAUJsonNode@@@Z		; Json_Free
 	npad	1
-; Line 407
+; Line 406
 	add	rsp, 56					; 00000038H
 	ret	0
 ?test_getter_defaults@@YAXXZ ENDP			; test_getter_defaults
@@ -5194,44 +5190,44 @@ _TEXT	SEGMENT
 tv73 = 32
 main	PROC
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\Json\Json\main.cpp
-; Line 409
+; Line 408
 $LN5:
 	sub	rsp, 56					; 00000038H
+; Line 409
+	lea	rcx, OFFSET $SG97593
+	call	printf
 ; Line 410
-	lea	rcx, OFFSET $SG82040
+	lea	rcx, OFFSET $SG97594
 	call	printf
 ; Line 411
-	lea	rcx, OFFSET $SG82041
+	lea	rcx, OFFSET $SG97595
 	call	printf
-; Line 412
-	lea	rcx, OFFSET $SG82042
-	call	printf
-; Line 414
+; Line 413
 	call	?test_basic_types@@YAXXZ		; test_basic_types
-; Line 415
+; Line 414
 	call	?test_array@@YAXXZ			; test_array
-; Line 416
+; Line 415
 	call	?test_object@@YAXXZ			; test_object
-; Line 417
+; Line 416
 	call	?test_complex@@YAXXZ			; test_complex
-; Line 418
+; Line 417
 	call	?test_tostring@@YAXXZ			; test_tostring
-; Line 419
+; Line 418
 	call	?test_http_response@@YAXXZ		; test_http_response
-; Line 420
+; Line 419
 	call	?test_getter_defaults@@YAXXZ		; test_getter_defaults
-; Line 422
-	lea	rcx, OFFSET $SG82043
+; Line 421
+	lea	rcx, OFFSET $SG97596
 	call	printf
-; Line 423
+; Line 422
 	mov	r8d, DWORD PTR ?g_failed@@3HA
 	mov	edx, DWORD PTR ?g_passed@@3HA
-	lea	rcx, OFFSET $SG82044
+	lea	rcx, OFFSET $SG97597
 	call	printf
-; Line 424
-	lea	rcx, OFFSET $SG82045
+; Line 423
+	lea	rcx, OFFSET $SG97598
 	call	printf
-; Line 426
+; Line 425
 	cmp	DWORD PTR ?g_failed@@3HA, 0
 	jle	SHORT $LN3@main
 	mov	DWORD PTR tv73[rsp], 1
@@ -5240,7 +5236,7 @@ $LN3@main:
 	mov	DWORD PTR tv73[rsp], 0
 $LN4@main:
 	mov	eax, DWORD PTR tv73[rsp]
-; Line 427
+; Line 426
 	add	rsp, 56					; 00000038H
 	ret	0
 main	ENDP

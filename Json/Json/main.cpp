@@ -1,6 +1,7 @@
 #include <windows.h>
 #include "json.h"
 #include <stdio.h>
+#include <iostream>
 
 static int g_passed = 0;
 static int g_failed = 0;
@@ -32,6 +33,15 @@ void test_basic_types() {
     Json_Free(n);
 
     n = Json_Parse("-456.789");
+    bool flag = n && n->type == JSON_NUMBER && n->value.numberValue == -456.789;
+    double number = n->value.numberValue - (-456.789);
+    std::cout << "n: " << number << std::endl;
+    std::cout << -456.789 << std::endl;
+    std::cout << flag <<std::endl;
+    std::cout.precision(17);
+
+    std::cout << n->value.numberValue << std::endl;
+    std::cout << n->type  << std::endl;
     TEST("Parse negative float", n && n->type == JSON_NUMBER && n->value.numberValue == -456.789);
     Json_Free(n);
 

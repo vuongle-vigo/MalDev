@@ -1044,6 +1044,247 @@ unsigned long long __cdecl crt_atoull(const char* str) {
     return (unsigned long long)crt_atoll(str);
 }
 
+//=============================================================================
+// STRING TO FLOAT CONVERSION (strtof/strtod/strtold)
+//=============================================================================
+
+static int crt_parse_float_sign(const char** str) {
+    int sign = 1;
+    while (crt_isspace(**str)) {
+        (*str)++;
+    }
+    if (**str == '+') {
+        (*str)++;
+    } else if (**str == '-') {
+        (*str)++;
+        sign = -1;
+    }
+    return sign;
+}
+
+static unsigned long crt_strtoul_float(const char* str, const char** endptr, int* overflow) {
+    unsigned long result = 0;
+    *overflow = 0;
+    const char* p = str;
+    
+    while (crt_isdigit(*p)) {
+        if (result > (ULONG_MAX - (*p - '0')) / 10) {
+            *overflow = 1;
+        }
+        result = result * 10 + (*p - '0');
+        p++;
+    }
+    
+    *endptr = p;
+    return result;
+}
+
+float __cdecl crt_strtof(const char* str, char** endptr) {
+    if (str == NULL) {
+        if (endptr) *endptr = NULL;
+        return 0.0f;
+    }
+    
+    const char* p = str;
+    int sign = crt_parse_float_sign(&p);
+    const char* int_start = p;
+    
+    int overflow = 0;
+    unsigned long integer_part = crt_strtoul_float(p, &p, &overflow);
+    
+    double result = (double)integer_part;
+    
+    char bytes[8] = {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x24, 0x40
+    };
+
+    double ten_double = *(double*)bytes;
+
+    if (*p == '.') {
+        p++;
+        SIZE_T frac_digits = 0;
+        while (crt_isdigit(*p)) {
+            result = result * ten_double + (*p - '0');
+            frac_digits++;
+            p++;
+        }
+        for (SIZE_T i = 0; i < frac_digits; i++) {
+            result /= ten_double;
+        }
+    }
+    
+    int exp_sign = 1;
+    if (*p == 'e' || *p == 'E') {
+        p++;
+        if (*p == '+') {
+            p++;
+        } else if (*p == '-') {
+            p++;
+            exp_sign = -1;
+        }
+        
+        int exp_value = 0;
+        while (crt_isdigit(*p)) {
+            exp_value = exp_value * 10 + (*p - '0');
+            if (exp_value > 38) {
+                overflow = 1;
+            }
+            p++;
+        }
+
+        char bytes[8] = {
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0xF0, 0x3F
+        };
+        
+        double exp_multiplier = *(double*)bytes;
+        // double exp_multiplier = 1.0;
+        for (int i = 0; i < exp_value; i++) {
+            exp_multiplier *= ten_double;
+        }
+        if (exp_sign > 0) {
+            result *= exp_multiplier;
+        } else {
+            result /= exp_multiplier;
+        }
+    }
+
+    if (overflow) {
+        char pos_inf[4] = {
+            0x00, 0x00, 0x80, 0x7F
+        };
+
+        char neg_inf[4] = {
+            0x00, 0x00, 0x80, 0xFF
+        };
+
+        if (sign > 0) {
+            result = *(float*)pos_inf;
+        }
+        else {
+            result = *(float*)neg_inf;
+        }
+        //if (sign > 0) {
+        //    result = *(float*)bytes;
+        //} else {
+        //    result = -*(float*)bytes;
+        //}
+    }
+
+    if (endptr) {
+        if (p == int_start || (p == str + 1 && (*str == '+' || *str == '-'))) {
+            *endptr = (char*)str;
+        } else {
+            *endptr = (char*)p;
+        }
+    }
+
+    return (float)(result * sign);
+}
+
+double __cdecl crt_strtod(const char* str, char** endptr) {
+    if (str == NULL) {
+        if (endptr) *endptr = NULL;
+        return 0.0;
+    }
+    
+    const char* p = str;
+    int sign = crt_parse_float_sign(&p);
+    const char* int_start = p;
+    
+    int overflow = 0;
+    unsigned long integer_part = crt_strtoul_float(p, &p, &overflow);
+    
+    double result = (double)integer_part;
+    char bytes[8] = {
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x24, 0x40
+    };
+
+    double ten_double = *(double*)bytes;
+
+    if (*p == '.') {
+        p++;
+        SIZE_T frac_digits = 0;
+        while (crt_isdigit(*p)) {
+            result = result * ten_double + (*p - '0');
+            frac_digits++;
+            p++;
+        }
+        for (SIZE_T i = 0; i < frac_digits; i++) {
+            result /= ten_double;
+        }
+    }
+    
+    int exp_sign = 1;
+    if (*p == 'e' || *p == 'E') {
+        p++;
+        if (*p == '+') {
+            p++;
+        } else if (*p == '-') {
+            p++;
+            exp_sign = -1;
+        }
+        
+        int exp_value = 0;
+        while (crt_isdigit(*p)) {
+            exp_value = exp_value * 10 + (*p - '0');
+            if (exp_value > 308) {
+                overflow = 1;
+            }
+            p++;
+        }
+        
+        char bytes[8] = {
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0xF0, 0x3F
+        };
+        
+        double exp_multiplier = *(double*)bytes;
+        // double exp_multiplier = 1.0;
+        for (int i = 0; i < exp_value; i++) {
+            exp_multiplier *= ten_double;
+        }
+        if (exp_sign > 0) {
+            result *= exp_multiplier;
+        } else {
+            result /= exp_multiplier;
+        }
+    }
+    
+    if (overflow) {
+        char pos_inf[8] = {
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f
+        };
+        char neg_inf[8] = {
+            0x00,0x00,0x00,0x00,
+            0x00,0x00,0xF0,0xFF
+        };
+        result = *(double*)(sign > 0 ? pos_inf : neg_inf);
+        //if (sign > 0) {
+        //    result = *(double*)bytes;
+        //} else {
+        //    result = *(double*)bytes;
+        //    result = -result;
+        //}
+    }
+
+    if (endptr) {
+        if (p == int_start || (p == str + 1 && (*str == '+' || *str == '-'))) {
+            *endptr = (char*)str;
+        } else {
+            *endptr = (char*)p;
+        }
+    }
+
+    return result * sign;
+}
+
+long double __cdecl crt_strtold(const char* str, char** endptr) {
+    return (long double)crt_strtod(str, endptr);
+}
+
 int __cdecl crt_wtoi(const wchar_t* str) {
     char* ansiStr = crt_wctoa(str);
     if (ansiStr == NULL) {
@@ -1299,6 +1540,116 @@ wchar_t* __cdecl crt_ulltow(unsigned long long value, wchar_t* str, int radix) {
 }
 
 //=============================================================================
+// CHARACTER CLASSIFICATION FUNCTIONS (CHAR)
+//=============================================================================
+
+int __cdecl crt_isdigit(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if (ch >= '0' && ch <= '9') {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_isalpha(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_isalnum(int ch) {
+    return crt_isalpha(ch) || crt_isdigit(ch);
+}
+
+int __cdecl crt_isspace(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f' || ch == '\v') {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_isupper(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if (ch >= 'A' && ch <= 'Z') {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_islower(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if (ch >= 'a' && ch <= 'z') {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_isxdigit(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if ((ch >= '0' && ch <= '9') ||
+        (ch >= 'a' && ch <= 'f') ||
+        (ch >= 'A' && ch <= 'F')) {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_isprint(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if (ch >= 32 && ch <= 126) {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_ispunct(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if ((ch >= 33 && ch <= 47) ||  // ! " # $ % & ' ( ) * + , - . / 
+        (ch >= 58 && ch <= 64) ||  // : ; < = > ? @
+        (ch >= 91 && ch <= 96) ||  // [ \ ] ^ _ `
+        (ch >= 123 && ch <= 126))  // { | } ~
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_iscntrl(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if ((ch >= 0 && ch <= 31) || ch == 127) {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_isgraph(int ch) {
+    if (ch == CRT_EOF) return 0;
+    if (ch >= 33 && ch <= 126) {
+        return 1;
+    }
+    return 0;
+}
+
+int __cdecl crt_toupper(int ch) {
+    if (ch == CRT_EOF) return CRT_EOF;
+    if (ch >= 'a' && ch <= 'z') {
+        return ch - 32;
+    }
+    return ch;
+}
+
+int __cdecl crt_tolower(int ch) {
+    if (ch == CRT_EOF) return CRT_EOF;
+    if (ch >= 'A' && ch <= 'Z') {
+        return ch + 32;
+    }
+    return ch;
+}
+
+//=============================================================================
 // WIDE-CHARACTER CLASSIFICATION FUNCTIONS
 //=============================================================================
 
@@ -1307,7 +1658,7 @@ int __cdecl crt_iswalnum(wint_t ch) {
 }
 
 int __cdecl crt_iswalpha(wint_t ch) {
-    if (ch == WEOF) return 0;
+    if (ch == CRT_WEOF) return 0;
     wchar_t wch = (wchar_t)ch;
     if ((wch >= L'a' && wch <= L'z') || (wch >= L'A' && wch <= L'Z')) {
         return 1;
@@ -1316,7 +1667,7 @@ int __cdecl crt_iswalpha(wint_t ch) {
 }
 
 int __cdecl crt_iswdigit(wint_t ch) {
-    if (ch == WEOF) return 0;
+    if (ch == CRT_WEOF) return 0;
     wchar_t wch = (wchar_t)ch;
     if (wch >= L'0' && wch <= L'9') {
         return 1;
@@ -1325,7 +1676,7 @@ int __cdecl crt_iswdigit(wint_t ch) {
 }
 
 int __cdecl crt_iswspace(wint_t ch) {
-    if (ch == WEOF) return 0;
+    if (ch == CRT_WEOF) return 0;
     wchar_t wch = (wchar_t)ch;
     if (wch == L' ' || wch == L'\t' || wch == L'\n' || wch == L'\r' || wch == L'\f' || wch == L'\v') {
         return 1;
@@ -1334,7 +1685,7 @@ int __cdecl crt_iswspace(wint_t ch) {
 }
 
 int __cdecl crt_iswupper(wint_t ch) {
-    if (ch == WEOF) return 0;
+    if (ch == CRT_WEOF) return 0;
     wchar_t wch = (wchar_t)ch;
     if (wch >= L'A' && wch <= L'Z') {
         return 1;
@@ -1343,7 +1694,7 @@ int __cdecl crt_iswupper(wint_t ch) {
 }
 
 int __cdecl crt_iswlower(wint_t ch) {
-    if (ch == WEOF) return 0;
+    if (ch == CRT_WEOF) return 0;
     wchar_t wch = (wchar_t)ch;
     if (wch >= L'a' && wch <= L'z') {
         return 1;
@@ -1352,7 +1703,7 @@ int __cdecl crt_iswlower(wint_t ch) {
 }
 
 int __cdecl crt_iswxdigit(wint_t ch) {
-    if (ch == WEOF) return 0;
+    if (ch == CRT_WEOF) return 0;
     wchar_t wch = (wchar_t)ch;
     if ((wch >= L'0' && wch <= L'9') ||
         (wch >= L'a' && wch <= L'f') ||
@@ -1363,7 +1714,7 @@ int __cdecl crt_iswxdigit(wint_t ch) {
 }
 
 wint_t __cdecl crt_towupper(wint_t ch) {
-    if (ch == WEOF) return WEOF;
+    if (ch == CRT_WEOF) return CRT_WEOF;
     wchar_t wch = (wchar_t)ch;
     if (wch >= L'a' && wch <= L'z') {
         return (wint_t)(wch - 32);
@@ -1372,7 +1723,7 @@ wint_t __cdecl crt_towupper(wint_t ch) {
 }
 
 wint_t __cdecl crt_towlower(wint_t ch) {
-    if (ch == WEOF) return WEOF;
+    if (ch == CRT_WEOF) return CRT_WEOF;
     wchar_t wch = (wchar_t)ch;
     if (wch >= L'A' && wch <= L'Z') {
         return (wint_t)(wch + 32);
@@ -2784,11 +3135,14 @@ int __cdecl crt_fseek(crt_FILE* stream, long offset, int origin) {
     _SetFilePointer pSetFilePointer = (_SetFilePointer)apiResolve.GetApiAddress(lpKernel32, hashSetFilePointer);
 
     DWORD dwOrigin;
-    switch (origin) {
-        case SEEK_SET: dwOrigin = FILE_BEGIN;   break;
-        case SEEK_CUR: dwOrigin = FILE_CURRENT; break;
-        case SEEK_END: dwOrigin = FILE_END;     break;
-        default: return -1;
+    if (origin == SEEK_SET) {
+        dwOrigin = FILE_BEGIN;
+    } else if (origin == SEEK_CUR) {
+        dwOrigin = FILE_CURRENT;
+    } else if (origin == SEEK_END) {
+        dwOrigin = FILE_END;
+    } else {
+        return -1;
     }
 
     DWORD result = pSetFilePointer(stream->handle, offset, NULL, dwOrigin);
@@ -3186,13 +3540,25 @@ static const char* crt_format_next(const char* fmt, int* width, int* precision, 
     fmt++;
 
     while (*fmt) {
-        switch (*fmt) {
-        case '-': *flags |= 1; fmt++; break;
-        case '+': *flags |= 2; fmt++; break;
-        case ' ': *flags |= 4; fmt++; break;
-        case '0': *flags |= 8; fmt++; break;
-        case '#': *flags |= 16; fmt++; break;
-        default: goto width_parse;
+        if (*fmt == '-') {
+            *flags |= 1; fmt++;
+        } else if (*fmt == '+') {
+            *flags |= 2; fmt++;
+        } else if (*fmt == ' ') {
+            *flags |= 4; fmt++;
+        } else if (*fmt == '0') {
+            *flags |= 8; fmt++;
+        } else if (*fmt == '#') {
+            *flags |= 16; fmt++;
+        } else if (*fmt == 'l') {
+            if (fmt[1] == 'l') {
+                *spec = 'L';
+                return fmt + 2;
+            }
+            *spec = 'l';
+            return fmt + 1;
+        } else {
+            goto width_parse;
         }
     }
 
@@ -3370,18 +3736,25 @@ static int crt_vsnprintf_impl(char* buf, SIZE_T count, const char* fmt, va_list 
     char* out = buf;
     SIZE_T remaining = count;
     int total = 0;
+    int full_len = 0;
 
-    while (*p && remaining > 1) {
+    while (*p) {
         if (*p != '%') {
-            *out++ = *p++;
-            remaining--;
-            total++;
+            full_len++;
+            if (remaining > 1) {
+                *out++ = *p++;
+                remaining--;
+                total++;
+            } else {
+                p++;
+            }
             continue;
         }
 
         int width = 0, prec = -1, flags = 0;
         char spec = '\0';
         const char* next = crt_format_next(p, &width, &prec, &flags, &spec);
+        full_len += (int)(next - p);
         int chars = 0;
 
         if (spec == 'd' || spec == 'i')
@@ -3440,7 +3813,7 @@ static int crt_vsnprintf_impl(char* buf, SIZE_T count, const char* fmt, va_list 
                 int fmt_remaining = 0;
                 const char* r = next;
                 while (r && *r) { fmt_remaining++; r++; }
-                return total + fmt_remaining;
+                return len + fmt_remaining;
             }
             crt_strncpy(out, s, len);
             out = out + len;
@@ -3469,30 +3842,30 @@ static int crt_vsnprintf_impl(char* buf, SIZE_T count, const char* fmt, va_list 
         }
         else if (spec == 'l')
         {
-            if (p[1] == 'd' || p[1] == 'i')
+            if (next[0] == 'd' || next[0] == 'i')
             {
                 long v = va_arg(args, long);
-                unsigned long uv;
+                unsigned long long uv;
                 int neg = 0;
 
                 if (v < 0)
                 {
-                    uv = 0ul - v;
+                    uv = (unsigned long long)(0ull - (unsigned long long)v);
                     neg = 1;
                 }
                 else
                 {
-                    uv = (unsigned long)v;
+                    uv = (unsigned long long)v;
                 }
 
                 chars = crt_putint(temp, uv, width, prec, flags, neg, 0, 10);
             }
-            else if (p[1] == 'u')
+            else if (next[0] == 'u')
             {
                 unsigned long v = va_arg(args, unsigned long);
-                chars = crt_putint(temp, v, width, prec, flags, 0, 0, 10);
+                chars = crt_putint(temp, (unsigned long long)v, width, prec, flags, 0, 0, 10);
             }
-            else if (p[1] == 'l' && (p[2] == 'd' || p[2] == 'i'))
+            else if (next[0] == 'l' && (next[1] == 'd' || next[1] == 'i'))
             {
                 long long v = va_arg(args, long long);
                 unsigned long long uv;
@@ -3509,13 +3882,11 @@ static int crt_vsnprintf_impl(char* buf, SIZE_T count, const char* fmt, va_list 
                 }
 
                 chars = crt_putint(temp, uv, width, prec, flags, neg, 0, 10);
-                p += 2;
             }
-            else if (p[1] == 'l' && p[2] == 'u')
+            else if (next[0] == 'l' && next[1] == 'u')
             {
                 unsigned long long v = va_arg(args, unsigned long long);
                 chars = crt_putint(temp, v, width, prec, flags, 0, 0, 10);
-                p += 2;
             }
             else
             {
@@ -3562,7 +3933,7 @@ static int crt_vsnprintf_impl(char* buf, SIZE_T count, const char* fmt, va_list 
             int fmt_remaining = 0;
             const char* r = next;
             while (r && *r) { fmt_remaining++; r++; }
-            return total + fmt_remaining;
+            return chars + fmt_remaining;
         }
 
         for (int i = 0; i < chars && remaining > 1; i++) {
@@ -3579,7 +3950,7 @@ static int crt_vsnprintf_impl(char* buf, SIZE_T count, const char* fmt, va_list 
     } else {
         buf[count - 1] = '\0';
     }
-    return total;
+    return full_len;
 }
 
 int __cdecl crt_vsnprintf(char* buf, SIZE_T count, const char* fmt, va_list args) {

@@ -1,6 +1,16 @@
 #include "CRT.h"
 #include <stdio.h>
 
+void print_separator(const char* title);
+void test_memory_allocation();
+void test_string_char();
+void test_string_wchar();
+void test_string_conversion();
+void test_memory_functions();
+void test_utilities();
+void test_file_io();
+void test_formatted_print();
+
 void print_separator(const char* title) {
     printf("\n=== %s ===\n", title);
 }
@@ -473,10 +483,236 @@ int main() {
     test_string_conversion();
     test_memory_functions();
     test_utilities();
+    test_file_io();
+    test_formatted_print();
     
     printf("\n=================================================\n");
     printf("    All tests completed!\n");
     printf("=================================================\n");
-    
+
     return 0;
+}
+
+//=============================================================================
+// TEST FILE I/O FUNCTIONS
+//=============================================================================
+
+void test_file_io() {
+    print_separator("FILE I/O TESTS");
+
+    const char* testFile = "crt_test_file.txt";
+    const char* testFile2 = "crt_test_file2.txt";
+
+    // Test file creation and write
+    printf("Testing crt_fopen (write mode)...\n");
+    crt_FILE* f = crt_fopen(testFile, "w");
+    printf("[%s] fopen(\"w\") returned non-NULL: %s\n",
+           f != NULL ? "PASS" : "FAIL", f != NULL ? "YES" : "NO");
+
+    if (f != NULL) {
+        const char* text = "Hello, CRT File I/O!\nLine 2: Testing write.\nLine 3: Wide chars: 12345\n";
+        SIZE_T written = crt_fwrite(text, 1, crt_strlen(text), f);
+        printf("[%s] fwrite: wrote %zu bytes\n",
+               written == crt_strlen(text) ? "PASS" : "FAIL", written);
+        crt_fclose(f);
+    }
+
+    // Test fileexists
+    printf("\nTesting crt_fileexists...\n");
+    printf("[%s] fileexists(\"%s\") = %d (expected: TRUE)\n",
+           crt_fileexists(testFile) ? "PASS" : "FAIL", testFile,
+           crt_fileexists(testFile));
+
+    printf("[%s] fileexists(\"nonexistent.txt\") = %d (expected: FALSE)\n",
+           !crt_fileexists("nonexistent.txt") ? "PASS" : "FAIL",
+           crt_fileexists("nonexistent.txt"));
+
+    // Test filesize
+    printf("\nTesting crt_filesize...\n");
+    long long fsize = crt_filesize(testFile);
+    printf("[%s] filesize(\"%s\") = %lld bytes\n",
+           fsize > 0 ? "PASS" : "FAIL", testFile, fsize);
+
+    // Test file read
+    printf("\nTesting crt_fopen (read mode)...\n");
+    f = crt_fopen(testFile, "r");
+    printf("[%s] fopen(\"r\") returned non-NULL: %s\n",
+           f != NULL ? "PASS" : "FAIL", f != NULL ? "YES" : "NO");
+
+    if (f != NULL) {
+        char readBuf[256] = {0};
+        SIZE_T r = crt_fread(readBuf, 1, 255, f);
+        printf("[%s] fread: read %zu bytes\n", r > 0 ? "PASS" : "FAIL", r);
+        printf("  Content: %.50s...\n", readBuf);
+
+        // Test feof (should be set after reading all)
+        int eof = crt_feof(f);
+        printf("[%s] feof set after full read: %d\n",
+               eof ? "PASS" : "FAIL", eof);
+        crt_fclose(f);
+    }
+
+    // Test fseek and ftell
+    printf("\nTesting crt_fseek and crt_ftell...\n");
+    f = crt_fopen(testFile, "r");
+    if (f != NULL) {
+        long pos = crt_ftell(f);
+        printf("[%s] ftell at start = 0: %ld\n", pos == 0 ? "PASS" : "FAIL", pos);
+
+        crt_fseek(f, 10, SEEK_SET);
+        pos = crt_ftell(f);
+        printf("[%s] ftell after seek(10) = 10: %ld\n", pos == 10 ? "PASS" : "FAIL", pos);
+
+        crt_fseek(f, 5, SEEK_CUR);
+        pos = crt_ftell(f);
+        printf("[%s] ftell after seek(5, CUR) = 15: %ld\n", pos == 15 ? "PASS" : "FAIL", pos);
+
+        crt_fseek(f, 0, SEEK_END);
+        pos = crt_ftell(f);
+        printf("[%s] ftell at end = filesize: %ld\n", pos == fsize ? "PASS" : "FAIL", pos);
+
+        crt_fclose(f);
+    }
+
+    // Test rewind
+    printf("\nTesting crt_rewind...\n");
+    f = crt_fopen(testFile, "r");
+    if (f != NULL) {
+        crt_fseek(f, 5, SEEK_SET);
+        crt_rewind(f);
+        long pos = crt_ftell(f);
+        printf("[%s] rewind resets position to 0: %ld\n", pos == 0 ? "PASS" : "FAIL", pos);
+        crt_fclose(f);
+    }
+
+    // Test append mode
+    printf("\nTesting crt_fopen (append mode)...\n");
+    f = crt_fopen(testFile, "a");
+    if (f != NULL) {
+        const char* appended = "Appended line!\n";
+        crt_fwrite(appended, 1, crt_strlen(appended), f);
+        crt_fclose(f);
+
+        long long newSize = crt_filesize(testFile);
+        printf("[%s] filesize after append increased: %lld > %lld\n",
+               newSize > fsize ? "PASS" : "FAIL", newSize, fsize);
+    }
+
+    // Test rename
+    printf("\nTesting crt_rename...\n");
+    int ren = crt_rename(testFile, testFile2);
+    printf("[%s] rename(\"%s\", \"%s\") = %d\n",
+           ren == 0 ? "PASS" : "FAIL", testFile, testFile2, ren);
+
+    if (ren == 0) {
+        printf("[%s] original file exists after rename: %d (expected: 0)\n",
+               !crt_fileexists(testFile) ? "PASS" : "FAIL",
+               crt_fileexists(testFile));
+        printf("[%s] new file exists after rename: %d (expected: 1)\n",
+               crt_fileexists(testFile2) ? "PASS" : "FAIL",
+               crt_fileexists(testFile2));
+    }
+
+    // Test remove
+    printf("\nTesting crt_remove...\n");
+    int rem = crt_remove(testFile2);
+    printf("[%s] remove(\"%s\") = %d\n",
+           rem == 0 ? "PASS" : "FAIL", testFile2, rem);
+    printf("[%s] file no longer exists: %d (expected: 0)\n",
+           !crt_fileexists(testFile2) ? "PASS" : "FAIL",
+           crt_fileexists(testFile2));
+
+    // Test ferror and clearerr
+    printf("\nTesting crt_ferror and crt_clearerr...\n");
+    f = crt_fopen("nonexistent_dir\\test.txt", "r");
+    if (f == NULL) {
+        printf("[PASS] fopen on nonexistent path returns NULL\n");
+    }
+    printf("[%s] ferror(NULL) = 0: %d\n", crt_ferror(NULL) == 0 ? "PASS" : "FAIL", crt_ferror(NULL));
+}
+
+//=============================================================================
+// TEST FORMATTED PRINT FUNCTIONS
+//=============================================================================
+
+void test_formatted_print() {
+    print_separator("FORMATTED PRINT TESTS");
+
+    char buf[256];
+
+    // Test sprintf
+    printf("Testing crt_sprintf...\n");
+    int len = crt_sprintf(buf, "Hello %s! Number: %d, Hex: %08x", "World", 42, 255);
+    printf("[%s] sprintf result: \"%s\" (len=%d)\n",
+           crt_strcmp(buf, "Hello World! Number: 42, Hex: 000000ff") == 0 ? "PASS" : "FAIL", buf, len);
+
+    // Test sprintf with negatives
+    crt_sprintf(buf, "Negative: %d, Positive: %+d", -12345, 67890);
+    printf("[%s] sprintf with %%+: \"%s\"\n",
+           crt_strstr(buf, "+67890") != NULL ? "PASS" : "FAIL", buf);
+
+    // Test snprintf
+    printf("\nTesting crt_snprintf...\n");
+    len = crt_snprintf(buf, 10, "Hello World!");
+    printf("[%s] snprintf truncated: \"%s\" (len=%d, expected 11)\n",
+           len == 11 ? "PASS" : "FAIL", buf, len);
+
+    len = crt_snprintf(buf, sizeof(buf), "Decimal: %d, Unsigned: %u, Octal: %o, Hex: %x", -999, 999, 255, 255);
+    printf("[%s] snprintf full: \"%s\"\n",
+           crt_strstr(buf, "999") != NULL ? "PASS" : "FAIL", buf);
+
+    // Test sprintf with width and flags
+    printf("\nTesting crt_sprintf with width/padding...\n");
+    crt_sprintf(buf, "|%10s|%05d|%-10s|", "RIGHT", 42, "LEFT");
+    printf("[%s] sprintf padded: \"%s\"\n",
+           crt_strlen(buf) > 0 ? "PASS" : "FAIL", buf);
+
+    // Test sprintf with %c and %%
+    printf("\nTesting crt_sprintf with %%c and %%%%\n");
+    crt_sprintf(buf, "Char: %c, Percent: 100%%", 'X');
+    printf("[%s] sprintf char/percent: \"%s\"\n",
+           crt_strstr(buf, "Char: X") != NULL && crt_strstr(buf, "100%") != NULL ? "PASS" : "FAIL", buf);
+
+    // Test sprintf with %p
+    printf("\nTesting crt_sprintf with %%p...\n");
+    int dummy = 0x12345678;
+    crt_sprintf(buf, "Pointer: %p", &dummy);
+    printf("[%s] sprintf pointer: \"%s\"\n",
+           crt_strstr(buf, "0x") != NULL ? "PASS" : "FAIL", buf);
+
+    // Test sprintf with long types
+    printf("\nTesting crt_sprintf with %%ld, %%lu...\n");
+    crt_sprintf(buf, "long: %ld, ulong: %lu", -123456L, 654321UL);
+    printf("[%s] sprintf long types: \"%s\"\n",
+           crt_strstr(buf, "123456") != NULL ? "PASS" : "FAIL", buf);
+
+    // Test sprintf with %s precision
+    printf("\nTesting crt_sprintf with %%.*s...\n");
+    crt_sprintf(buf, "%.5s", "HelloWorld");
+    printf("[%s] sprintf precision: \"%s\" (expected: \"Hello\")\n",
+           crt_strcmp(buf, "Hello") == 0 ? "PASS" : "FAIL", buf);
+
+    // Test sprintf with %n
+    printf("\nTesting crt_sprintf with %%n...\n");
+    int writtenCount = 0;
+    crt_sprintf(buf, "Hello%n World", &writtenCount);
+    printf("[%s] sprintf %%n: writtenCount=%d (expected: 5)\n",
+           writtenCount == 5 ? "PASS" : "FAIL", writtenCount);
+
+    // Test vsprintf (called from within a variadic wrapper)
+    printf("\nTesting crt_vsprintf...\n");
+    len = crt_sprintf(buf, "Testing %s %d %s", "values", 42, "here");
+    printf("[%s] vsprintf result: \"%s\" (len=%d)\n",
+           crt_strstr(buf, "Testing") != NULL ? "PASS" : "FAIL", buf, len);
+
+    // Test printf output
+    printf("\nTesting crt_printf (actual output below):\n");
+    printf("  ");
+    int p = crt_printf("printf: Hello %s, %d+%d=%d, 0x%x", "World", 1, 2, 3, 0xDEAD);
+    printf("  (returned: %d chars)\n", p);
+
+    // Test printf with newlines
+    printf("\n  ");
+    crt_printf("Multi-line:\n    Line 1\n    Line 2\n    Line 3");
+    printf("\n");
 }

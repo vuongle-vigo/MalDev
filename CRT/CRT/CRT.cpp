@@ -2017,8 +2017,8 @@ int __cdecl crt_vswprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, va_lis
 
             if (v < 0)
             {
+                uv = 0u - (unsigned int)v;
                 neg = 1;
-                uv = (unsigned int)(-(int)(v + 1)) + 1;
             }
             else
             {
@@ -2080,43 +2080,41 @@ int __cdecl crt_vswprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, va_lis
                 unsigned long uv;
                 int neg = 0;
 
-                if (v < 0)
-                {
-                    neg = 1;
-                    uv = (unsigned long)(-(long)(v + 1)) + 1;
-                }
-                else
-                {
-                    uv = (unsigned long)v;
-                }
-
-                chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
-                p++;
-            }
-            else if (p[1] == L'u')
+            if (v < 0)
             {
-                unsigned long v = va_arg(args, unsigned long);
-                chars = crt_wcputunsigned(temp, v, width, prec, flags, 0, 10);
-                p++;
+                uv = 0ul - (unsigned long)v;
+                neg = 1;
             }
-            else if (p[1] == L'l' && (p[2] == L'd' || p[2] == L'i'))
+            else
             {
-                long long v = va_arg(args, long long);
-                unsigned long long uv;
-                int neg = 0;
+                uv = (unsigned long)v;
+            }
 
-                if (v < 0)
-                {
-                    neg = 1;
-                    uv = (unsigned long long)(-(long long)(v + 1)) + 1;
-                }
-                else
-                {
-                    uv = (unsigned long long)v;
-                }
+            chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
+        }
+        else if (p[1] == L'u')
+        {
+            unsigned long v = va_arg(args, unsigned long);
+            chars = crt_wcputunsigned(temp, v, width, prec, flags, 0, 10);
+        }
+        else if (p[1] == L'l' && (p[2] == L'd' || p[2] == L'i'))
+        {
+            long long v = va_arg(args, long long);
+            unsigned long long uv;
+            int neg = 0;
 
-                chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
-                p += 2;
+            if (v < 0)
+            {
+                uv = 0ull - (unsigned long long)v;
+                neg = 1;
+            }
+            else
+            {
+                uv = (unsigned long long)v;
+            }
+
+            chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
+            p += 2;
             }
             else if (p[1] == L'l' && p[2] == L'u')
             {
@@ -2154,8 +2152,6 @@ int __cdecl crt_vswprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, va_lis
                     flags,
                     0,
                     10);
-
-                p++;
             }
             else if (p[1] == L'd' || p[1] == L'i')
             {
@@ -2165,8 +2161,8 @@ int __cdecl crt_vswprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, va_lis
 
                 if ((long)v < 0)
                 {
+                    uv = 0ull - (unsigned long long)v;
                     neg = 1;
-                    uv = (unsigned long long)(-(long long)(v + 1)) + 1;
                 }
 
                 chars = crt_wcputint(
@@ -2177,8 +2173,6 @@ int __cdecl crt_vswprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, va_lis
                     flags,
                     neg,
                     0);
-
-                p++;
             }
             else
             {
@@ -2249,7 +2243,10 @@ int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va
                 SIZE_T null_len = crt_wcslen(wsNull);
                 if (null_len >= remaining) {
                     buf[bufSize - 1] = L'\0';
-                    return -1;
+                    int fmt_remaining = 0;
+                    const wchar_t* r = next;
+                    while (r && *r) { fmt_remaining++; r++; }
+                    return total + fmt_remaining;
                 }
                 out += null_len;
                 remaining -= null_len;
@@ -2264,7 +2261,10 @@ int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va
             if (s_len >= remaining) {
                 crt_wcsncpy(out, s, remaining - 1);
                 buf[bufSize - 1] = L'\0';
-                return -1;
+                int fmt_remaining = 0;
+                const wchar_t* r = next;
+                while (r && *r) { fmt_remaining++; r++; }
+                return total + fmt_remaining;
             }
             crt_wcsncpy(out, s, s_len);
             out += s_len;
@@ -2282,8 +2282,8 @@ int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va
 
             if (v < 0)
             {
+                uv = 0u - (unsigned int)v;
                 neg = 1;
-                uv = (unsigned int)(-(int)(v + 1)) + 1;
             }
             else
             {
@@ -2339,8 +2339,8 @@ int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va
 
                 if (v < 0)
                 {
+                    uv = 0ul - (unsigned long)v;
                     neg = 1;
-                    uv = (unsigned long)(-(long)(v + 1)) + 1;
                 }
                 else
                 {
@@ -2348,13 +2348,11 @@ int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va
                 }
 
                 chars = crt_wcputint(temp, uv, width, prec, flags, neg, 0);
-                p++;
             }
             else if (p[1] == L'u')
             {
                 unsigned long v = va_arg(args, unsigned long);
                 chars = crt_wcputunsigned(temp, v, width, prec, flags, 0, 10);
-                p++;
             }
             else
             {
@@ -2376,8 +2374,6 @@ int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va
                     flags,
                     0,
                     10);
-
-                p++;
             }
             else
             {
@@ -2394,7 +2390,10 @@ int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va
         if (chars >= (int)remaining) {
             crt_wcsncpy(out, temp, remaining - 1);
             buf[bufSize - 1] = L'\0';
-            return -1;
+            int fmt_remaining = 0;
+            const wchar_t* r = next;
+            while (r && *r) { fmt_remaining++; r++; }
+            return total + fmt_remaining;
         }
 
         for (int i = 0; i < chars; i++) {
@@ -2444,6 +2443,1188 @@ long long __cdecl crt_llabs(long long value) {
         return -value;
     }
     return value;
+}
+
+//=============================================================================
+// FILE I/O FUNCTIONS (WinAPI-based)
+//=============================================================================
+
+#define CRT_FILE_FLAG_READ   0x01
+#define CRT_FILE_FLAG_WRITE  0x02
+#define CRT_FILE_FLAG_APPEND 0x04
+#define CRT_FILE_FLAG_BINARY 0x08
+#define CRT_FILE_FLAG_EOF    0x10
+#define CRT_FILE_FLAG_ERROR  0x20
+
+typedef struct crt_FILE {
+    HANDLE handle;
+    unsigned char flags;
+    wchar_t lastChar;
+} crt_FILE;
+
+static DWORD crt_access_mode_to_winapi_a(const char* mode) {
+    if (mode[0] == 'r' || mode[0] == 'R') {
+        if (mode[1] == '+') return GENERIC_READ | GENERIC_WRITE;
+        return GENERIC_READ;
+    }
+    if (mode[0] == 'w' || mode[0] == 'W') {
+        if (mode[1] == '+') return GENERIC_READ | GENERIC_WRITE;
+        return GENERIC_WRITE;
+    }
+    if (mode[0] == 'a' || mode[0] == 'A') {
+        if (mode[1] == '+') return GENERIC_READ | GENERIC_WRITE;
+        return GENERIC_WRITE;
+    }
+    return GENERIC_READ | GENERIC_WRITE;
+}
+
+static DWORD crt_access_mode_to_winapi_w(const wchar_t* mode) {
+    if (mode[0] == L'r' || mode[0] == L'R') {
+        if (mode[1] == L'+') return GENERIC_READ | GENERIC_WRITE;
+        return GENERIC_READ;
+    }
+    if (mode[0] == L'w' || mode[0] == L'W') {
+        if (mode[1] == L'+') return GENERIC_READ | GENERIC_WRITE;
+        return GENERIC_WRITE;
+    }
+    if (mode[0] == L'a' || mode[0] == L'A') {
+        if (mode[1] == L'+') return GENERIC_READ | GENERIC_WRITE;
+        return GENERIC_WRITE;
+    }
+    return GENERIC_READ | GENERIC_WRITE;
+}
+
+static DWORD crt_creation_mode_a(const char* mode) {
+    if (mode[0] == 'r' || mode[0] == 'R') {
+        return OPEN_EXISTING;
+    }
+    if (mode[0] == 'w' || mode[0] == 'W') {
+        return CREATE_ALWAYS;
+    }
+    if (mode[0] == 'a' || mode[0] == 'A') {
+        return OPEN_ALWAYS;
+    }
+    return OPEN_EXISTING;
+}
+
+static DWORD crt_creation_mode_w(const wchar_t* mode) {
+    if (mode[0] == L'r' || mode[0] == L'R') {
+        return OPEN_EXISTING;
+    }
+    if (mode[0] == L'w' || mode[0] == L'W') {
+        return CREATE_ALWAYS;
+    }
+    if (mode[0] == L'a' || mode[0] == L'A') {
+        return OPEN_ALWAYS;
+    }
+    return OPEN_EXISTING;
+}
+
+static DWORD crt_file_share_mode(void) {
+    return FILE_SHARE_READ | FILE_SHARE_WRITE;
+}
+
+static HANDLE crt_create_file_common(HANDLE hFile, crt_FILE* f, const wchar_t* mode) {
+    if ((mode[0] == L'a' || mode[0] == L'A') &&
+        (mode[1] != L'+')) {
+        ApiResolve apiResolve2;
+        constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+        LPVOID lpKernel322 = apiResolve2.GetModuleBaseAddress(hashKernel32);
+        typedef DWORD (WINAPI* _SetFilePointer)(
+            _In_ HANDLE hFile,
+            _In_ LONG lDistanceToMove,
+            _In_opt_ PLONG lpDistanceToMoveHigh,
+            _In_ DWORD dwMoveMethod
+        );
+        constexpr unsigned int hashSetFilePointer = ComplexHashForAnsi("SetFilePointer");
+        _SetFilePointer pSetFilePointer = (_SetFilePointer)apiResolve2.GetApiAddress(lpKernel322, hashSetFilePointer);
+        pSetFilePointer(hFile, 0, NULL, FILE_END);
+    }
+
+    f->handle = hFile;
+    f->flags = 0;
+    f->lastChar = 0;
+
+    if (mode[0] == L'r' || mode[0] == L'R') {
+        f->flags = (unsigned char)(f->flags | CRT_FILE_FLAG_READ);
+    }
+    if (mode[0] == L'w' || mode[0] == L'W') {
+        f->flags = (unsigned char)(f->flags | CRT_FILE_FLAG_WRITE);
+    }
+    if (mode[0] == L'a' || mode[0] == L'A') {
+        f->flags = (unsigned char)(f->flags | CRT_FILE_FLAG_WRITE | CRT_FILE_FLAG_APPEND);
+    }
+    if (crt_wcschr(mode, L'+') != NULL) {
+        f->flags = (unsigned char)(f->flags | CRT_FILE_FLAG_READ | CRT_FILE_FLAG_WRITE);
+    }
+    return hFile;
+}
+
+crt_FILE* __cdecl crt_fopen(const char* filename, const char* mode) {
+    if (filename == NULL || mode == NULL) {
+        return NULL;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+
+    typedef HANDLE (WINAPI* _CreateFileW)(
+        _In_ LPCWSTR lpFileName,
+        _In_ DWORD dwDesiredAccess,
+        _In_ DWORD dwShareMode,
+        _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+        _In_ DWORD dwCreationDisposition,
+        _In_ DWORD dwFlagsAndAttributes,
+        _In_opt_ HANDLE hTemplateFile
+    );
+    constexpr unsigned int hashCreateFileW = ComplexHashForAnsi("CreateFileW");
+    _CreateFileW pCreateFileW = (_CreateFileW)apiResolve.GetApiAddress(lpKernel32, hashCreateFileW);
+    typedef BOOL (WINAPI* _CloseHandle)(HANDLE hObject);
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    wchar_t* wFilename = crt_atowc(filename);
+    wchar_t* wMode = crt_atowc(mode);
+
+    if (wFilename == NULL || wMode == NULL) {
+        if (wFilename) crt_free(wFilename);
+        if (wMode) crt_free(wMode);
+        return NULL;
+    }
+
+    DWORD dwAccess = crt_access_mode_to_winapi_w(wMode);
+    DWORD dwCreation = crt_creation_mode_w(wMode);
+
+    HANDLE hFile = pCreateFileW(
+        wFilename,
+        dwAccess,
+        crt_file_share_mode(),
+        NULL,
+        dwCreation,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        crt_free(wFilename);
+        crt_free(wMode);
+        return NULL;
+    }
+
+    crt_FILE* f = (crt_FILE*)crt_malloc(sizeof(crt_FILE));
+    if (f == NULL) {
+        pCloseHandle(hFile);
+        crt_free(wFilename);
+        crt_free(wMode);
+        return NULL;
+    }
+
+    crt_create_file_common(hFile, f, wMode);
+    crt_free(wFilename);
+    crt_free(wMode);
+    return f;
+}
+
+crt_FILE* __cdecl crt_wfopen(const wchar_t* filename, const wchar_t* mode) {
+    if (filename == NULL || mode == NULL) {
+        return NULL;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+
+    typedef HANDLE (WINAPI* _CreateFileW)(
+        _In_ LPCWSTR lpFileName,
+        _In_ DWORD dwDesiredAccess,
+        _In_ DWORD dwShareMode,
+        _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+        _In_ DWORD dwCreationDisposition,
+        _In_ DWORD dwFlagsAndAttributes,
+        _In_opt_ HANDLE hTemplateFile
+    );
+    constexpr unsigned int hashCreateFileW = ComplexHashForAnsi("CreateFileW");
+    _CreateFileW pCreateFileW = (_CreateFileW)apiResolve.GetApiAddress(lpKernel32, hashCreateFileW);
+    typedef BOOL (WINAPI* _CloseHandle)(HANDLE hObject);
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    DWORD dwAccess = crt_access_mode_to_winapi_w(mode);
+    DWORD dwCreation = crt_creation_mode_w(mode);
+
+    HANDLE hFile = pCreateFileW(
+        filename,
+        dwAccess,
+        crt_file_share_mode(),
+        NULL,
+        dwCreation,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        return NULL;
+    }
+
+    crt_FILE* f = (crt_FILE*)crt_malloc(sizeof(crt_FILE));
+    if (f == NULL) {
+        pCloseHandle(hFile);
+        return NULL;
+    }
+
+    crt_create_file_common(hFile, f, mode);
+    return f;
+}
+
+int __cdecl crt_fclose(crt_FILE* stream) {
+    if (stream == NULL) {
+        return CRT_EOF;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef BOOL (WINAPI* _CloseHandle)(HANDLE hObject);
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    BOOL result = pCloseHandle(stream->handle);
+    crt_free(stream);
+    return result ? 0 : CRT_EOF;
+}
+
+SIZE_T __cdecl crt_fread(void* buffer, SIZE_T size, SIZE_T count, crt_FILE* stream) {
+    if (buffer == NULL || stream == NULL || size == 0) {
+        return 0;
+    }
+
+    SIZE_T totalBytes = size * count;
+    if (totalBytes == 0) {
+        return 0;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef BOOL (WINAPI* _ReadFile)(
+        _In_ HANDLE hFile,
+        _Out_writes_bytes_to_(nNumberOfBytesToRead, *lpNumberOfBytesRead) LPVOID lpBuffer,
+        _In_ DWORD nNumberOfBytesToRead,
+        _Out_opt_ LPDWORD lpNumberOfBytesRead,
+        _Inout_opt_ LPOVERLAPPED lpOverlapped
+    );
+    constexpr unsigned int hashReadFile = ComplexHashForAnsi("ReadFile");
+    _ReadFile pReadFile = (_ReadFile)apiResolve.GetApiAddress(lpKernel32, hashReadFile);
+
+    DWORD bytesRead = 0;
+    BOOL result = pReadFile(stream->handle, buffer, (DWORD)totalBytes, &bytesRead, NULL);
+
+    if (!result) {
+        stream->flags |= CRT_FILE_FLAG_ERROR;
+        return 0;
+    }
+
+    if (bytesRead < totalBytes) {
+        stream->flags |= CRT_FILE_FLAG_EOF;
+    }
+
+    return bytesRead / size;
+}
+
+SIZE_T __cdecl crt_fwrite(const void* buffer, SIZE_T size, SIZE_T count, crt_FILE* stream) {
+    if (buffer == NULL || stream == NULL || size == 0) {
+        return 0;
+    }
+
+    SIZE_T totalBytes = size * count;
+    if (totalBytes == 0) {
+        return 0;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef BOOL (WINAPI* _WriteFile)(
+        _In_ HANDLE hFile,
+        _In_reads_bytes_(nNumberOfBytesToWrite) LPCVOID lpBuffer,
+        _In_ DWORD nNumberOfBytesToWrite,
+        _Out_opt_ LPDWORD lpNumberOfBytesWritten,
+        _Inout_opt_ LPOVERLAPPED lpOverlapped
+    );
+    constexpr unsigned int hashWriteFile = ComplexHashForAnsi("WriteFile");
+    _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
+
+    DWORD bytesWritten = 0;
+    BOOL result = pWriteFile(stream->handle, buffer, (DWORD)totalBytes, &bytesWritten, NULL);
+
+    if (!result) {
+        stream->flags |= CRT_FILE_FLAG_ERROR;
+        return 0;
+    }
+
+    return bytesWritten / size;
+}
+
+int __cdecl crt_fseek(crt_FILE* stream, long offset, int origin) {
+    if (stream == NULL) {
+        return -1;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef DWORD (WINAPI* _SetFilePointer)(
+        _In_ HANDLE hFile,
+        _In_ LONG lDistanceToMove,
+        _In_opt_ PLONG lpDistanceToMoveHigh,
+        _In_ DWORD dwMoveMethod
+    );
+    constexpr unsigned int hashSetFilePointer = ComplexHashForAnsi("SetFilePointer");
+    _SetFilePointer pSetFilePointer = (_SetFilePointer)apiResolve.GetApiAddress(lpKernel32, hashSetFilePointer);
+
+    DWORD dwOrigin;
+    switch (origin) {
+        case SEEK_SET: dwOrigin = FILE_BEGIN;   break;
+        case SEEK_CUR: dwOrigin = FILE_CURRENT; break;
+        case SEEK_END: dwOrigin = FILE_END;     break;
+        default: return -1;
+    }
+
+    DWORD result = pSetFilePointer(stream->handle, offset, NULL, dwOrigin);
+    if (result == INVALID_SET_FILE_POINTER) {
+        return -1;
+    }
+
+    stream->flags &= ~CRT_FILE_FLAG_EOF;
+    return 0;
+}
+
+long __cdecl crt_ftell(crt_FILE* stream) {
+    if (stream == NULL) {
+        return -1;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef DWORD (WINAPI* _SetFilePointer)(
+        _In_ HANDLE hFile,
+        _In_ LONG lDistanceToMove,
+        _In_opt_ PLONG lpDistanceToMoveHigh,
+        _In_ DWORD dwMoveMethod
+    );
+    constexpr unsigned int hashSetFilePointer = ComplexHashForAnsi("SetFilePointer");
+    _SetFilePointer pSetFilePointer = (_SetFilePointer)apiResolve.GetApiAddress(lpKernel32, hashSetFilePointer);
+
+    DWORD pos = pSetFilePointer(stream->handle, 0, NULL, FILE_CURRENT);
+    if (pos == INVALID_SET_FILE_POINTER) {
+        return -1;
+    }
+
+    return (long)pos;
+}
+
+void __cdecl crt_rewind(crt_FILE* stream) {
+    if (stream != NULL) {
+        crt_fseek(stream, 0, SEEK_SET);
+        stream->flags &= ~CRT_FILE_FLAG_ERROR;
+    }
+}
+
+int __cdecl crt_fflush(crt_FILE* stream) {
+    if (stream == NULL) {
+        return 0;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef BOOL (WINAPI* _FlushFileBuffers)(_In_ HANDLE hFile);
+    constexpr unsigned int hashFlushFileBuffers = ComplexHashForAnsi("FlushFileBuffers");
+    _FlushFileBuffers pFlushFileBuffers = (_FlushFileBuffers)apiResolve.GetApiAddress(lpKernel32, hashFlushFileBuffers);
+
+    BOOL result = pFlushFileBuffers(stream->handle);
+    return result ? 0 : CRT_EOF;
+}
+
+int __cdecl crt_feof(crt_FILE* stream) {
+    if (stream == NULL) {
+        return 0;
+    }
+    return (stream->flags & CRT_FILE_FLAG_EOF) ? 1 : 0;
+}
+
+int __cdecl crt_ferror(crt_FILE* stream) {
+    if (stream == NULL) {
+        return 0;
+    }
+    return (stream->flags & CRT_FILE_FLAG_ERROR) ? 1 : 0;
+}
+
+void __cdecl crt_clearerr(crt_FILE* stream) {
+    if (stream != NULL) {
+        stream->flags &= ~(CRT_FILE_FLAG_EOF | CRT_FILE_FLAG_ERROR);
+    }
+}
+
+int __cdecl crt_remove(const char* filename) {
+    if (filename == NULL) {
+        return -1;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef BOOL (WINAPI* _DeleteFileW)(_In_ LPCWSTR lpFileName);
+    constexpr unsigned int hashDeleteFileW = ComplexHashForAnsi("DeleteFileW");
+    _DeleteFileW pDeleteFileW = (_DeleteFileW)apiResolve.GetApiAddress(lpKernel32, hashDeleteFileW);
+
+    wchar_t* wFilename = crt_atowc(filename);
+    if (wFilename == NULL) {
+        return -1;
+    }
+
+    BOOL result = pDeleteFileW(wFilename);
+    crt_free(wFilename);
+    return result ? 0 : -1;
+}
+
+int __cdecl crt_wremove(const wchar_t* filename) {
+    if (filename == NULL) {
+        return -1;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef BOOL (WINAPI* _DeleteFileW)(_In_ LPCWSTR lpFileName);
+    constexpr unsigned int hashDeleteFileW = ComplexHashForAnsi("DeleteFileW");
+    _DeleteFileW pDeleteFileW = (_DeleteFileW)apiResolve.GetApiAddress(lpKernel32, hashDeleteFileW);
+
+    BOOL result = pDeleteFileW(filename);
+    return result ? 0 : -1;
+}
+
+int __cdecl crt_rename(const char* oldname, const char* newname) {
+    if (oldname == NULL || newname == NULL) {
+        return -1;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef BOOL (WINAPI* _MoveFileExW)(
+        _In_ LPCWSTR lpExistingFileName,
+        _In_opt_ LPCWSTR lpNewFileName,
+        _In_ DWORD dwFlags
+    );
+    constexpr unsigned int hashMoveFileExW = ComplexHashForAnsi("MoveFileExW");
+    _MoveFileExW pMoveFileExW = (_MoveFileExW)apiResolve.GetApiAddress(lpKernel32, hashMoveFileExW);
+
+    wchar_t* wOldname = crt_atowc(oldname);
+    wchar_t* wNewname = crt_atowc(newname);
+
+    if (wOldname == NULL || wNewname == NULL) {
+        if (wOldname) crt_free(wOldname);
+        if (wNewname) crt_free(wNewname);
+        return -1;
+    }
+
+    BOOL result = pMoveFileExW(wOldname, wNewname, MOVEFILE_REPLACE_EXISTING);
+    crt_free(wOldname);
+    crt_free(wNewname);
+    return result ? 0 : -1;
+}
+
+int __cdecl crt_wrename(const wchar_t* oldname, const wchar_t* newname) {
+    if (oldname == NULL || newname == NULL) {
+        return -1;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef BOOL (WINAPI* _MoveFileExW)(
+        _In_ LPCWSTR lpExistingFileName,
+        _In_opt_ LPCWSTR lpNewFileName,
+        _In_ DWORD dwFlags
+    );
+    constexpr unsigned int hashMoveFileExW = ComplexHashForAnsi("MoveFileExW");
+    _MoveFileExW pMoveFileExW = (_MoveFileExW)apiResolve.GetApiAddress(lpKernel32, hashMoveFileExW);
+
+    BOOL result = pMoveFileExW(oldname, newname, MOVEFILE_REPLACE_EXISTING);
+    return result ? 0 : -1;
+}
+
+BOOL __cdecl crt_fileexists(const char* filename) {
+    if (filename == NULL) {
+        return FALSE;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef HANDLE (WINAPI* _CreateFileW)(
+        _In_ LPCWSTR lpFileName,
+        _In_ DWORD dwDesiredAccess,
+        _In_ DWORD dwShareMode,
+        _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+        _In_ DWORD dwCreationDisposition,
+        _In_ DWORD dwFlagsAndAttributes,
+        _In_opt_ HANDLE hTemplateFile
+    );
+    constexpr unsigned int hashCreateFileW = ComplexHashForAnsi("CreateFileW");
+    _CreateFileW pCreateFileW = (_CreateFileW)apiResolve.GetApiAddress(lpKernel32, hashCreateFileW);
+    typedef BOOL (WINAPI* _CloseHandle)(HANDLE hObject);
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    wchar_t* wFilename = crt_atowc(filename);
+    if (wFilename == NULL) {
+        return FALSE;
+    }
+
+    HANDLE hFile = pCreateFileW(wFilename, 0, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                NULL, OPEN_EXISTING, 0, NULL);
+    crt_free(wFilename);
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        return FALSE;
+    }
+
+    pCloseHandle(hFile);
+    return TRUE;
+}
+
+BOOL __cdecl crt_wfileexists(const wchar_t* filename) {
+    if (filename == NULL) {
+        return FALSE;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef HANDLE (WINAPI* _CreateFileW)(
+        _In_ LPCWSTR lpFileName,
+        _In_ DWORD dwDesiredAccess,
+        _In_ DWORD dwShareMode,
+        _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+        _In_ DWORD dwCreationDisposition,
+        _In_ DWORD dwFlagsAndAttributes,
+        _In_opt_ HANDLE hTemplateFile
+    );
+    constexpr unsigned int hashCreateFileW = ComplexHashForAnsi("CreateFileW");
+    _CreateFileW pCreateFileW = (_CreateFileW)apiResolve.GetApiAddress(lpKernel32, hashCreateFileW);
+    typedef BOOL (WINAPI* _CloseHandle)(HANDLE hObject);
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    HANDLE hFile = pCreateFileW(filename, 0, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                NULL, OPEN_EXISTING, 0, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        return FALSE;
+    }
+
+    pCloseHandle(hFile);
+    return TRUE;
+}
+
+long long __cdecl crt_filesize(const char* filename) {
+    if (filename == NULL) {
+        return -1;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef HANDLE (WINAPI* _CreateFileW)(
+        _In_ LPCWSTR lpFileName, _In_ DWORD dwDesiredAccess,
+        _In_ DWORD dwShareMode, _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+        _In_ DWORD dwCreationDisposition, _In_ DWORD dwFlagsAndAttributes,
+        _In_opt_ HANDLE hTemplateFile
+    );
+    constexpr unsigned int hashCreateFileW = ComplexHashForAnsi("CreateFileW");
+    _CreateFileW pCreateFileW = (_CreateFileW)apiResolve.GetApiAddress(lpKernel32, hashCreateFileW);
+    typedef BOOL (WINAPI* _CloseHandle)(HANDLE hObject);
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    wchar_t* wFilename = crt_atowc(filename);
+    if (wFilename == NULL) {
+        return -1;
+    }
+
+    HANDLE hFile = pCreateFileW(wFilename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                NULL, OPEN_EXISTING, 0, NULL);
+    crt_free(wFilename);
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        return -1;
+    }
+
+    typedef DWORD (WINAPI* _GetFileSizeEx)(HANDLE hFile, PLARGE_INTEGER lpFileSize);
+    constexpr unsigned int hashGetFileSizeEx = ComplexHashForAnsi("GetFileSizeEx");
+    _GetFileSizeEx pGetFileSizeEx = (_GetFileSizeEx)apiResolve.GetApiAddress(lpKernel32, hashGetFileSizeEx);
+
+    LARGE_INTEGER size;
+    long long result = -1;
+    if (pGetFileSizeEx(hFile, &size)) {
+        result = size.QuadPart;
+    }
+
+    pCloseHandle(hFile);
+    return result;
+}
+
+long long __cdecl crt_wfilesize(const wchar_t* filename) {
+    if (filename == NULL) {
+        return -1;
+    }
+
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef HANDLE (WINAPI* _CreateFileW)(
+        _In_ LPCWSTR lpFileName, _In_ DWORD dwDesiredAccess,
+        _In_ DWORD dwShareMode, _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+        _In_ DWORD dwCreationDisposition, _In_ DWORD dwFlagsAndAttributes,
+        _In_opt_ HANDLE hTemplateFile
+    );
+    constexpr unsigned int hashCreateFileW = ComplexHashForAnsi("CreateFileW");
+    _CreateFileW pCreateFileW = (_CreateFileW)apiResolve.GetApiAddress(lpKernel32, hashCreateFileW);
+    typedef BOOL (WINAPI* _CloseHandle)(HANDLE hObject);
+    constexpr unsigned int hashCloseHandle = ComplexHashForAnsi("CloseHandle");
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+
+    HANDLE hFile = pCreateFileW(filename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                NULL, OPEN_EXISTING, 0, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        return -1;
+    }
+
+    typedef DWORD (WINAPI* _GetFileSizeEx)(HANDLE hFile, PLARGE_INTEGER lpFileSize);
+    constexpr unsigned int hashGetFileSizeEx = ComplexHashForAnsi("GetFileSizeEx");
+    _GetFileSizeEx pGetFileSizeEx = (_GetFileSizeEx)apiResolve.GetApiAddress(lpKernel32, hashGetFileSizeEx);
+
+    LARGE_INTEGER size;
+    long long result = -1;
+    if (pGetFileSizeEx(hFile, &size)) {
+        result = size.QuadPart;
+    }
+
+    pCloseHandle(hFile);
+    return result;
+}
+
+//=============================================================================
+// FORMATTED PRINT FUNCTIONS (char)
+//=============================================================================
+
+static int crt_cputchar(char c) {
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef HANDLE (WINAPI* _GetStdHandle)(_In_ DWORD nStdHandle);
+    constexpr unsigned int hashGetStdHandle = ComplexHashForAnsi("GetStdHandle");
+    _GetStdHandle pGetStdHandle = (_GetStdHandle)apiResolve.GetApiAddress(lpKernel32, hashGetStdHandle);
+    typedef BOOL (WINAPI* _WriteFile)(
+        _In_ HANDLE hFile, _In_reads_bytes_(nNumberOfBytesToWrite) LPCVOID lpBuffer,
+        _In_ DWORD nNumberOfBytesToWrite, _Out_opt_ LPDWORD lpNumberOfBytesWritten,
+        _Inout_opt_ LPOVERLAPPED lpOverlapped
+    );
+    constexpr unsigned int hashWriteFile = ComplexHashForAnsi("WriteFile");
+    _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
+
+    HANDLE hStdout = pGetStdHandle(STD_OUTPUT_HANDLE);
+    char buf[2] = { c, '\0' };
+    DWORD written = 0;
+    pWriteFile(hStdout, buf, 1, &written, NULL);
+    return (int)written;
+}
+
+static int crt_cputs(const char* str) {
+    if (str == NULL) return -1;
+    int count = 0;
+    while (*str) {
+        count += crt_cputchar(*str++);
+    }
+    return count;
+}
+
+static int crt_cpputs(const char* str, SIZE_T len) {
+    if (str == NULL || len == 0) return 0;
+    ApiResolve apiResolve;
+    constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    typedef HANDLE (WINAPI* _GetStdHandle)(_In_ DWORD nStdHandle);
+    constexpr unsigned int hashGetStdHandle = ComplexHashForAnsi("GetStdHandle");
+    _GetStdHandle pGetStdHandle = (_GetStdHandle)apiResolve.GetApiAddress(lpKernel32, hashGetStdHandle);
+    typedef BOOL (WINAPI* _WriteFile)(
+        _In_ HANDLE hFile, _In_reads_bytes_(nNumberOfBytesToWrite) LPCVOID lpBuffer,
+        _In_ DWORD nNumberOfBytesToWrite, _Out_opt_ LPDWORD lpNumberOfBytesWritten,
+        _Inout_opt_ LPOVERLAPPED lpOverlapped
+    );
+    constexpr unsigned int hashWriteFile = ComplexHashForAnsi("WriteFile");
+    _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
+
+    HANDLE hStdout = pGetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD written = 0;
+    pWriteFile(hStdout, str, (DWORD)len, &written, NULL);
+    return (int)written;
+}
+
+static const char* crt_format_next(const char* fmt, int* width, int* precision, int* flags, char* spec) {
+    *width = 0;
+    *precision = -1;
+    *flags = 0;
+    *spec = '\0';
+
+    if (*fmt != '%') return fmt;
+    fmt++;
+
+    while (*fmt) {
+        switch (*fmt) {
+        case '-': *flags |= 1; fmt++; break;
+        case '+': *flags |= 2; fmt++; break;
+        case ' ': *flags |= 4; fmt++; break;
+        case '0': *flags |= 8; fmt++; break;
+        case '#': *flags |= 16; fmt++; break;
+        default: goto width_parse;
+        }
+    }
+
+width_parse:
+    if (*fmt >= '0' && *fmt <= '9') {
+        int w = 0;
+        while (*fmt >= '0' && *fmt <= '9') {
+            w = w * 10 + (*fmt - '0');
+            fmt++;
+        }
+        *width = w;
+    }
+
+    if (*fmt == '.') {
+        fmt++;
+        int p = 0;
+        int has_digit = 0;
+        while (*fmt >= '0' && *fmt <= '9') {
+            p = p * 10 + (*fmt - '0');
+            has_digit = 1;
+            fmt++;
+        }
+        *precision = has_digit ? p : 0;
+    }
+
+    *spec = *fmt;
+    return fmt + 1;
+}
+
+static int crt_putint(char* buf, unsigned long long val, int width, int prec, int flags, int negative, int upper, int base) {
+    char tmp[32];
+    int i = 0;
+
+    if (val == 0) {
+        tmp[i++] = '0';
+    } else {
+        while (val > 0) {
+            int d = (int)(val % (unsigned long long)base);
+            if (d < 10) {
+                tmp[i++] = (char)('0' + d);
+            } else {
+                tmp[i++] = (char)((upper ? 'A' : 'a') + d - 10);
+            }
+            val /= (unsigned long long)base;
+        }
+    }
+
+    int out_i = 0;
+
+    if (!(flags & 1) && (flags & 8) && !negative) {
+        while (i < width) {
+            buf[out_i++] = '0';
+            i++;
+        }
+    }
+
+    if (negative) {
+        buf[out_i++] = '-';
+    } else if ((flags & 2)) {
+        buf[out_i++] = '+';
+    } else if ((flags & 4)) {
+        buf[out_i++] = ' ';
+    }
+
+    int pad = width - i;
+    if ((flags & 1)) {
+        while (i > 0) {
+            buf[out_i++] = tmp[--i];
+        }
+        while (pad > 0) {
+            buf[out_i++] = ' ';
+            pad--;
+        }
+    } else {
+        while (pad > 0 && !(flags & 8)) {
+            buf[out_i++] = ' ';
+            pad--;
+        }
+        while (i > 0) {
+            buf[out_i++] = tmp[--i];
+        }
+    }
+
+    return out_i;
+}
+
+static int crt_puthex(char* buf, unsigned long long val, int width, int prec, int flags, int upper) {
+    char tmp[32];
+    int i = 0;
+
+    if (val == 0) {
+        tmp[i++] = '0';
+    } else {
+        while (val > 0) {
+            int d = (int)(val % 16);
+            if (d < 10) {
+                tmp[i++] = (char)('0' + d);
+            } else {
+                tmp[i++] = (char)((upper ? 'A' : 'a') + d - 10);
+            }
+            val /= 16;
+        }
+    }
+
+    int out_i = 0;
+
+    if ((flags & 16) && val == 0 && i > 0) {
+        buf[out_i++] = upper ? 'X' : 'x';
+        buf[out_i++] = '0';
+    }
+
+    int pad = width - i;
+    if (!(flags & 1) && (flags & 8)) {
+        while (pad > 0) {
+            buf[out_i++] = '0';
+            pad--;
+        }
+    }
+
+    while (i > 0) {
+        buf[out_i++] = tmp[--i];
+    }
+
+    if (flags & 1) {
+        while (pad > 0) {
+            buf[out_i++] = ' ';
+            pad--;
+        }
+    }
+
+    return out_i;
+}
+
+static int crt_putpointer(char* buf, void* ptr) {
+    unsigned long long val = (unsigned long long)(SIZE_T)ptr;
+    char tmp[32];
+    int i = 0;
+
+    if (val == 0) {
+        tmp[i++] = '0';
+    } else {
+        while (val > 0) {
+            int d = (int)(val % 16);
+            if (d < 10) {
+                tmp[i++] = (char)('0' + d);
+            } else {
+                tmp[i++] = (char)('a' + d - 10);
+            }
+            val /= 16;
+        }
+    }
+
+    int out_i = 0;
+    buf[out_i++] = '0';
+    buf[out_i++] = 'x';
+
+    while (i > 0) {
+        buf[out_i++] = tmp[--i];
+    }
+
+    return out_i;
+}
+
+static int crt_vsnprintf_impl(char* buf, SIZE_T count, const char* fmt, va_list args) {
+    if (buf == NULL || count == 0 || fmt == NULL) {
+        return -1;
+    }
+
+    if (count == (SIZE_T)(-1)) {
+        count = (SIZE_T)0x7FFFFFFF;
+    }
+
+    char temp[64];
+    const char* p = fmt;
+    char* out = buf;
+    SIZE_T remaining = count;
+    int total = 0;
+
+    while (*p && remaining > 1) {
+        if (*p != '%') {
+            *out++ = *p++;
+            remaining--;
+            total++;
+            continue;
+        }
+
+        int width = 0, prec = -1, flags = 0;
+        char spec = '\0';
+        const char* next = crt_format_next(p, &width, &prec, &flags, &spec);
+        int chars = 0;
+
+        if (spec == 'd' || spec == 'i')
+        {
+            int v = va_arg(args, int);
+            unsigned int uv;
+            int neg = 0;
+
+            if (v < 0)
+            {
+                uv = 0u - v;
+                neg = 1;
+            }
+            else
+            {
+                uv = (unsigned int)v;
+            }
+
+            chars = crt_putint(temp, uv, width, prec, flags, neg, 0, 10);
+        }
+        else if (spec == 'u')
+        {
+            unsigned int v = va_arg(args, unsigned int);
+            chars = crt_putint(temp, v, width, prec, flags, 0, 0, 10);
+        }
+        else if (spec == 'o')
+        {
+            unsigned int v = va_arg(args, unsigned int);
+            chars = crt_putint(temp, v, width, prec, flags, 0, 0, 8);
+        }
+        else if (spec == 'x' || spec == 'X')
+        {
+            unsigned int v = va_arg(args, unsigned int);
+            chars = crt_puthex(temp, v, width, prec, flags, (spec == 'X') ? 1 : 0);
+        }
+        else if (spec == 'c')
+        {
+            temp[0] = (char)va_arg(args, int);
+            chars = 1;
+        }
+        else if (spec == 's')
+        {
+            const char* s = va_arg(args, char*);
+            if (s == NULL) { 
+                char sNull[] = {'(', 'n' , 'u', 'l', 'l', '\0'};
+                s = sNull; 
+            }
+            int len = 0;
+            while (s[len]) len++;
+            if (prec >= 0 && prec < len) len = prec;
+            if (len >= (int)(SIZE_T)(remaining)) {
+                if (remaining > 1) {
+                    crt_strncpy(out, s, remaining - 1);
+                }
+                buf[count - 1] = '\0';
+                int fmt_remaining = 0;
+                const char* r = next;
+                while (r && *r) { fmt_remaining++; r++; }
+                return total + fmt_remaining;
+            }
+            crt_strncpy(out, s, len);
+            out = out + len;
+            remaining = remaining - (SIZE_T)len;
+            total = total + len;
+            p = next;
+            continue;
+        }
+        else if (spec == 'p')
+        {
+            void* ptr = va_arg(args, void*);
+            chars = crt_putpointer(temp, ptr);
+        }
+        else if (spec == '%')
+        {
+            temp[0] = '%';
+            chars = 1;
+        }
+        else if (spec == 'n')
+        {
+            int* np = va_arg(args, int*);
+            if (np)
+                *np = total;
+
+            chars = 0;
+        }
+        else if (spec == 'l')
+        {
+            if (p[1] == 'd' || p[1] == 'i')
+            {
+                long v = va_arg(args, long);
+                unsigned long uv;
+                int neg = 0;
+
+                if (v < 0)
+                {
+                    uv = 0ul - v;
+                    neg = 1;
+                }
+                else
+                {
+                    uv = (unsigned long)v;
+                }
+
+                chars = crt_putint(temp, uv, width, prec, flags, neg, 0, 10);
+            }
+            else if (p[1] == 'u')
+            {
+                unsigned long v = va_arg(args, unsigned long);
+                chars = crt_putint(temp, v, width, prec, flags, 0, 0, 10);
+            }
+            else if (p[1] == 'l' && (p[2] == 'd' || p[2] == 'i'))
+            {
+                long long v = va_arg(args, long long);
+                unsigned long long uv;
+                int neg = 0;
+
+                if (v < 0)
+                {
+                    uv = 0ull - v;
+                    neg = 1;
+                }
+                else
+                {
+                    uv = (unsigned long long)v;
+                }
+
+                chars = crt_putint(temp, uv, width, prec, flags, neg, 0, 10);
+                p += 2;
+            }
+            else if (p[1] == 'l' && p[2] == 'u')
+            {
+                unsigned long long v = va_arg(args, unsigned long long);
+                chars = crt_putint(temp, v, width, prec, flags, 0, 0, 10);
+                p += 2;
+            }
+            else
+            {
+                temp[0] = 'l';
+                chars = 1;
+            }
+        }
+        else if (spec == 'z')
+        {
+            if (p[1] == 'u')
+            {
+                SIZE_T v = va_arg(args, SIZE_T);
+                chars = crt_putint(temp, (unsigned long long)v, width, prec, flags, 0, 0, 10);
+            }
+            else if (p[1] == 'd' || p[1] == 'i')
+            {
+                SIZE_T v = va_arg(args, SIZE_T);
+                unsigned long long uv = (unsigned long long)v;
+                int neg = 0;
+
+                if ((long)v < 0)
+                {
+                    uv = 0ull - v;
+                    neg = 1;
+                }
+
+                chars = crt_putint(temp, uv, width, prec, flags, neg, 0, 10);
+            }
+            else
+            {
+                temp[0] = 'z';
+                chars = 1;
+            }
+        }
+        else
+        {
+            temp[0] = *p;
+            chars = 1;
+        }
+
+        if (chars >= (int)remaining) {
+            crt_strncpy(out, temp, remaining - 1);
+            buf[count - 1] = '\0';
+            int fmt_remaining = 0;
+            const char* r = next;
+            while (r && *r) { fmt_remaining++; r++; }
+            return total + fmt_remaining;
+        }
+
+        for (int i = 0; i < chars && remaining > 1; i++) {
+            *out++ = temp[i];
+            remaining--;
+            total++;
+        }
+
+        p = next;
+    }
+
+    if (remaining > 0) {
+        *out = '\0';
+    } else {
+        buf[count - 1] = '\0';
+    }
+    return total;
+}
+
+int __cdecl crt_vsnprintf(char* buf, SIZE_T count, const char* fmt, va_list args) {
+    va_list args_copy;
+    va_copy(args_copy, args);
+    int result = crt_vsnprintf_impl(buf, count, fmt, args_copy);
+    va_end(args_copy);
+    return result;
+}
+
+int __cdecl crt_vprintf(const char* fmt, va_list args) {
+    char buffer[512];
+    int len = crt_vsnprintf(buffer, sizeof(buffer), fmt, args);
+    if (len > 0) {
+        crt_cpputs(buffer, len);
+    }
+    return len;
+}
+
+int __cdecl crt_printf(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int result = crt_vprintf(fmt, args);
+    va_end(args);
+    return result;
+}
+
+int __cdecl crt_sprintf(char* buf, const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int result = crt_vsnprintf_impl(buf, (SIZE_T)(-1), fmt, args);
+    va_end(args);
+    return result;
+}
+
+int __cdecl crt_vsprintf(char* buf, const char* fmt, va_list args) {
+    return crt_vsnprintf_impl(buf, (SIZE_T)(-1), fmt, args);
+}
+
+int __cdecl crt_snprintf(char* buf, SIZE_T count, const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int result = crt_vsnprintf_impl(buf, count, fmt, args);
+    va_end(args);
+    return result;
 }
 
 static void quick_sort_helper(void* base, SIZE_T num, SIZE_T width,

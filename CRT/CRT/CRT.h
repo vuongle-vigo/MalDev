@@ -1,6 +1,7 @@
 #pragma once
 
 #define CRT_VERSION "1.0.0"
+#define CRT_EOF (-1)
 
 #include <windows.h>
 
@@ -164,13 +165,22 @@ unsigned long long __cdecl crt_wcstoull(const wchar_t* nptr, wchar_t** endptr, i
 unsigned long  __cdecl crt_wcstoull_val(const wchar_t* nptr, wchar_t** endptr, int base);
 
 //=============================================================================
-// WIDE-CHARACTER FORMATTED OUTPUT (swprintf)
+// FORMATTED OUTPUT FUNCTIONS
 //=============================================================================
 
+// Wide-character
 int __cdecl crt_swprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, ...);
 int __cdecl crt_vswprintf(wchar_t* buf, SIZE_T count, const wchar_t* fmt, va_list args);
 int __cdecl crt_swprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, ...);
 int __cdecl crt_vswprintf_s(wchar_t* buf, SIZE_T bufSize, const wchar_t* fmt, va_list args);
+
+// Char
+int __cdecl crt_printf(const char* fmt, ...);
+int __cdecl crt_vprintf(const char* fmt, va_list args);
+int __cdecl crt_sprintf(char* buf, const char* fmt, ...);
+int __cdecl crt_vsprintf(char* buf, const char* fmt, va_list args);
+int __cdecl crt_snprintf(char* buf, SIZE_T count, const char* fmt, ...);
+int __cdecl crt_vsnprintf(char* buf, SIZE_T count, const char* fmt, va_list args);
 
 //=============================================================================
 // UTILITY FUNCTIONS
@@ -189,3 +199,35 @@ int __cdecl crt_rand(void);
 int __cdecl crt_abs(int value);
 long __cdecl crt_labs(long value);
 long long __cdecl crt_llabs(long long value);
+
+//=============================================================================
+// FILE I/O FUNCTIONS (WinAPI-based)
+//=============================================================================
+
+typedef struct crt_FILE crt_FILE;
+
+crt_FILE* __cdecl crt_fopen(const char* filename, const char* mode);
+crt_FILE* __cdecl crt_wfopen(const wchar_t* filename, const wchar_t* mode);
+int       __cdecl crt_fclose(crt_FILE* stream);
+
+SIZE_T    __cdecl crt_fread(void* buffer, SIZE_T size, SIZE_T count, crt_FILE* stream);
+SIZE_T    __cdecl crt_fwrite(const void* buffer, SIZE_T size, SIZE_T count, crt_FILE* stream);
+
+int       __cdecl crt_fseek(crt_FILE* stream, long offset, int origin);
+long      __cdecl crt_ftell(crt_FILE* stream);
+void      __cdecl crt_rewind(crt_FILE* stream);
+int       __cdecl crt_fflush(crt_FILE* stream);
+
+int       __cdecl crt_feof(crt_FILE* stream);
+int       __cdecl crt_ferror(crt_FILE* stream);
+void      __cdecl crt_clearerr(crt_FILE* stream);
+
+int       __cdecl crt_remove(const char* filename);
+int       __cdecl crt_wremove(const wchar_t* filename);
+int       __cdecl crt_rename(const char* oldname, const char* newname);
+int       __cdecl crt_wrename(const wchar_t* oldname, const wchar_t* newname);
+
+BOOL      __cdecl crt_fileexists(const char* filename);
+BOOL      __cdecl crt_wfileexists(const wchar_t* filename);
+long long __cdecl crt_filesize(const char* filename);
+long long __cdecl crt_wfilesize(const wchar_t* filename);

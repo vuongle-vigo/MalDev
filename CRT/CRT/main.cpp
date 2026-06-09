@@ -355,58 +355,71 @@ void test_string_float_conversion() {
 
     // Basic positive float
     float f1 = crt_strtof("123.456", &endptr);
-    printf("[%s] strtof(\"123.456\") = %.3f (expected: 123.456)\n",
+    printf("[%s] strtof(\"123.456\") = %.7g (expected: 123.456)\n",
            (f1 > 123.455f && f1 < 123.457f) ? "PASS" : "FAIL", f1);
+
+    // Debug: Compare binary representations
+    float expected_f1 = 123.456f;
+    unsigned int u_f1 = *(unsigned int*)&f1;
+    unsigned int u_exp_f1 = *(unsigned int*)&expected_f1;
+    printf("    [DEBUG] f1 binary: 0x%08X, expected binary: 0x%08X, equal=%s\n",
+           u_f1, u_exp_f1, u_f1 == u_exp_f1 ? "YES" : "NO");
+
+    // CRITICAL: Test so sánh float == float (đúng) vs float == double (sai)
+    printf("    [DEBUG] f1 == 123.456f: %s (float vs float)\n", f1 == 123.456f ? "TRUE" : "FALSE");
+    printf("    [DEBUG] f1 == 123.456:  %s (float vs double)\n", f1 == 123.456 ? "TRUE" : "FALSE");
+    printf("    [DEBUG] (double)f1 == 123.456: %s\n", (double)f1 == 123.456 ? "TRUE" : "FALSE");
+    printf("    [DEBUG] f1 - 123.456f = %e (should be ~0)\n", f1 - 123.456f);
 
     // Negative float
     float f2 = crt_strtof("-456.789", &endptr);
-    printf("[%s] strtof(\"-456.789\") = %.3f (expected: -456.789)\n",
+    printf("[%s] strtof(\"-456.789\") = %.7g (expected: -456.789)\n",
            (f2 > -456.790f && f2 < -456.788f) ? "PASS" : "FAIL", f2);
 
     // Float with exponent (positive)
     float f3 = crt_strtof("3.14e2", &endptr);
-    printf("[%s] strtof(\"3.14e2\") = %.2f (expected: 314.00)\n",
+    printf("[%s] strtof(\"3.14e2\") = %.7g (expected: 314.00)\n",
            (f3 > 313.99f && f3 < 314.01f) ? "PASS" : "FAIL", f3);
 
     // Float with exponent (negative)
     float f4 = crt_strtof("1.5e-1", &endptr);
-    printf("[%s] strtof(\"1.5e-1\") = %.2f (expected: 0.15)\n",
+    printf("[%s] strtof(\"1.5e-1\") = %.7g (expected: 0.15)\n",
            (f4 > 0.149f && f4 < 0.151f) ? "PASS" : "FAIL", f4);
 
     // Integer only
     float f5 = crt_strtof("42", &endptr);
-    printf("[%s] strtof(\"42\") = %.0f (expected: 42)\n",
+    printf("[%s] strtof(\"42\") = %.7g (expected: 42)\n",
            (f5 > 41.9f && f5 < 42.1f) ? "PASS" : "FAIL", f5);
 
     // Leading whitespace
     float f6 = crt_strtof("   99.5", &endptr);
-    printf("[%s] strtof(\"   99.5\") = %.1f (expected: 99.5)\n",
+    printf("[%s] strtof(\"   99.5\") = %.7g (expected: 99.5)\n",
            (f6 > 99.49f && f6 < 99.51f) ? "PASS" : "FAIL", f6);
 
     // Uppercase E exponent
     float f7 = crt_strtof("2.5E3", &endptr);
-    printf("[%s] strtof(\"2.5E3\") = %.0f (expected: 2500)\n",
+    printf("[%s] strtof(\"2.5E3\") = %.7g (expected: 2500)\n",
            (f7 > 2499.9f && f7 < 2500.1f) ? "PASS" : "FAIL", f7);
 
     // Positive sign
     float f8 = crt_strtof("+10.5", &endptr);
-    printf("[%s] strtof(\"+10.5\") = %.1f (expected: 10.5)\n",
+    printf("[%s] strtof(\"+10.5\") = %.7g (expected: 10.5)\n",
            (f8 > 10.49f && f8 < 10.51f) ? "PASS" : "FAIL", f8);
 
     // No digits after decimal
     float f9 = crt_strtof("123.", &endptr);
-    printf("[%s] strtof(\"123.\") = %.0f (expected: 123)\n",
+    printf("[%s] strtof(\"123.\") = %.7g (expected: 123)\n",
            (f9 > 122.9f && f9 < 123.1f) ? "PASS" : "FAIL", f9);
 
     // Empty string - endptr should point to start of string (no conversion)
     float f10 = crt_strtof("", &endptr);
-    printf("[%s] strtof(\"\") = %.0f, endptr=start: %s\n",
+    printf("[%s] strtof(\"\") = %.7g, endptr=start: %s\n",
            (f10 == 0.0f && endptr != NULL) ? "PASS" : "FAIL", f10,
            endptr == NULL ? "NULL" : "valid");
 
     // No conversion - endptr should point to 'a'
     float f11 = crt_strtof("abc", &endptr);
-    printf("[%s] strtof(\"abc\") = %.0f, endptr at 'a': %s\n",
+    printf("[%s] strtof(\"abc\") = %.7g, endptr at 'a': %s\n",
            (f11 == 0.0f && endptr != NULL && *endptr == 'a') ? "PASS" : "FAIL", f11,
            (endptr && *endptr == 'a') ? "yes" : "no");
 
@@ -417,32 +430,43 @@ void test_string_float_conversion() {
 
     // Basic positive double
     double d1 = crt_strtod("456.789", &endptr);
-    printf("[%s] strtod(\"456.789\") = %.3f (expected: 456.789)\n",
+    printf("[%s] strtod(\"456.789\") = %.7g (expected: 456.789)\n",
            (d1 > 456.788 && d1 < 456.790) ? "PASS" : "FAIL", d1);
+
+    // Debug: Compare binary representations
+    double expected_d1 = 456.789;
+    unsigned long long ull_d1 = *(unsigned long long*)&d1;
+    unsigned long long ull_exp_d1 = *(unsigned long long*)&expected_d1;
+    printf("    [DEBUG] d1 binary: 0x%016llX, expected binary: 0x%016llX, equal=%s\n",
+           ull_d1, ull_exp_d1, ull_d1 == ull_exp_d1 ? "YES" : "NO");
+    printf("    [DEBUG] diff = %e (expected: 0)\n", d1 - 456.789);
+
+    // CRITICAL: Test so sánh double == double (đúng)
+    printf("    [DEBUG] d1 == 456.789:    %s (double vs double)\n", d1 == 456.789 ? "TRUE" : "FALSE");
 
     // Negative double
     double d2 = crt_strtod("-456.789", &endptr);
-    printf("[%s] strtod(\"-456.789\") = %.3f (expected: -456.789)\n",
+    printf("[%s] strtod(\"-456.789\") = %.7g (expected: -456.789)\n",
            (d2 > -456.790 && d2 < -456.788) ? "PASS" : "FAIL", d2);
 
     // Double with large exponent
     double d3 = crt_strtod("1.23e10", &endptr);
-    printf("[%s] strtod(\"1.23e10\") = %.0e (expected: 1.23e10)\n",
+    printf("[%s] strtod(\"1.23e10\") = %.7g (expected: 1.23e10)\n",
            (d3 > 1.22e10 && d3 < 1.24e10) ? "PASS" : "FAIL", d3);
 
     // Negative exponent
     double d4 = crt_strtod("5.5e-5", &endptr);
-    printf("[%s] strtod(\"5.5e-5\") = %.6f (expected: 0.000055)\n",
+    printf("[%s] strtod(\"5.5e-5\") = %.7g (expected: 0.000055)\n",
            (d4 > 0.000054 && d4 < 0.000056) ? "PASS" : "FAIL", d4);
 
     // Double precision
     double d5 = crt_strtod("3.14159265358979", &endptr);
-    printf("[%s] strtod(\"3.14159265358979\") = %.14f\n",
+    printf("[%s] strtod(\"3.14159265358979\") = %.7g\n",
            (d5 > 3.1415926535 && d5 < 3.1415926536) ? "PASS" : "FAIL", d5);
 
     // Leading whitespace and sign
     double d6 = crt_strtod("  -273.15", &endptr);
-    printf("[%s] strtod(\"  -273.15\") = %.2f (expected: -273.15)\n",
+    printf("[%s] strtod(\"  -273.15\") = %.7g (expected: -273.15)\n",
            (d6 > -273.16 && d6 < -273.14) ? "PASS" : "FAIL", d6);
 
     // Overflow
@@ -453,17 +477,17 @@ void test_string_float_conversion() {
 
     // Very small positive
     double d8 = crt_strtod("0.0000001", &endptr);
-    printf("[%s] strtod(\"0.0000001\") = %.7f (expected: 0.0000001)\n",
+    printf("[%s] strtod(\"0.0000001\") = %.7g (expected: 0.0000001)\n",
            (d8 > 0.00000009 && d8 < 0.00000011) ? "PASS" : "FAIL", d8);
 
     // Zero
     double d9 = crt_strtod("0", &endptr);
-    printf("[%s] strtod(\"0\") = %.1f (expected: 0.0)\n",
+    printf("[%s] strtod(\"0\") = %.7g (expected: 0.0)\n",
            d9 == 0.0 ? "PASS" : "FAIL", d9);
 
     // Negative zero
     double d10 = crt_strtod("-0", &endptr);
-    printf("[%s] strtod(\"-0\") = %.1f (expected: -0.0)\n",
+    printf("[%s] strtod(\"-0\") = %.7g (expected: -0.0)\n",
            d10 == 0.0 ? "PASS" : "FAIL", d10);
 
     //========================================
@@ -472,7 +496,7 @@ void test_string_float_conversion() {
     printf("\nTesting crt_strtold...\n");
 
     long double ld1 = crt_strtold("123.456789012345", &endptr);
-    printf("[%s] strtold(\"123.456789012345\") = %.15Lf\n",
+    printf("[%s] strtold(\"123.456789012345\") = %.18Lg\n",
            (ld1 > 123.4567890123 && ld1 < 123.4567890124) ? "PASS" : "FAIL", ld1);
 
     //========================================
@@ -487,7 +511,7 @@ void test_string_float_conversion() {
 
     // NULL endptr should not crash
     double d12 = crt_strtod("999.99", NULL);
-    printf("[%s] strtod with NULL endptr doesn't crash: %.2f\n",
+    printf("[%s] strtod with NULL endptr doesn't crash: %.7g\n",
            (d12 > 999.98 && d12 < 1000.0) ? "PASS" : "FAIL", d12);
 
     // NULL input

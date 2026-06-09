@@ -1188,36 +1188,26 @@ double __cdecl crt_strtod(const char* str, char** endptr) {
         if (endptr) *endptr = NULL;
         return 0.0;
     }
-    
+
     const char* p = str;
     int sign = crt_parse_float_sign(&p);
     const char* int_start = p;
-    
+
     int overflow = 0;
     unsigned long integer_part = crt_strtoul_float(p, &p, &overflow);
-    
-    double result = (double)integer_part;
-    char bytes[8] = {
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x24, 0x40
-    };
 
-    double ten_double = *(double*)bytes;
+    long double result = (long double)integer_part;
 
     if (*p == '.') {
         p++;
-        SIZE_T frac_digits = 0;
         while (crt_isdigit(*p)) {
-            result = result * ten_double + (*p - '0');
-            frac_digits++;
+            result = result * 10.0L + (long double)(*p - '0');
             p++;
         }
-        for (SIZE_T i = 0; i < frac_digits; i++) {
-            result /= ten_double;
-        }
     }
-    
+
     int exp_sign = 1;
+    int exp_value = 0;
     if (*p == 'e' || *p == 'E') {
         p++;
         if (*p == '+') {
@@ -1226,8 +1216,7 @@ double __cdecl crt_strtod(const char* str, char** endptr) {
             p++;
             exp_sign = -1;
         }
-        
-        int exp_value = 0;
+
         while (crt_isdigit(*p)) {
             exp_value = exp_value * 10 + (*p - '0');
             if (exp_value > 308) {
@@ -1235,39 +1224,22 @@ double __cdecl crt_strtod(const char* str, char** endptr) {
             }
             p++;
         }
-        
-        char bytes[8] = {
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0xF0, 0x3F
-        };
-        
-        double exp_multiplier = *(double*)bytes;
-        // double exp_multiplier = 1.0;
+    }
+
+    if (exp_value > 0 || exp_sign < 0) {
+        long double power = 1.0L;
         for (int i = 0; i < exp_value; i++) {
-            exp_multiplier *= ten_double;
+            power *= 10.0L;
         }
         if (exp_sign > 0) {
-            result *= exp_multiplier;
+            result *= power;
         } else {
-            result /= exp_multiplier;
+            result /= power;
         }
     }
-    
+
     if (overflow) {
-        char pos_inf[8] = {
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f
-        };
-        char neg_inf[8] = {
-            0x00,0x00,0x00,0x00,
-            0x00,0x00,0xF0,0xFF
-        };
-        result = *(double*)(sign > 0 ? pos_inf : neg_inf);
-        //if (sign > 0) {
-        //    result = *(double*)bytes;
-        //} else {
-        //    result = *(double*)bytes;
-        //    result = -result;
-        //}
+        return sign > 0 ? __builtin_huge_val() : -__builtin_huge_val();
     }
 
     if (endptr) {
@@ -1278,7 +1250,7 @@ double __cdecl crt_strtod(const char* str, char** endptr) {
         }
     }
 
-    return result * sign;
+    return (double)(result * sign);
 }
 
 long double __cdecl crt_strtold(const char* str, char** endptr) {

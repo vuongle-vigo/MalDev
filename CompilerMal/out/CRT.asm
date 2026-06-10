@@ -144,11 +144,26 @@ PUBLIC	?crt_fileexists@@YAHPEBD@Z			; crt_fileexists
 PUBLIC	?crt_wfileexists@@YAHPEB_W@Z			; crt_wfileexists
 PUBLIC	?crt_filesize@@YA_JPEBD@Z			; crt_filesize
 PUBLIC	?crt_wfilesize@@YA_JPEB_W@Z			; crt_wfilesize
+PUBLIC	__real@4024000000000000
+PUBLIC	__real@7ff0000000000000
+PUBLIC	__real@fff0000000000000
 EXTRN	??0ApiResolve@@QEAA@XZ:PROC			; ApiResolve::ApiResolve
 EXTRN	??1ApiResolve@@QEAA@XZ:PROC			; ApiResolve::~ApiResolve
 EXTRN	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z:PROC ; ApiResolve::GetModuleBaseAddress
 EXTRN	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z:PROC	; ApiResolve::GetApiAddress
 EXTRN	_fltused:DWORD
+;	COMDAT __real@fff0000000000000
+CONST	SEGMENT
+__real@fff0000000000000 DQ 0fff0000000000000r	; -inf
+CONST	ENDS
+;	COMDAT __real@7ff0000000000000
+CONST	SEGMENT
+__real@7ff0000000000000 DQ 07ff0000000000000r	; inf
+CONST	ENDS
+;	COMDAT __real@4024000000000000
+CONST	SEGMENT
+__real@4024000000000000 DQ 04024000000000000r	; 10
+CONST	ENDS
 ; Function compile flags: /Odtp
 _TEXT	SEGMENT
 apiResolve$ = 32
@@ -4327,32 +4342,28 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 _TEXT	SEGMENT
 p$ = 32
-result$ = 40
-exp_value$1 = 48
-bytes$ = 56
-bytes$2 = 64
-pos_inf$3 = 72
-neg_inf$4 = 80
-i$5 = 88
-overflow$ = 92
-exp_sign$ = 96
-sign$ = 100
-exp_multiplier$6 = 104
-integer_part$ = 112
-frac_digits$7 = 120
-i$8 = 128
-ten_double$ = 136
-tv151 = 144
-int_start$ = 152
-str$ = 176
-endptr$ = 184
+exp_value$ = 40
+result$ = 48
+onel$1 = 56
+frac_digits$ = 64
+i$2 = 68
+i$3 = 72
+exp_sign$ = 76
+overflow$ = 80
+sign$ = 84
+power$4 = 88
+integer_part$ = 96
+tv153 = 104
+int_start$ = 112
+str$ = 144
+endptr$ = 152
 ?crt_strtod@@YANPEBDPEAPEAD@Z PROC			; crt_strtod
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
 ; Line 1186
-$LN32:
+$LN34:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 168				; 000000a8H
+	sub	rsp, 136				; 00000088H
 ; Line 1187
 	cmp	QWORD PTR str$[rsp], 0
 	jne	SHORT $LN12@crt_strtod
@@ -4388,80 +4399,69 @@ $LN12@crt_strtod:
 	mov	eax, DWORD PTR integer_part$[rsp]
 	cvtsi2sd xmm0, rax
 	movsd	QWORD PTR result$[rsp], xmm0
-; Line 1201
-	mov	BYTE PTR bytes$[rsp], 0
-	mov	BYTE PTR bytes$[rsp+1], 0
-	mov	BYTE PTR bytes$[rsp+2], 0
-	mov	BYTE PTR bytes$[rsp+3], 0
+; Line 1200
+	mov	DWORD PTR frac_digits$[rsp], 0
 ; Line 1202
-	mov	BYTE PTR bytes$[rsp+4], 0
-	mov	BYTE PTR bytes$[rsp+5], 0
-	mov	BYTE PTR bytes$[rsp+6], 36		; 00000024H
-	mov	BYTE PTR bytes$[rsp+7], 64		; 00000040H
-; Line 1205
-	movsd	xmm0, QWORD PTR bytes$[rsp]
-	movsd	QWORD PTR ten_double$[rsp], xmm0
-; Line 1207
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 46					; 0000002eH
 	jne	$LN14@crt_strtod
-; Line 1208
+; Line 1203
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
-; Line 1209
-	mov	QWORD PTR frac_digits$7[rsp], 0
 $LN2@crt_strtod:
-; Line 1210
+; Line 1204
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	mov	ecx, eax
 	call	?crt_isdigit@@YAHH@Z			; crt_isdigit
 	test	eax, eax
 	je	SHORT $LN3@crt_strtod
-; Line 1211
+; Line 1205
 	movsd	xmm0, QWORD PTR result$[rsp]
-	mulsd	xmm0, QWORD PTR ten_double$[rsp]
+	mulsd	xmm0, QWORD PTR __real@4024000000000000
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	sub	eax, 48					; 00000030H
 	cvtsi2sd xmm1, eax
 	addsd	xmm0, xmm1
 	movsd	QWORD PTR result$[rsp], xmm0
-; Line 1212
-	mov	rax, QWORD PTR frac_digits$7[rsp]
-	inc	rax
-	mov	QWORD PTR frac_digits$7[rsp], rax
-; Line 1213
+; Line 1206
+	mov	eax, DWORD PTR frac_digits$[rsp]
+	inc	eax
+	mov	DWORD PTR frac_digits$[rsp], eax
+; Line 1207
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
-; Line 1214
+; Line 1208
 	jmp	SHORT $LN2@crt_strtod
 $LN3@crt_strtod:
-; Line 1215
-	mov	QWORD PTR i$8[rsp], 0
+; Line 1209
+	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN6@crt_strtod
 $LN4@crt_strtod:
-	mov	rax, QWORD PTR i$8[rsp]
-	inc	rax
-	mov	QWORD PTR i$8[rsp], rax
+	mov	eax, DWORD PTR i$2[rsp]
+	inc	eax
+	mov	DWORD PTR i$2[rsp], eax
 $LN6@crt_strtod:
-	mov	rax, QWORD PTR frac_digits$7[rsp]
-	cmp	QWORD PTR i$8[rsp], rax
-	jae	SHORT $LN5@crt_strtod
-; Line 1216
+	mov	eax, DWORD PTR frac_digits$[rsp]
+	cmp	DWORD PTR i$2[rsp], eax
+	jge	SHORT $LN5@crt_strtod
+; Line 1210
 	movsd	xmm0, QWORD PTR result$[rsp]
-	divsd	xmm0, QWORD PTR ten_double$[rsp]
+	divsd	xmm0, QWORD PTR __real@4024000000000000
 	movsd	QWORD PTR result$[rsp], xmm0
-; Line 1217
+; Line 1211
 	jmp	SHORT $LN4@crt_strtod
 $LN5@crt_strtod:
 $LN14@crt_strtod:
-; Line 1220
+; Line 1214
 	mov	DWORD PTR exp_sign$[rsp], 1
-; Line 1221
+; Line 1215
+	mov	DWORD PTR exp_value$[rsp], 0
+; Line 1216
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 101				; 00000065H
@@ -4471,188 +4471,172 @@ $LN14@crt_strtod:
 	cmp	eax, 69					; 00000045H
 	jne	$LN15@crt_strtod
 $LN16@crt_strtod:
-; Line 1222
+; Line 1217
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
-; Line 1223
+; Line 1218
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 43					; 0000002bH
 	jne	SHORT $LN17@crt_strtod
-; Line 1224
+; Line 1219
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
 	jmp	SHORT $LN18@crt_strtod
 $LN17@crt_strtod:
-; Line 1225
+; Line 1220
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 45					; 0000002dH
 	jne	SHORT $LN19@crt_strtod
-; Line 1226
+; Line 1221
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
-; Line 1227
+; Line 1222
 	mov	DWORD PTR exp_sign$[rsp], -1
 $LN19@crt_strtod:
 $LN18@crt_strtod:
-; Line 1230
-	mov	DWORD PTR exp_value$1[rsp], 0
 $LN7@crt_strtod:
-; Line 1231
+; Line 1225
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	mov	ecx, eax
 	call	?crt_isdigit@@YAHH@Z			; crt_isdigit
 	test	eax, eax
 	je	SHORT $LN8@crt_strtod
-; Line 1232
-	imul	eax, DWORD PTR exp_value$1[rsp], 10
+; Line 1226
+	imul	eax, DWORD PTR exp_value$[rsp], 10
 	mov	rcx, QWORD PTR p$[rsp]
 	movsx	ecx, BYTE PTR [rcx]
 	lea	eax, DWORD PTR [rax+rcx-48]
-	mov	DWORD PTR exp_value$1[rsp], eax
-; Line 1233
-	cmp	DWORD PTR exp_value$1[rsp], 308		; 00000134H
+	mov	DWORD PTR exp_value$[rsp], eax
+; Line 1227
+	cmp	DWORD PTR exp_value$[rsp], 308		; 00000134H
 	jle	SHORT $LN20@crt_strtod
-; Line 1234
+; Line 1228
 	mov	DWORD PTR overflow$[rsp], 1
 $LN20@crt_strtod:
-; Line 1236
+; Line 1230
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
-; Line 1237
+; Line 1231
 	jmp	SHORT $LN7@crt_strtod
 $LN8@crt_strtod:
-; Line 1240
-	mov	BYTE PTR bytes$2[rsp], 0
-	mov	BYTE PTR bytes$2[rsp+1], 0
-	mov	BYTE PTR bytes$2[rsp+2], 0
-	mov	BYTE PTR bytes$2[rsp+3], 0
-; Line 1241
-	mov	BYTE PTR bytes$2[rsp+4], 0
-	mov	BYTE PTR bytes$2[rsp+5], 0
-	mov	BYTE PTR bytes$2[rsp+6], -16
-	mov	BYTE PTR bytes$2[rsp+7], 63		; 0000003fH
-; Line 1244
-	movsd	xmm0, QWORD PTR bytes$2[rsp]
-	movsd	QWORD PTR exp_multiplier$6[rsp], xmm0
-; Line 1246
-	mov	DWORD PTR i$5[rsp], 0
+$LN15@crt_strtod:
+; Line 1234
+	cmp	DWORD PTR exp_value$[rsp], 0
+	jg	SHORT $LN22@crt_strtod
+	cmp	DWORD PTR exp_sign$[rsp], 0
+	jge	$LN21@crt_strtod
+$LN22@crt_strtod:
+; Line 1235
+	mov	BYTE PTR onel$1[rsp], 0
+	mov	BYTE PTR onel$1[rsp+1], 0
+	mov	BYTE PTR onel$1[rsp+2], 0
+	mov	BYTE PTR onel$1[rsp+3], 0
+	mov	BYTE PTR onel$1[rsp+4], 0
+	mov	BYTE PTR onel$1[rsp+5], 0
+	mov	BYTE PTR onel$1[rsp+6], -16
+	mov	BYTE PTR onel$1[rsp+7], 63		; 0000003fH
+; Line 1236
+	movsd	xmm0, QWORD PTR onel$1[rsp]
+	movsd	QWORD PTR power$4[rsp], xmm0
+; Line 1237
+	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN11@crt_strtod
 $LN9@crt_strtod:
-	mov	eax, DWORD PTR i$5[rsp]
+	mov	eax, DWORD PTR i$3[rsp]
 	inc	eax
-	mov	DWORD PTR i$5[rsp], eax
+	mov	DWORD PTR i$3[rsp], eax
 $LN11@crt_strtod:
-	mov	eax, DWORD PTR exp_value$1[rsp]
-	cmp	DWORD PTR i$5[rsp], eax
+	mov	eax, DWORD PTR exp_value$[rsp]
+	cmp	DWORD PTR i$3[rsp], eax
 	jge	SHORT $LN10@crt_strtod
-; Line 1247
-	movsd	xmm0, QWORD PTR exp_multiplier$6[rsp]
-	mulsd	xmm0, QWORD PTR ten_double$[rsp]
-	movsd	QWORD PTR exp_multiplier$6[rsp], xmm0
-; Line 1248
+; Line 1238
+	movsd	xmm0, QWORD PTR power$4[rsp]
+	mulsd	xmm0, QWORD PTR __real@4024000000000000
+	movsd	QWORD PTR power$4[rsp], xmm0
+; Line 1239
 	jmp	SHORT $LN9@crt_strtod
 $LN10@crt_strtod:
-; Line 1249
+; Line 1240
 	cmp	DWORD PTR exp_sign$[rsp], 0
-	jle	SHORT $LN21@crt_strtod
-; Line 1250
+	jle	SHORT $LN23@crt_strtod
+; Line 1241
 	movsd	xmm0, QWORD PTR result$[rsp]
-	mulsd	xmm0, QWORD PTR exp_multiplier$6[rsp]
+	mulsd	xmm0, QWORD PTR power$4[rsp]
 	movsd	QWORD PTR result$[rsp], xmm0
-; Line 1251
-	jmp	SHORT $LN22@crt_strtod
-$LN21@crt_strtod:
-; Line 1252
-	movsd	xmm0, QWORD PTR result$[rsp]
-	divsd	xmm0, QWORD PTR exp_multiplier$6[rsp]
-	movsd	QWORD PTR result$[rsp], xmm0
-$LN22@crt_strtod:
-$LN15@crt_strtod:
-; Line 1256
-	cmp	DWORD PTR overflow$[rsp], 0
-	je	$LN23@crt_strtod
-; Line 1258
-	mov	BYTE PTR pos_inf$3[rsp], 0
-	mov	BYTE PTR pos_inf$3[rsp+1], 0
-	mov	BYTE PTR pos_inf$3[rsp+2], 0
-	mov	BYTE PTR pos_inf$3[rsp+3], 0
-	mov	BYTE PTR pos_inf$3[rsp+4], 0
-	mov	BYTE PTR pos_inf$3[rsp+5], 0
-	mov	BYTE PTR pos_inf$3[rsp+6], -16
-	mov	BYTE PTR pos_inf$3[rsp+7], 127		; 0000007fH
-; Line 1261
-	mov	BYTE PTR neg_inf$4[rsp], 0
-	mov	BYTE PTR neg_inf$4[rsp+1], 0
-	mov	BYTE PTR neg_inf$4[rsp+2], 0
-	mov	BYTE PTR neg_inf$4[rsp+3], 0
-; Line 1262
-	mov	BYTE PTR neg_inf$4[rsp+4], 0
-	mov	BYTE PTR neg_inf$4[rsp+5], 0
-	mov	BYTE PTR neg_inf$4[rsp+6], -16
-	mov	BYTE PTR neg_inf$4[rsp+7], -1
-; Line 1264
-	cmp	DWORD PTR sign$[rsp], 0
-	jle	SHORT $LN30@crt_strtod
-	lea	rax, QWORD PTR pos_inf$3[rsp]
-	mov	QWORD PTR tv151[rsp], rax
-	jmp	SHORT $LN31@crt_strtod
-$LN30@crt_strtod:
-	lea	rax, QWORD PTR neg_inf$4[rsp]
-	mov	QWORD PTR tv151[rsp], rax
-$LN31@crt_strtod:
-	mov	rax, QWORD PTR tv151[rsp]
-	movsd	xmm0, QWORD PTR [rax]
-	movsd	QWORD PTR result$[rsp], xmm0
+; Line 1242
+	jmp	SHORT $LN24@crt_strtod
 $LN23@crt_strtod:
-; Line 1273
+; Line 1243
+	movsd	xmm0, QWORD PTR result$[rsp]
+	divsd	xmm0, QWORD PTR power$4[rsp]
+	movsd	QWORD PTR result$[rsp], xmm0
+$LN24@crt_strtod:
+$LN21@crt_strtod:
+; Line 1247
+	cmp	DWORD PTR overflow$[rsp], 0
+	je	SHORT $LN25@crt_strtod
+; Line 1248
+	cmp	DWORD PTR sign$[rsp], 0
+	jle	SHORT $LN32@crt_strtod
+	movsd	xmm0, QWORD PTR __real@7ff0000000000000
+	movsd	QWORD PTR tv153[rsp], xmm0
+	jmp	SHORT $LN33@crt_strtod
+$LN32@crt_strtod:
+	movsd	xmm0, QWORD PTR __real@fff0000000000000
+	movsd	QWORD PTR tv153[rsp], xmm0
+$LN33@crt_strtod:
+	movsd	xmm0, QWORD PTR tv153[rsp]
+	jmp	$LN1@crt_strtod
+$LN25@crt_strtod:
+; Line 1251
 	cmp	QWORD PTR endptr$[rsp], 0
-	je	SHORT $LN24@crt_strtod
-; Line 1274
+	je	SHORT $LN26@crt_strtod
+; Line 1252
 	mov	rax, QWORD PTR int_start$[rsp]
 	cmp	QWORD PTR p$[rsp], rax
-	je	SHORT $LN27@crt_strtod
+	je	SHORT $LN29@crt_strtod
 	mov	rax, QWORD PTR str$[rsp]
 	inc	rax
 	cmp	QWORD PTR p$[rsp], rax
-	jne	SHORT $LN25@crt_strtod
+	jne	SHORT $LN27@crt_strtod
 	mov	rax, QWORD PTR str$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 43					; 0000002bH
-	je	SHORT $LN28@crt_strtod
+	je	SHORT $LN30@crt_strtod
 	mov	rax, QWORD PTR str$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 45					; 0000002dH
-	jne	SHORT $LN25@crt_strtod
-$LN28@crt_strtod:
-$LN27@crt_strtod:
-; Line 1275
+	jne	SHORT $LN27@crt_strtod
+$LN30@crt_strtod:
+$LN29@crt_strtod:
+; Line 1253
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR str$[rsp]
 	mov	QWORD PTR [rax], rcx
-; Line 1276
-	jmp	SHORT $LN26@crt_strtod
-$LN25@crt_strtod:
-; Line 1277
+; Line 1254
+	jmp	SHORT $LN28@crt_strtod
+$LN27@crt_strtod:
+; Line 1255
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
 	mov	QWORD PTR [rax], rcx
+$LN28@crt_strtod:
 $LN26@crt_strtod:
-$LN24@crt_strtod:
-; Line 1281
+; Line 1259
 	cvtsi2sd xmm0, DWORD PTR sign$[rsp]
 	movsd	xmm1, QWORD PTR result$[rsp]
 	mulsd	xmm1, xmm0
 	movaps	xmm0, xmm1
 $LN1@crt_strtod:
-; Line 1282
-	add	rsp, 168				; 000000a8H
+; Line 1260
+	add	rsp, 136				; 00000088H
 	ret	0
 ?crt_strtod@@YANPEBDPEAPEAD@Z ENDP			; crt_strtod
 _TEXT	ENDS
@@ -4662,16 +4646,16 @@ str$ = 48
 endptr$ = 56
 ?crt_strtold@@YAOPEBDPEAPEAD@Z PROC			; crt_strtold
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1284
+; Line 1262
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 1285
+; Line 1263
 	mov	rdx, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR str$[rsp]
 	call	?crt_strtod@@YANPEBDPEAPEAD@Z		; crt_strtod
-; Line 1286
+; Line 1264
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_strtold@@YAOPEBDPEAPEAD@Z ENDP			; crt_strtold
@@ -4683,32 +4667,32 @@ ansiStr$ = 40
 str$ = 64
 ?crt_wtoi@@YAHPEB_W@Z PROC				; crt_wtoi
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1288
+; Line 1266
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
-; Line 1289
+; Line 1267
 	mov	rcx, QWORD PTR str$[rsp]
 	call	?crt_wctoa@@YAPEADPEB_W@Z		; crt_wctoa
 	mov	QWORD PTR ansiStr$[rsp], rax
-; Line 1290
+; Line 1268
 	cmp	QWORD PTR ansiStr$[rsp], 0
 	jne	SHORT $LN2@crt_wtoi
-; Line 1291
+; Line 1269
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_wtoi
 $LN2@crt_wtoi:
-; Line 1293
+; Line 1271
 	mov	rcx, QWORD PTR ansiStr$[rsp]
 	call	?crt_atoi@@YAHPEBD@Z			; crt_atoi
 	mov	DWORD PTR result$[rsp], eax
-; Line 1294
+; Line 1272
 	mov	rcx, QWORD PTR ansiStr$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
-; Line 1295
+; Line 1273
 	mov	eax, DWORD PTR result$[rsp]
 $LN1@crt_wtoi:
-; Line 1296
+; Line 1274
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_wtoi@@YAHPEB_W@Z ENDP				; crt_wtoi
@@ -4720,32 +4704,32 @@ ansiStr$ = 40
 str$ = 64
 ?crt_wtol@@YAJPEB_W@Z PROC				; crt_wtol
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1298
+; Line 1276
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
-; Line 1299
+; Line 1277
 	mov	rcx, QWORD PTR str$[rsp]
 	call	?crt_wctoa@@YAPEADPEB_W@Z		; crt_wctoa
 	mov	QWORD PTR ansiStr$[rsp], rax
-; Line 1300
+; Line 1278
 	cmp	QWORD PTR ansiStr$[rsp], 0
 	jne	SHORT $LN2@crt_wtol
-; Line 1301
+; Line 1279
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_wtol
 $LN2@crt_wtol:
-; Line 1303
+; Line 1281
 	mov	rcx, QWORD PTR ansiStr$[rsp]
 	call	?crt_atol@@YAJPEBD@Z			; crt_atol
 	mov	DWORD PTR result$[rsp], eax
-; Line 1304
+; Line 1282
 	mov	rcx, QWORD PTR ansiStr$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
-; Line 1305
+; Line 1283
 	mov	eax, DWORD PTR result$[rsp]
 $LN1@crt_wtol:
-; Line 1306
+; Line 1284
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_wtol@@YAJPEB_W@Z ENDP				; crt_wtol
@@ -4757,32 +4741,32 @@ result$ = 40
 str$ = 64
 ?crt_wtoll@@YA_JPEB_W@Z PROC				; crt_wtoll
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1308
+; Line 1286
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
-; Line 1309
+; Line 1287
 	mov	rcx, QWORD PTR str$[rsp]
 	call	?crt_wctoa@@YAPEADPEB_W@Z		; crt_wctoa
 	mov	QWORD PTR ansiStr$[rsp], rax
-; Line 1310
+; Line 1288
 	cmp	QWORD PTR ansiStr$[rsp], 0
 	jne	SHORT $LN2@crt_wtoll
-; Line 1311
+; Line 1289
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_wtoll
 $LN2@crt_wtoll:
-; Line 1313
+; Line 1291
 	mov	rcx, QWORD PTR ansiStr$[rsp]
 	call	?crt_atoll@@YA_JPEBD@Z			; crt_atoll
 	mov	QWORD PTR result$[rsp], rax
-; Line 1314
+; Line 1292
 	mov	rcx, QWORD PTR ansiStr$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
-; Line 1315
+; Line 1293
 	mov	rax, QWORD PTR result$[rsp]
 $LN1@crt_wtoll:
-; Line 1316
+; Line 1294
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_wtoll@@YA_JPEB_W@Z ENDP				; crt_wtoll
@@ -4792,14 +4776,14 @@ _TEXT	SEGMENT
 str$ = 48
 ?crt_wtoui@@YAIPEB_W@Z PROC				; crt_wtoui
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1318
+; Line 1296
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 1319
+; Line 1297
 	mov	rcx, QWORD PTR str$[rsp]
 	call	?crt_wtoi@@YAHPEB_W@Z			; crt_wtoi
-; Line 1320
+; Line 1298
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_wtoui@@YAIPEB_W@Z ENDP				; crt_wtoui
@@ -4809,14 +4793,14 @@ _TEXT	SEGMENT
 str$ = 48
 ?crt_wtoul@@YAKPEB_W@Z PROC				; crt_wtoul
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1322
+; Line 1300
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 1323
+; Line 1301
 	mov	rcx, QWORD PTR str$[rsp]
 	call	?crt_wtoll@@YA_JPEB_W@Z			; crt_wtoll
-; Line 1324
+; Line 1302
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_wtoul@@YAKPEB_W@Z ENDP				; crt_wtoul
@@ -4826,14 +4810,14 @@ _TEXT	SEGMENT
 str$ = 48
 ?crt_wtoull@@YA_KPEB_W@Z PROC				; crt_wtoull
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1326
+; Line 1304
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 1327
+; Line 1305
 	mov	rcx, QWORD PTR str$[rsp]
 	call	?crt_wtoll@@YA_JPEB_W@Z			; crt_wtoll
-; Line 1328
+; Line 1306
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_wtoull@@YA_KPEB_W@Z ENDP				; crt_wtoull
@@ -4851,13 +4835,13 @@ str$ = 88
 radix$ = 96
 ?crt_itoa@@YAPEADHPEADH@Z PROC				; crt_itoa
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1330
+; Line 1308
 $LN16:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
-; Line 1331
+; Line 1309
 	cmp	QWORD PTR str$[rsp], 0
 	je	SHORT $LN7@crt_itoa
 	cmp	DWORD PTR radix$[rsp], 2
@@ -4865,60 +4849,60 @@ $LN16:
 	cmp	DWORD PTR radix$[rsp], 36		; 00000024H
 	jle	SHORT $LN6@crt_itoa
 $LN7@crt_itoa:
-; Line 1332
+; Line 1310
 	xor	eax, eax
 	jmp	$LN1@crt_itoa
 $LN6@crt_itoa:
-; Line 1336
+; Line 1314
 	mov	DWORD PTR negative$[rsp], 0
-; Line 1338
+; Line 1316
 	cmp	DWORD PTR value$[rsp], 0
 	jge	SHORT $LN8@crt_itoa
 	cmp	DWORD PTR radix$[rsp], 10
 	jne	SHORT $LN8@crt_itoa
-; Line 1339
+; Line 1317
 	mov	DWORD PTR negative$[rsp], 1
-; Line 1340
+; Line 1318
 	mov	eax, DWORD PTR value$[rsp]
 	inc	eax
 	neg	eax
 	inc	eax
 	mov	DWORD PTR uvalue$[rsp], eax
-; Line 1341
+; Line 1319
 	jmp	SHORT $LN9@crt_itoa
 $LN8@crt_itoa:
-; Line 1342
+; Line 1320
 	mov	eax, DWORD PTR value$[rsp]
 	mov	DWORD PTR uvalue$[rsp], eax
 $LN9@crt_itoa:
-; Line 1346
+; Line 1324
 	mov	DWORD PTR i$[rsp], 0
-; Line 1348
+; Line 1326
 	cmp	DWORD PTR uvalue$[rsp], 0
 	jne	SHORT $LN10@crt_itoa
-; Line 1349
+; Line 1327
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	BYTE PTR buffer$[rsp+rax], 48		; 00000030H
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 1350
+; Line 1328
 	jmp	SHORT $LN11@crt_itoa
 $LN10@crt_itoa:
 $LN2@crt_itoa:
-; Line 1351
+; Line 1329
 	cmp	DWORD PTR uvalue$[rsp], 0
 	jbe	SHORT $LN3@crt_itoa
-; Line 1352
+; Line 1330
 	xor	edx, edx
 	mov	eax, DWORD PTR uvalue$[rsp]
 	div	DWORD PTR radix$[rsp]
 	mov	eax, edx
 	mov	DWORD PTR digit$1[rsp], eax
-; Line 1353
+; Line 1331
 	cmp	DWORD PTR digit$1[rsp], 10
 	jge	SHORT $LN12@crt_itoa
-; Line 1354
+; Line 1332
 	mov	eax, DWORD PTR digit$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -4926,10 +4910,10 @@ $LN2@crt_itoa:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 1355
+; Line 1333
 	jmp	SHORT $LN13@crt_itoa
 $LN12@crt_itoa:
-; Line 1356
+; Line 1334
 	mov	eax, DWORD PTR digit$1[rsp]
 	add	eax, 87					; 00000057H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -4938,32 +4922,32 @@ $LN12@crt_itoa:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN13@crt_itoa:
-; Line 1358
+; Line 1336
 	xor	edx, edx
 	mov	eax, DWORD PTR uvalue$[rsp]
 	div	DWORD PTR radix$[rsp]
 	mov	DWORD PTR uvalue$[rsp], eax
-; Line 1359
+; Line 1337
 	jmp	SHORT $LN2@crt_itoa
 $LN3@crt_itoa:
 $LN11@crt_itoa:
-; Line 1362
+; Line 1340
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN14@crt_itoa
-; Line 1363
+; Line 1341
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	BYTE PTR buffer$[rsp+rax], 45		; 0000002dH
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN14@crt_itoa:
-; Line 1366
+; Line 1344
 	mov	DWORD PTR j$[rsp], 0
 $LN4@crt_itoa:
-; Line 1367
+; Line 1345
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN5@crt_itoa
-; Line 1368
+; Line 1346
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -4975,17 +4959,17 @@ $LN4@crt_itoa:
 	mov	eax, DWORD PTR j$[rsp]
 	inc	eax
 	mov	DWORD PTR j$[rsp], eax
-; Line 1369
+; Line 1347
 	jmp	SHORT $LN4@crt_itoa
 $LN5@crt_itoa:
-; Line 1370
+; Line 1348
 	movsxd	rax, DWORD PTR j$[rsp]
 	mov	rcx, QWORD PTR str$[rsp]
 	mov	BYTE PTR [rcx+rax], 0
-; Line 1372
+; Line 1350
 	mov	rax, QWORD PTR str$[rsp]
 $LN1@crt_itoa:
-; Line 1373
+; Line 1351
 	add	rsp, 72					; 00000048H
 	ret	0
 ?crt_itoa@@YAPEADHPEADH@Z ENDP				; crt_itoa
@@ -4997,18 +4981,18 @@ str$ = 56
 radix$ = 64
 ?crt_ltoa@@YAPEADJPEADH@Z PROC				; crt_ltoa
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1375
+; Line 1353
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
-; Line 1376
+; Line 1354
 	mov	r8d, DWORD PTR radix$[rsp]
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	ecx, DWORD PTR value$[rsp]
 	call	?crt_itoa@@YAPEADHPEADH@Z		; crt_itoa
-; Line 1377
+; Line 1355
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_ltoa@@YAPEADJPEADH@Z ENDP				; crt_ltoa
@@ -5028,13 +5012,13 @@ str$ = 152
 radix$ = 160
 ?crt_lltoa@@YAPEAD_JPEADH@Z PROC			; crt_lltoa
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1379
+; Line 1357
 $LN16:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 136				; 00000088H
-; Line 1380
+; Line 1358
 	cmp	QWORD PTR str$[rsp], 0
 	je	SHORT $LN7@crt_lltoa
 	cmp	DWORD PTR radix$[rsp], 2
@@ -5042,51 +5026,51 @@ $LN16:
 	cmp	DWORD PTR radix$[rsp], 36		; 00000024H
 	jle	SHORT $LN6@crt_lltoa
 $LN7@crt_lltoa:
-; Line 1381
+; Line 1359
 	xor	eax, eax
 	jmp	$LN1@crt_lltoa
 $LN6@crt_lltoa:
-; Line 1385
+; Line 1363
 	mov	DWORD PTR negative$[rsp], 0
-; Line 1387
+; Line 1365
 	cmp	QWORD PTR value$[rsp], 0
 	jge	SHORT $LN8@crt_lltoa
 	cmp	DWORD PTR radix$[rsp], 10
 	jne	SHORT $LN8@crt_lltoa
-; Line 1388
+; Line 1366
 	mov	DWORD PTR negative$[rsp], 1
-; Line 1389
+; Line 1367
 	mov	rax, QWORD PTR value$[rsp]
 	inc	rax
 	neg	rax
 	inc	rax
 	mov	QWORD PTR uvalue$[rsp], rax
-; Line 1390
+; Line 1368
 	jmp	SHORT $LN9@crt_lltoa
 $LN8@crt_lltoa:
-; Line 1391
+; Line 1369
 	mov	rax, QWORD PTR value$[rsp]
 	mov	QWORD PTR uvalue$[rsp], rax
 $LN9@crt_lltoa:
-; Line 1395
+; Line 1373
 	mov	DWORD PTR i$[rsp], 0
-; Line 1397
+; Line 1375
 	cmp	QWORD PTR uvalue$[rsp], 0
 	jne	SHORT $LN10@crt_lltoa
-; Line 1398
+; Line 1376
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	BYTE PTR buffer$[rsp+rax], 48		; 00000030H
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 1399
+; Line 1377
 	jmp	$LN11@crt_lltoa
 $LN10@crt_lltoa:
 $LN2@crt_lltoa:
-; Line 1400
+; Line 1378
 	cmp	QWORD PTR uvalue$[rsp], 0
 	jbe	$LN3@crt_lltoa
-; Line 1401
+; Line 1379
 	movsxd	rax, DWORD PTR radix$[rsp]
 	mov	QWORD PTR tv78[rsp], rax
 	xor	edx, edx
@@ -5095,10 +5079,10 @@ $LN2@crt_lltoa:
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR digit$1[rsp], eax
-; Line 1402
+; Line 1380
 	cmp	DWORD PTR digit$1[rsp], 10
 	jge	SHORT $LN12@crt_lltoa
-; Line 1403
+; Line 1381
 	mov	eax, DWORD PTR digit$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -5106,10 +5090,10 @@ $LN2@crt_lltoa:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 1404
+; Line 1382
 	jmp	SHORT $LN13@crt_lltoa
 $LN12@crt_lltoa:
-; Line 1405
+; Line 1383
 	mov	eax, DWORD PTR digit$1[rsp]
 	add	eax, 87					; 00000057H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -5118,7 +5102,7 @@ $LN12@crt_lltoa:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN13@crt_lltoa:
-; Line 1407
+; Line 1385
 	movsxd	rax, DWORD PTR radix$[rsp]
 	mov	QWORD PTR tv95[rsp], rax
 	xor	edx, edx
@@ -5126,27 +5110,27 @@ $LN13@crt_lltoa:
 	mov	rcx, QWORD PTR tv95[rsp]
 	div	rcx
 	mov	QWORD PTR uvalue$[rsp], rax
-; Line 1408
+; Line 1386
 	jmp	$LN2@crt_lltoa
 $LN3@crt_lltoa:
 $LN11@crt_lltoa:
-; Line 1411
+; Line 1389
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN14@crt_lltoa
-; Line 1412
+; Line 1390
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	BYTE PTR buffer$[rsp+rax], 45		; 0000002dH
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN14@crt_lltoa:
-; Line 1415
+; Line 1393
 	mov	DWORD PTR j$[rsp], 0
 $LN4@crt_lltoa:
-; Line 1416
+; Line 1394
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN5@crt_lltoa
-; Line 1417
+; Line 1395
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -5158,17 +5142,17 @@ $LN4@crt_lltoa:
 	mov	eax, DWORD PTR j$[rsp]
 	inc	eax
 	mov	DWORD PTR j$[rsp], eax
-; Line 1418
+; Line 1396
 	jmp	SHORT $LN4@crt_lltoa
 $LN5@crt_lltoa:
-; Line 1419
+; Line 1397
 	movsxd	rax, DWORD PTR j$[rsp]
 	mov	rcx, QWORD PTR str$[rsp]
 	mov	BYTE PTR [rcx+rax], 0
-; Line 1421
+; Line 1399
 	mov	rax, QWORD PTR str$[rsp]
 $LN1@crt_lltoa:
-; Line 1422
+; Line 1400
 	add	rsp, 136				; 00000088H
 	ret	0
 ?crt_lltoa@@YAPEAD_JPEADH@Z ENDP			; crt_lltoa
@@ -5180,18 +5164,18 @@ str$ = 56
 radix$ = 64
 ?crt_uitoa@@YAPEADIPEADH@Z PROC				; crt_uitoa
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1424
+; Line 1402
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
-; Line 1425
+; Line 1403
 	mov	r8d, DWORD PTR radix$[rsp]
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	ecx, DWORD PTR value$[rsp]
 	call	?crt_itoa@@YAPEADHPEADH@Z		; crt_itoa
-; Line 1426
+; Line 1404
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_uitoa@@YAPEADIPEADH@Z ENDP				; crt_uitoa
@@ -5203,19 +5187,19 @@ str$ = 56
 radix$ = 64
 ?crt_ultoa@@YAPEADKPEADH@Z PROC				; crt_ultoa
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1428
+; Line 1406
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
-; Line 1429
+; Line 1407
 	mov	eax, DWORD PTR value$[rsp]
 	mov	r8d, DWORD PTR radix$[rsp]
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	ecx, eax
 	call	?crt_lltoa@@YAPEAD_JPEADH@Z		; crt_lltoa
-; Line 1430
+; Line 1408
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_ultoa@@YAPEADKPEADH@Z ENDP				; crt_ultoa
@@ -5227,18 +5211,18 @@ str$ = 56
 radix$ = 64
 ?crt_ulltoa@@YAPEAD_KPEADH@Z PROC			; crt_ulltoa
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1432
+; Line 1410
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 1433
+; Line 1411
 	mov	r8d, DWORD PTR radix$[rsp]
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	rcx, QWORD PTR value$[rsp]
 	call	?crt_lltoa@@YAPEAD_JPEADH@Z		; crt_lltoa
-; Line 1434
+; Line 1412
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_ulltoa@@YAPEAD_KPEADH@Z ENDP			; crt_ulltoa
@@ -5256,13 +5240,13 @@ str$ = 136
 radix$ = 144
 ?crt_itow@@YAPEA_WHPEA_WH@Z PROC			; crt_itow
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1436
+; Line 1414
 $LN16:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 120				; 00000078H
-; Line 1437
+; Line 1415
 	cmp	QWORD PTR str$[rsp], 0
 	je	SHORT $LN7@crt_itow
 	cmp	DWORD PTR radix$[rsp], 2
@@ -5270,61 +5254,61 @@ $LN16:
 	cmp	DWORD PTR radix$[rsp], 36		; 00000024H
 	jle	SHORT $LN6@crt_itow
 $LN7@crt_itow:
-; Line 1438
+; Line 1416
 	xor	eax, eax
 	jmp	$LN1@crt_itow
 $LN6@crt_itow:
-; Line 1442
+; Line 1420
 	mov	DWORD PTR negative$[rsp], 0
-; Line 1444
+; Line 1422
 	cmp	DWORD PTR value$[rsp], 0
 	jge	SHORT $LN8@crt_itow
 	cmp	DWORD PTR radix$[rsp], 10
 	jne	SHORT $LN8@crt_itow
-; Line 1445
+; Line 1423
 	mov	DWORD PTR negative$[rsp], 1
-; Line 1446
+; Line 1424
 	mov	eax, DWORD PTR value$[rsp]
 	inc	eax
 	neg	eax
 	inc	eax
 	mov	DWORD PTR uvalue$[rsp], eax
-; Line 1447
+; Line 1425
 	jmp	SHORT $LN9@crt_itow
 $LN8@crt_itow:
-; Line 1448
+; Line 1426
 	mov	eax, DWORD PTR value$[rsp]
 	mov	DWORD PTR uvalue$[rsp], eax
 $LN9@crt_itow:
-; Line 1452
+; Line 1430
 	mov	DWORD PTR i$[rsp], 0
-; Line 1454
+; Line 1432
 	cmp	DWORD PTR uvalue$[rsp], 0
 	jne	SHORT $LN10@crt_itow
-; Line 1455
+; Line 1433
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	WORD PTR buffer$[rsp+rax*2], cx
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 1456
+; Line 1434
 	jmp	SHORT $LN11@crt_itow
 $LN10@crt_itow:
 $LN2@crt_itow:
-; Line 1457
+; Line 1435
 	cmp	DWORD PTR uvalue$[rsp], 0
 	jbe	SHORT $LN3@crt_itow
-; Line 1458
+; Line 1436
 	xor	edx, edx
 	mov	eax, DWORD PTR uvalue$[rsp]
 	div	DWORD PTR radix$[rsp]
 	mov	eax, edx
 	mov	DWORD PTR digit$1[rsp], eax
-; Line 1459
+; Line 1437
 	cmp	DWORD PTR digit$1[rsp], 10
 	jge	SHORT $LN12@crt_itow
-; Line 1460
+; Line 1438
 	mov	eax, DWORD PTR digit$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -5332,10 +5316,10 @@ $LN2@crt_itow:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 1461
+; Line 1439
 	jmp	SHORT $LN13@crt_itow
 $LN12@crt_itow:
-; Line 1462
+; Line 1440
 	mov	eax, DWORD PTR digit$1[rsp]
 	add	eax, 87					; 00000057H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -5344,19 +5328,19 @@ $LN12@crt_itow:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN13@crt_itow:
-; Line 1464
+; Line 1442
 	xor	edx, edx
 	mov	eax, DWORD PTR uvalue$[rsp]
 	div	DWORD PTR radix$[rsp]
 	mov	DWORD PTR uvalue$[rsp], eax
-; Line 1465
+; Line 1443
 	jmp	SHORT $LN2@crt_itow
 $LN3@crt_itow:
 $LN11@crt_itow:
-; Line 1468
+; Line 1446
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN14@crt_itow
-; Line 1469
+; Line 1447
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	ecx, 45					; 0000002dH
 	mov	WORD PTR buffer$[rsp+rax*2], cx
@@ -5364,13 +5348,13 @@ $LN11@crt_itow:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN14@crt_itow:
-; Line 1472
+; Line 1450
 	mov	DWORD PTR j$[rsp], 0
 $LN4@crt_itow:
-; Line 1473
+; Line 1451
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN5@crt_itow
-; Line 1474
+; Line 1452
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -5382,18 +5366,18 @@ $LN4@crt_itow:
 	mov	eax, DWORD PTR j$[rsp]
 	inc	eax
 	mov	DWORD PTR j$[rsp], eax
-; Line 1475
+; Line 1453
 	jmp	SHORT $LN4@crt_itow
 $LN5@crt_itow:
-; Line 1476
+; Line 1454
 	movsxd	rax, DWORD PTR j$[rsp]
 	xor	ecx, ecx
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	WORD PTR [rdx+rax*2], cx
-; Line 1478
+; Line 1456
 	mov	rax, QWORD PTR str$[rsp]
 $LN1@crt_itow:
-; Line 1479
+; Line 1457
 	add	rsp, 120				; 00000078H
 	ret	0
 ?crt_itow@@YAPEA_WHPEA_WH@Z ENDP			; crt_itow
@@ -5405,18 +5389,18 @@ str$ = 56
 radix$ = 64
 ?crt_ltow@@YAPEA_WJPEA_WH@Z PROC			; crt_ltow
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1481
+; Line 1459
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
-; Line 1482
+; Line 1460
 	mov	r8d, DWORD PTR radix$[rsp]
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	ecx, DWORD PTR value$[rsp]
 	call	?crt_itow@@YAPEA_WHPEA_WH@Z		; crt_itow
-; Line 1483
+; Line 1461
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_ltow@@YAPEA_WJPEA_WH@Z ENDP			; crt_ltow
@@ -5436,13 +5420,13 @@ str$ = 216
 radix$ = 224
 ?crt_lltow@@YAPEA_W_JPEA_WH@Z PROC			; crt_lltow
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1485
+; Line 1463
 $LN16:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 200				; 000000c8H
-; Line 1486
+; Line 1464
 	cmp	QWORD PTR str$[rsp], 0
 	je	SHORT $LN7@crt_lltow
 	cmp	DWORD PTR radix$[rsp], 2
@@ -5450,52 +5434,52 @@ $LN16:
 	cmp	DWORD PTR radix$[rsp], 36		; 00000024H
 	jle	SHORT $LN6@crt_lltow
 $LN7@crt_lltow:
-; Line 1487
+; Line 1465
 	xor	eax, eax
 	jmp	$LN1@crt_lltow
 $LN6@crt_lltow:
-; Line 1491
+; Line 1469
 	mov	DWORD PTR negative$[rsp], 0
-; Line 1493
+; Line 1471
 	cmp	QWORD PTR value$[rsp], 0
 	jge	SHORT $LN8@crt_lltow
 	cmp	DWORD PTR radix$[rsp], 10
 	jne	SHORT $LN8@crt_lltow
-; Line 1494
+; Line 1472
 	mov	DWORD PTR negative$[rsp], 1
-; Line 1495
+; Line 1473
 	mov	rax, QWORD PTR value$[rsp]
 	inc	rax
 	neg	rax
 	inc	rax
 	mov	QWORD PTR uvalue$[rsp], rax
-; Line 1496
+; Line 1474
 	jmp	SHORT $LN9@crt_lltow
 $LN8@crt_lltow:
-; Line 1497
+; Line 1475
 	mov	rax, QWORD PTR value$[rsp]
 	mov	QWORD PTR uvalue$[rsp], rax
 $LN9@crt_lltow:
-; Line 1501
+; Line 1479
 	mov	DWORD PTR i$[rsp], 0
-; Line 1503
+; Line 1481
 	cmp	QWORD PTR uvalue$[rsp], 0
 	jne	SHORT $LN10@crt_lltow
-; Line 1504
+; Line 1482
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	WORD PTR buffer$[rsp+rax*2], cx
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 1505
+; Line 1483
 	jmp	$LN11@crt_lltow
 $LN10@crt_lltow:
 $LN2@crt_lltow:
-; Line 1506
+; Line 1484
 	cmp	QWORD PTR uvalue$[rsp], 0
 	jbe	$LN3@crt_lltow
-; Line 1507
+; Line 1485
 	movsxd	rax, DWORD PTR radix$[rsp]
 	mov	QWORD PTR tv78[rsp], rax
 	xor	edx, edx
@@ -5504,10 +5488,10 @@ $LN2@crt_lltow:
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR digit$1[rsp], eax
-; Line 1508
+; Line 1486
 	cmp	DWORD PTR digit$1[rsp], 10
 	jge	SHORT $LN12@crt_lltow
-; Line 1509
+; Line 1487
 	mov	eax, DWORD PTR digit$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -5515,10 +5499,10 @@ $LN2@crt_lltow:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 1510
+; Line 1488
 	jmp	SHORT $LN13@crt_lltow
 $LN12@crt_lltow:
-; Line 1511
+; Line 1489
 	mov	eax, DWORD PTR digit$1[rsp]
 	add	eax, 87					; 00000057H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -5527,7 +5511,7 @@ $LN12@crt_lltow:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN13@crt_lltow:
-; Line 1513
+; Line 1491
 	movsxd	rax, DWORD PTR radix$[rsp]
 	mov	QWORD PTR tv95[rsp], rax
 	xor	edx, edx
@@ -5535,14 +5519,14 @@ $LN13@crt_lltow:
 	mov	rcx, QWORD PTR tv95[rsp]
 	div	rcx
 	mov	QWORD PTR uvalue$[rsp], rax
-; Line 1514
+; Line 1492
 	jmp	$LN2@crt_lltow
 $LN3@crt_lltow:
 $LN11@crt_lltow:
-; Line 1517
+; Line 1495
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN14@crt_lltow
-; Line 1518
+; Line 1496
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	ecx, 45					; 0000002dH
 	mov	WORD PTR buffer$[rsp+rax*2], cx
@@ -5550,13 +5534,13 @@ $LN11@crt_lltow:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN14@crt_lltow:
-; Line 1521
+; Line 1499
 	mov	DWORD PTR j$[rsp], 0
 $LN4@crt_lltow:
-; Line 1522
+; Line 1500
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN5@crt_lltow
-; Line 1523
+; Line 1501
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -5568,18 +5552,18 @@ $LN4@crt_lltow:
 	mov	eax, DWORD PTR j$[rsp]
 	inc	eax
 	mov	DWORD PTR j$[rsp], eax
-; Line 1524
+; Line 1502
 	jmp	SHORT $LN4@crt_lltow
 $LN5@crt_lltow:
-; Line 1525
+; Line 1503
 	movsxd	rax, DWORD PTR j$[rsp]
 	xor	ecx, ecx
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	WORD PTR [rdx+rax*2], cx
-; Line 1527
+; Line 1505
 	mov	rax, QWORD PTR str$[rsp]
 $LN1@crt_lltow:
-; Line 1528
+; Line 1506
 	add	rsp, 200				; 000000c8H
 	ret	0
 ?crt_lltow@@YAPEA_W_JPEA_WH@Z ENDP			; crt_lltow
@@ -5591,18 +5575,18 @@ str$ = 56
 radix$ = 64
 ?crt_uwtow@@YAPEA_WIPEA_WH@Z PROC			; crt_uwtow
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1530
+; Line 1508
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
-; Line 1531
+; Line 1509
 	mov	r8d, DWORD PTR radix$[rsp]
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	ecx, DWORD PTR value$[rsp]
 	call	?crt_itow@@YAPEA_WHPEA_WH@Z		; crt_itow
-; Line 1532
+; Line 1510
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_uwtow@@YAPEA_WIPEA_WH@Z ENDP			; crt_uwtow
@@ -5614,19 +5598,19 @@ str$ = 56
 radix$ = 64
 ?crt_ultow@@YAPEA_WKPEA_WH@Z PROC			; crt_ultow
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1534
+; Line 1512
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
-; Line 1535
+; Line 1513
 	mov	eax, DWORD PTR value$[rsp]
 	mov	r8d, DWORD PTR radix$[rsp]
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	ecx, eax
 	call	?crt_lltow@@YAPEA_W_JPEA_WH@Z		; crt_lltow
-; Line 1536
+; Line 1514
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_ultow@@YAPEA_WKPEA_WH@Z ENDP			; crt_ultow
@@ -5638,18 +5622,18 @@ str$ = 56
 radix$ = 64
 ?crt_ulltow@@YAPEA_W_KPEA_WH@Z PROC			; crt_ulltow
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1538
+; Line 1516
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 1539
+; Line 1517
 	mov	r8d, DWORD PTR radix$[rsp]
 	mov	rdx, QWORD PTR str$[rsp]
 	mov	rcx, QWORD PTR value$[rsp]
 	call	?crt_lltow@@YAPEA_W_JPEA_WH@Z		; crt_lltow
-; Line 1540
+; Line 1518
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_ulltow@@YAPEA_W_KPEA_WH@Z ENDP			; crt_ulltow
@@ -5659,27 +5643,27 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_isdigit@@YAHH@Z PROC				; crt_isdigit
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1546
+; Line 1524
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1547
+; Line 1525
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_isdigi
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_isdigi
 $LN2@crt_isdigi:
-; Line 1548
+; Line 1526
 	cmp	DWORD PTR ch$[rsp], 48			; 00000030H
 	jl	SHORT $LN3@crt_isdigi
 	cmp	DWORD PTR ch$[rsp], 57			; 00000039H
 	jg	SHORT $LN3@crt_isdigi
-; Line 1549
+; Line 1527
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_isdigi
 $LN3@crt_isdigi:
-; Line 1551
+; Line 1529
 	xor	eax, eax
 $LN1@crt_isdigi:
-; Line 1552
+; Line 1530
 	ret	0
 ?crt_isdigit@@YAHH@Z ENDP				; crt_isdigit
 _TEXT	ENDS
@@ -5688,15 +5672,15 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_isalpha@@YAHH@Z PROC				; crt_isalpha
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1554
+; Line 1532
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1555
+; Line 1533
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_isalph
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_isalph
 $LN2@crt_isalph:
-; Line 1556
+; Line 1534
 	cmp	DWORD PTR ch$[rsp], 97			; 00000061H
 	jl	SHORT $LN5@crt_isalph
 	cmp	DWORD PTR ch$[rsp], 122			; 0000007aH
@@ -5707,14 +5691,14 @@ $LN5@crt_isalph:
 	cmp	DWORD PTR ch$[rsp], 90			; 0000005aH
 	jg	SHORT $LN3@crt_isalph
 $LN4@crt_isalph:
-; Line 1557
+; Line 1535
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_isalph
 $LN3@crt_isalph:
-; Line 1559
+; Line 1537
 	xor	eax, eax
 $LN1@crt_isalph:
-; Line 1560
+; Line 1538
 	ret	0
 ?crt_isalpha@@YAHH@Z ENDP				; crt_isalpha
 _TEXT	ENDS
@@ -5724,11 +5708,11 @@ tv70 = 32
 ch$ = 64
 ?crt_isalnum@@YAHH@Z PROC				; crt_isalnum
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1562
+; Line 1540
 $LN5:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
-; Line 1563
+; Line 1541
 	mov	ecx, DWORD PTR ch$[rsp]
 	call	?crt_isalpha@@YAHH@Z			; crt_isalpha
 	test	eax, eax
@@ -5743,7 +5727,7 @@ $LN3@crt_isalnu:
 	mov	DWORD PTR tv70[rsp], 1
 $LN4@crt_isalnu:
 	mov	eax, DWORD PTR tv70[rsp]
-; Line 1564
+; Line 1542
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_isalnum@@YAHH@Z ENDP				; crt_isalnum
@@ -5753,15 +5737,15 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_isspace@@YAHH@Z PROC				; crt_isspace
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1566
+; Line 1544
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1567
+; Line 1545
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_isspac
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_isspac
 $LN2@crt_isspac:
-; Line 1568
+; Line 1546
 	cmp	DWORD PTR ch$[rsp], 32			; 00000020H
 	je	SHORT $LN4@crt_isspac
 	cmp	DWORD PTR ch$[rsp], 9
@@ -5775,14 +5759,14 @@ $LN2@crt_isspac:
 	cmp	DWORD PTR ch$[rsp], 11
 	jne	SHORT $LN3@crt_isspac
 $LN4@crt_isspac:
-; Line 1569
+; Line 1547
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_isspac
 $LN3@crt_isspac:
-; Line 1571
+; Line 1549
 	xor	eax, eax
 $LN1@crt_isspac:
-; Line 1572
+; Line 1550
 	ret	0
 ?crt_isspace@@YAHH@Z ENDP				; crt_isspace
 _TEXT	ENDS
@@ -5791,27 +5775,27 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_isupper@@YAHH@Z PROC				; crt_isupper
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1574
+; Line 1552
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1575
+; Line 1553
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_isuppe
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_isuppe
 $LN2@crt_isuppe:
-; Line 1576
+; Line 1554
 	cmp	DWORD PTR ch$[rsp], 65			; 00000041H
 	jl	SHORT $LN3@crt_isuppe
 	cmp	DWORD PTR ch$[rsp], 90			; 0000005aH
 	jg	SHORT $LN3@crt_isuppe
-; Line 1577
+; Line 1555
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_isuppe
 $LN3@crt_isuppe:
-; Line 1579
+; Line 1557
 	xor	eax, eax
 $LN1@crt_isuppe:
-; Line 1580
+; Line 1558
 	ret	0
 ?crt_isupper@@YAHH@Z ENDP				; crt_isupper
 _TEXT	ENDS
@@ -5820,27 +5804,27 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_islower@@YAHH@Z PROC				; crt_islower
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1582
+; Line 1560
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1583
+; Line 1561
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_islowe
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_islowe
 $LN2@crt_islowe:
-; Line 1584
+; Line 1562
 	cmp	DWORD PTR ch$[rsp], 97			; 00000061H
 	jl	SHORT $LN3@crt_islowe
 	cmp	DWORD PTR ch$[rsp], 122			; 0000007aH
 	jg	SHORT $LN3@crt_islowe
-; Line 1585
+; Line 1563
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_islowe
 $LN3@crt_islowe:
-; Line 1587
+; Line 1565
 	xor	eax, eax
 $LN1@crt_islowe:
-; Line 1588
+; Line 1566
 	ret	0
 ?crt_islower@@YAHH@Z ENDP				; crt_islower
 _TEXT	ENDS
@@ -5849,15 +5833,15 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_isxdigit@@YAHH@Z PROC				; crt_isxdigit
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1590
+; Line 1568
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1591
+; Line 1569
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_isxdig
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_isxdig
 $LN2@crt_isxdig:
-; Line 1593
+; Line 1571
 	cmp	DWORD PTR ch$[rsp], 48			; 00000030H
 	jl	SHORT $LN5@crt_isxdig
 	cmp	DWORD PTR ch$[rsp], 57			; 00000039H
@@ -5873,14 +5857,14 @@ $LN6@crt_isxdig:
 	cmp	DWORD PTR ch$[rsp], 70			; 00000046H
 	jg	SHORT $LN3@crt_isxdig
 $LN4@crt_isxdig:
-; Line 1595
+; Line 1573
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_isxdig
 $LN3@crt_isxdig:
-; Line 1597
+; Line 1575
 	xor	eax, eax
 $LN1@crt_isxdig:
-; Line 1598
+; Line 1576
 	ret	0
 ?crt_isxdigit@@YAHH@Z ENDP				; crt_isxdigit
 _TEXT	ENDS
@@ -5889,27 +5873,27 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_isprint@@YAHH@Z PROC				; crt_isprint
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1600
+; Line 1578
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1601
+; Line 1579
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_isprin
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_isprin
 $LN2@crt_isprin:
-; Line 1602
+; Line 1580
 	cmp	DWORD PTR ch$[rsp], 32			; 00000020H
 	jl	SHORT $LN3@crt_isprin
 	cmp	DWORD PTR ch$[rsp], 126			; 0000007eH
 	jg	SHORT $LN3@crt_isprin
-; Line 1603
+; Line 1581
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_isprin
 $LN3@crt_isprin:
-; Line 1605
+; Line 1583
 	xor	eax, eax
 $LN1@crt_isprin:
-; Line 1606
+; Line 1584
 	ret	0
 ?crt_isprint@@YAHH@Z ENDP				; crt_isprint
 _TEXT	ENDS
@@ -5918,15 +5902,15 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_ispunct@@YAHH@Z PROC				; crt_ispunct
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1608
+; Line 1586
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1609
+; Line 1587
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_ispunc
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_ispunc
 $LN2@crt_ispunc:
-; Line 1612
+; Line 1590
 	cmp	DWORD PTR ch$[rsp], 33			; 00000021H
 	jl	SHORT $LN5@crt_ispunc
 	cmp	DWORD PTR ch$[rsp], 47			; 0000002fH
@@ -5947,14 +5931,14 @@ $LN7@crt_ispunc:
 	cmp	DWORD PTR ch$[rsp], 126			; 0000007eH
 	jg	SHORT $LN3@crt_ispunc
 $LN4@crt_ispunc:
-; Line 1615
+; Line 1593
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_ispunc
 $LN3@crt_ispunc:
-; Line 1617
+; Line 1595
 	xor	eax, eax
 $LN1@crt_ispunc:
-; Line 1618
+; Line 1596
 	ret	0
 ?crt_ispunct@@YAHH@Z ENDP				; crt_ispunct
 _TEXT	ENDS
@@ -5963,15 +5947,15 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_iscntrl@@YAHH@Z PROC				; crt_iscntrl
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1620
+; Line 1598
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1621
+; Line 1599
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_iscntr
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_iscntr
 $LN2@crt_iscntr:
-; Line 1622
+; Line 1600
 	cmp	DWORD PTR ch$[rsp], 0
 	jl	SHORT $LN5@crt_iscntr
 	cmp	DWORD PTR ch$[rsp], 31
@@ -5980,14 +5964,14 @@ $LN5@crt_iscntr:
 	cmp	DWORD PTR ch$[rsp], 127			; 0000007fH
 	jne	SHORT $LN3@crt_iscntr
 $LN4@crt_iscntr:
-; Line 1623
+; Line 1601
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_iscntr
 $LN3@crt_iscntr:
-; Line 1625
+; Line 1603
 	xor	eax, eax
 $LN1@crt_iscntr:
-; Line 1626
+; Line 1604
 	ret	0
 ?crt_iscntrl@@YAHH@Z ENDP				; crt_iscntrl
 _TEXT	ENDS
@@ -5996,27 +5980,27 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_isgraph@@YAHH@Z PROC				; crt_isgraph
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1628
+; Line 1606
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1629
+; Line 1607
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_isgrap
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_isgrap
 $LN2@crt_isgrap:
-; Line 1630
+; Line 1608
 	cmp	DWORD PTR ch$[rsp], 33			; 00000021H
 	jl	SHORT $LN3@crt_isgrap
 	cmp	DWORD PTR ch$[rsp], 126			; 0000007eH
 	jg	SHORT $LN3@crt_isgrap
-; Line 1631
+; Line 1609
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_isgrap
 $LN3@crt_isgrap:
-; Line 1633
+; Line 1611
 	xor	eax, eax
 $LN1@crt_isgrap:
-; Line 1634
+; Line 1612
 	ret	0
 ?crt_isgraph@@YAHH@Z ENDP				; crt_isgraph
 _TEXT	ENDS
@@ -6025,28 +6009,28 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_toupper@@YAHH@Z PROC				; crt_toupper
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1636
+; Line 1614
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1637
+; Line 1615
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_touppe
 	mov	eax, -1
 	jmp	SHORT $LN1@crt_touppe
 $LN2@crt_touppe:
-; Line 1638
+; Line 1616
 	cmp	DWORD PTR ch$[rsp], 97			; 00000061H
 	jl	SHORT $LN3@crt_touppe
 	cmp	DWORD PTR ch$[rsp], 122			; 0000007aH
 	jg	SHORT $LN3@crt_touppe
-; Line 1639
+; Line 1617
 	mov	eax, DWORD PTR ch$[rsp]
 	sub	eax, 32					; 00000020H
 	jmp	SHORT $LN1@crt_touppe
 $LN3@crt_touppe:
-; Line 1641
+; Line 1619
 	mov	eax, DWORD PTR ch$[rsp]
 $LN1@crt_touppe:
-; Line 1642
+; Line 1620
 	ret	0
 ?crt_toupper@@YAHH@Z ENDP				; crt_toupper
 _TEXT	ENDS
@@ -6055,28 +6039,28 @@ _TEXT	SEGMENT
 ch$ = 8
 ?crt_tolower@@YAHH@Z PROC				; crt_tolower
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1644
+; Line 1622
 	mov	DWORD PTR [rsp+8], ecx
-; Line 1645
+; Line 1623
 	cmp	DWORD PTR ch$[rsp], -1
 	jne	SHORT $LN2@crt_tolowe
 	mov	eax, -1
 	jmp	SHORT $LN1@crt_tolowe
 $LN2@crt_tolowe:
-; Line 1646
+; Line 1624
 	cmp	DWORD PTR ch$[rsp], 65			; 00000041H
 	jl	SHORT $LN3@crt_tolowe
 	cmp	DWORD PTR ch$[rsp], 90			; 0000005aH
 	jg	SHORT $LN3@crt_tolowe
-; Line 1647
+; Line 1625
 	mov	eax, DWORD PTR ch$[rsp]
 	add	eax, 32					; 00000020H
 	jmp	SHORT $LN1@crt_tolowe
 $LN3@crt_tolowe:
-; Line 1649
+; Line 1627
 	mov	eax, DWORD PTR ch$[rsp]
 $LN1@crt_tolowe:
-; Line 1650
+; Line 1628
 	ret	0
 ?crt_tolower@@YAHH@Z ENDP				; crt_tolower
 _TEXT	ENDS
@@ -6086,11 +6070,11 @@ tv70 = 32
 ch$ = 64
 ?crt_iswalnum@@YAHG@Z PROC				; crt_iswalnum
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1656
+; Line 1634
 $LN5:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 56					; 00000038H
-; Line 1657
+; Line 1635
 	movzx	ecx, WORD PTR ch$[rsp]
 	call	?crt_iswalpha@@YAHG@Z			; crt_iswalpha
 	test	eax, eax
@@ -6105,7 +6089,7 @@ $LN3@crt_iswaln:
 	mov	DWORD PTR tv70[rsp], 1
 $LN4@crt_iswaln:
 	mov	eax, DWORD PTR tv70[rsp]
-; Line 1658
+; Line 1636
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_iswalnum@@YAHG@Z ENDP				; crt_iswalnum
@@ -6116,21 +6100,21 @@ wch$ = 0
 ch$ = 32
 ?crt_iswalpha@@YAHG@Z PROC				; crt_iswalpha
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1660
+; Line 1638
 $LN7:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
-; Line 1661
+; Line 1639
 	movzx	eax, WORD PTR ch$[rsp]
 	cmp	eax, 65535				; 0000ffffH
 	jne	SHORT $LN2@crt_iswalp
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_iswalp
 $LN2@crt_iswalp:
-; Line 1662
+; Line 1640
 	movzx	eax, WORD PTR ch$[rsp]
 	mov	WORD PTR wch$[rsp], ax
-; Line 1663
+; Line 1641
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 97					; 00000061H
 	jl	SHORT $LN5@crt_iswalp
@@ -6145,14 +6129,14 @@ $LN5@crt_iswalp:
 	cmp	eax, 90					; 0000005aH
 	jg	SHORT $LN3@crt_iswalp
 $LN4@crt_iswalp:
-; Line 1664
+; Line 1642
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_iswalp
 $LN3@crt_iswalp:
-; Line 1666
+; Line 1644
 	xor	eax, eax
 $LN1@crt_iswalp:
-; Line 1667
+; Line 1645
 	add	rsp, 24
 	ret	0
 ?crt_iswalpha@@YAHG@Z ENDP				; crt_iswalpha
@@ -6163,35 +6147,35 @@ wch$ = 0
 ch$ = 32
 ?crt_iswdigit@@YAHG@Z PROC				; crt_iswdigit
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1669
+; Line 1647
 $LN5:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
-; Line 1670
+; Line 1648
 	movzx	eax, WORD PTR ch$[rsp]
 	cmp	eax, 65535				; 0000ffffH
 	jne	SHORT $LN2@crt_iswdig
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_iswdig
 $LN2@crt_iswdig:
-; Line 1671
+; Line 1649
 	movzx	eax, WORD PTR ch$[rsp]
 	mov	WORD PTR wch$[rsp], ax
-; Line 1672
+; Line 1650
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 48					; 00000030H
 	jl	SHORT $LN3@crt_iswdig
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN3@crt_iswdig
-; Line 1673
+; Line 1651
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_iswdig
 $LN3@crt_iswdig:
-; Line 1675
+; Line 1653
 	xor	eax, eax
 $LN1@crt_iswdig:
-; Line 1676
+; Line 1654
 	add	rsp, 24
 	ret	0
 ?crt_iswdigit@@YAHG@Z ENDP				; crt_iswdigit
@@ -6202,21 +6186,21 @@ wch$ = 0
 ch$ = 32
 ?crt_iswspace@@YAHG@Z PROC				; crt_iswspace
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1678
+; Line 1656
 $LN6:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
-; Line 1679
+; Line 1657
 	movzx	eax, WORD PTR ch$[rsp]
 	cmp	eax, 65535				; 0000ffffH
 	jne	SHORT $LN2@crt_iswspa
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_iswspa
 $LN2@crt_iswspa:
-; Line 1680
+; Line 1658
 	movzx	eax, WORD PTR ch$[rsp]
 	mov	WORD PTR wch$[rsp], ax
-; Line 1681
+; Line 1659
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 32					; 00000020H
 	je	SHORT $LN4@crt_iswspa
@@ -6236,14 +6220,14 @@ $LN2@crt_iswspa:
 	cmp	eax, 11
 	jne	SHORT $LN3@crt_iswspa
 $LN4@crt_iswspa:
-; Line 1682
+; Line 1660
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_iswspa
 $LN3@crt_iswspa:
-; Line 1684
+; Line 1662
 	xor	eax, eax
 $LN1@crt_iswspa:
-; Line 1685
+; Line 1663
 	add	rsp, 24
 	ret	0
 ?crt_iswspace@@YAHG@Z ENDP				; crt_iswspace
@@ -6254,35 +6238,35 @@ wch$ = 0
 ch$ = 32
 ?crt_iswupper@@YAHG@Z PROC				; crt_iswupper
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1687
+; Line 1665
 $LN5:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
-; Line 1688
+; Line 1666
 	movzx	eax, WORD PTR ch$[rsp]
 	cmp	eax, 65535				; 0000ffffH
 	jne	SHORT $LN2@crt_iswupp
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_iswupp
 $LN2@crt_iswupp:
-; Line 1689
+; Line 1667
 	movzx	eax, WORD PTR ch$[rsp]
 	mov	WORD PTR wch$[rsp], ax
-; Line 1690
+; Line 1668
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 65					; 00000041H
 	jl	SHORT $LN3@crt_iswupp
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 90					; 0000005aH
 	jg	SHORT $LN3@crt_iswupp
-; Line 1691
+; Line 1669
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_iswupp
 $LN3@crt_iswupp:
-; Line 1693
+; Line 1671
 	xor	eax, eax
 $LN1@crt_iswupp:
-; Line 1694
+; Line 1672
 	add	rsp, 24
 	ret	0
 ?crt_iswupper@@YAHG@Z ENDP				; crt_iswupper
@@ -6293,35 +6277,35 @@ wch$ = 0
 ch$ = 32
 ?crt_iswlower@@YAHG@Z PROC				; crt_iswlower
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1696
+; Line 1674
 $LN5:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
-; Line 1697
+; Line 1675
 	movzx	eax, WORD PTR ch$[rsp]
 	cmp	eax, 65535				; 0000ffffH
 	jne	SHORT $LN2@crt_iswlow
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_iswlow
 $LN2@crt_iswlow:
-; Line 1698
+; Line 1676
 	movzx	eax, WORD PTR ch$[rsp]
 	mov	WORD PTR wch$[rsp], ax
-; Line 1699
+; Line 1677
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 97					; 00000061H
 	jl	SHORT $LN3@crt_iswlow
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 122				; 0000007aH
 	jg	SHORT $LN3@crt_iswlow
-; Line 1700
+; Line 1678
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_iswlow
 $LN3@crt_iswlow:
-; Line 1702
+; Line 1680
 	xor	eax, eax
 $LN1@crt_iswlow:
-; Line 1703
+; Line 1681
 	add	rsp, 24
 	ret	0
 ?crt_iswlower@@YAHG@Z ENDP				; crt_iswlower
@@ -6332,21 +6316,21 @@ wch$ = 0
 ch$ = 32
 ?crt_iswxdigit@@YAHG@Z PROC				; crt_iswxdigit
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1705
+; Line 1683
 $LN8:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
-; Line 1706
+; Line 1684
 	movzx	eax, WORD PTR ch$[rsp]
 	cmp	eax, 65535				; 0000ffffH
 	jne	SHORT $LN2@crt_iswxdi
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_iswxdi
 $LN2@crt_iswxdi:
-; Line 1707
+; Line 1685
 	movzx	eax, WORD PTR ch$[rsp]
 	mov	WORD PTR wch$[rsp], ax
-; Line 1709
+; Line 1687
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 48					; 00000030H
 	jl	SHORT $LN5@crt_iswxdi
@@ -6368,14 +6352,14 @@ $LN6@crt_iswxdi:
 	cmp	eax, 70					; 00000046H
 	jg	SHORT $LN3@crt_iswxdi
 $LN4@crt_iswxdi:
-; Line 1711
+; Line 1689
 	mov	eax, 1
 	jmp	SHORT $LN1@crt_iswxdi
 $LN3@crt_iswxdi:
-; Line 1713
+; Line 1691
 	xor	eax, eax
 $LN1@crt_iswxdi:
-; Line 1714
+; Line 1692
 	add	rsp, 24
 	ret	0
 ?crt_iswxdigit@@YAHG@Z ENDP				; crt_iswxdigit
@@ -6386,36 +6370,36 @@ wch$ = 0
 ch$ = 32
 ?crt_towupper@@YAGG@Z PROC				; crt_towupper
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1716
+; Line 1694
 $LN5:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
-; Line 1717
+; Line 1695
 	movzx	eax, WORD PTR ch$[rsp]
 	cmp	eax, 65535				; 0000ffffH
 	jne	SHORT $LN2@crt_towupp
 	mov	eax, 65535				; 0000ffffH
 	jmp	SHORT $LN1@crt_towupp
 $LN2@crt_towupp:
-; Line 1718
+; Line 1696
 	movzx	eax, WORD PTR ch$[rsp]
 	mov	WORD PTR wch$[rsp], ax
-; Line 1719
+; Line 1697
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 97					; 00000061H
 	jl	SHORT $LN3@crt_towupp
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 122				; 0000007aH
 	jg	SHORT $LN3@crt_towupp
-; Line 1720
+; Line 1698
 	movzx	eax, WORD PTR wch$[rsp]
 	sub	eax, 32					; 00000020H
 	jmp	SHORT $LN1@crt_towupp
 $LN3@crt_towupp:
-; Line 1722
+; Line 1700
 	movzx	eax, WORD PTR ch$[rsp]
 $LN1@crt_towupp:
-; Line 1723
+; Line 1701
 	add	rsp, 24
 	ret	0
 ?crt_towupper@@YAGG@Z ENDP				; crt_towupper
@@ -6426,36 +6410,36 @@ wch$ = 0
 ch$ = 32
 ?crt_towlower@@YAGG@Z PROC				; crt_towlower
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1725
+; Line 1703
 $LN5:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
-; Line 1726
+; Line 1704
 	movzx	eax, WORD PTR ch$[rsp]
 	cmp	eax, 65535				; 0000ffffH
 	jne	SHORT $LN2@crt_towlow
 	mov	eax, 65535				; 0000ffffH
 	jmp	SHORT $LN1@crt_towlow
 $LN2@crt_towlow:
-; Line 1727
+; Line 1705
 	movzx	eax, WORD PTR ch$[rsp]
 	mov	WORD PTR wch$[rsp], ax
-; Line 1728
+; Line 1706
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 65					; 00000041H
 	jl	SHORT $LN3@crt_towlow
 	movzx	eax, WORD PTR wch$[rsp]
 	cmp	eax, 90					; 0000005aH
 	jg	SHORT $LN3@crt_towlow
-; Line 1729
+; Line 1707
 	movzx	eax, WORD PTR wch$[rsp]
 	add	eax, 32					; 00000020H
 	jmp	SHORT $LN1@crt_towlow
 $LN3@crt_towlow:
-; Line 1731
+; Line 1709
 	movzx	eax, WORD PTR ch$[rsp]
 $LN1@crt_towlow:
-; Line 1732
+; Line 1710
 	add	rsp, 24
 	ret	0
 ?crt_towlower@@YAGG@Z ENDP				; crt_towlower
@@ -6467,18 +6451,18 @@ endptr$ = 56
 base$ = 64
 ?crt_wcstoul@@YAKPEB_WPEAPEA_WH@Z PROC			; crt_wcstoul
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1816
+; Line 1794
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 1817
+; Line 1795
 	mov	r8d, DWORD PTR base$[rsp]
 	mov	rdx, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR nptr$[rsp]
 	call	?crt_wcstoul_base@@YAKPEB_WPEAPEA_WH@Z	; crt_wcstoul_base
-; Line 1818
+; Line 1796
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_wcstoul@@YAKPEB_WPEAPEA_WH@Z ENDP			; crt_wcstoul
@@ -6490,18 +6474,18 @@ endptr$ = 56
 base$ = 64
 ?crt_wcstoui@@YAIPEB_WPEAPEA_WH@Z PROC			; crt_wcstoui
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1820
+; Line 1798
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 1821
+; Line 1799
 	mov	r8d, DWORD PTR base$[rsp]
 	mov	rdx, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR nptr$[rsp]
 	call	?crt_wcstoul_base@@YAKPEB_WPEAPEA_WH@Z	; crt_wcstoul_base
-; Line 1822
+; Line 1800
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_wcstoui@@YAIPEB_WPEAPEA_WH@Z ENDP			; crt_wcstoui
@@ -6521,67 +6505,67 @@ endptr$ = 104
 base$ = 112
 ?crt_wcstol@@YAJPEB_WPEAPEA_WH@Z PROC			; crt_wcstol
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1824
+; Line 1802
 $LN33:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
-; Line 1825
+; Line 1803
 	cmp	QWORD PTR nptr$[rsp], 0
 	jne	SHORT $LN4@crt_wcstol
-; Line 1826
+; Line 1804
 	cmp	QWORD PTR endptr$[rsp], 0
 	je	SHORT $LN5@crt_wcstol
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR nptr$[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN5@crt_wcstol:
-; Line 1827
+; Line 1805
 	xor	eax, eax
 	jmp	$LN1@crt_wcstol
 $LN4@crt_wcstol:
-; Line 1830
+; Line 1808
 	mov	rcx, QWORD PTR nptr$[rsp]
 	call	?crt_wcskip_isspace@@YAPEB_WPEB_W@Z	; crt_wcskip_isspace
 	mov	QWORD PTR p$[rsp], rax
-; Line 1832
+; Line 1810
 	mov	DWORD PTR negative$[rsp], 0
-; Line 1833
+; Line 1811
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 45					; 0000002dH
 	jne	SHORT $LN6@crt_wcstol
-; Line 1834
+; Line 1812
 	mov	DWORD PTR negative$[rsp], 1
-; Line 1835
+; Line 1813
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
 	jmp	SHORT $LN7@crt_wcstol
 $LN6@crt_wcstol:
-; Line 1836
+; Line 1814
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 43					; 0000002bH
 	jne	SHORT $LN8@crt_wcstol
-; Line 1837
+; Line 1815
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
 $LN8@crt_wcstol:
 $LN7@crt_wcstol:
-; Line 1840
+; Line 1818
 	cmp	DWORD PTR base$[rsp], 0
 	jne	SHORT $LN9@crt_wcstol
-; Line 1841
+; Line 1819
 	mov	DWORD PTR base$[rsp], 10
-; Line 1842
+; Line 1820
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
 	jne	SHORT $LN11@crt_wcstol
-; Line 1843
+; Line 1821
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -6595,26 +6579,26 @@ $LN7@crt_wcstol:
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN12@crt_wcstol
 $LN14@crt_wcstol:
-; Line 1844
+; Line 1822
 	mov	DWORD PTR base$[rsp], 16
-; Line 1845
+; Line 1823
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
-; Line 1846
+; Line 1824
 	jmp	SHORT $LN13@crt_wcstol
 $LN12@crt_wcstol:
-; Line 1847
+; Line 1825
 	mov	DWORD PTR base$[rsp], 8
 $LN13@crt_wcstol:
 $LN11@crt_wcstol:
-; Line 1849
+; Line 1827
 	jmp	SHORT $LN10@crt_wcstol
 $LN9@crt_wcstol:
-; Line 1850
+; Line 1828
 	cmp	DWORD PTR base$[rsp], 16
 	jne	SHORT $LN15@crt_wcstol
-; Line 1851
+; Line 1829
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -6632,113 +6616,113 @@ $LN9@crt_wcstol:
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN16@crt_wcstol
 $LN17@crt_wcstol:
-; Line 1852
+; Line 1830
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
 $LN16@crt_wcstol:
 $LN15@crt_wcstol:
 $LN10@crt_wcstol:
-; Line 1856
+; Line 1834
 	mov	DWORD PTR result$[rsp], 0
-; Line 1857
+; Line 1835
 	mov	DWORD PTR overflow$[rsp], 0
 $LN2@crt_wcstol:
-; Line 1859
+; Line 1837
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_wcstol
-; Line 1860
+; Line 1838
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	mov	WORD PTR c$1[rsp], ax
-; Line 1863
+; Line 1841
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 48					; 00000030H
 	jl	SHORT $LN18@crt_wcstol
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN18@crt_wcstol
-; Line 1864
+; Line 1842
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 48					; 00000030H
 	mov	DWORD PTR digit$2[rsp], eax
 	jmp	SHORT $LN19@crt_wcstol
 $LN18@crt_wcstol:
-; Line 1865
+; Line 1843
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 97					; 00000061H
 	jl	SHORT $LN20@crt_wcstol
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 122				; 0000007aH
 	jg	SHORT $LN20@crt_wcstol
-; Line 1866
+; Line 1844
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 87					; 00000057H
 	mov	DWORD PTR digit$2[rsp], eax
 	jmp	SHORT $LN21@crt_wcstol
 $LN20@crt_wcstol:
-; Line 1867
+; Line 1845
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 65					; 00000041H
 	jl	SHORT $LN22@crt_wcstol
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 90					; 0000005aH
 	jg	SHORT $LN22@crt_wcstol
-; Line 1868
+; Line 1846
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 55					; 00000037H
 	mov	DWORD PTR digit$2[rsp], eax
-; Line 1869
+; Line 1847
 	jmp	SHORT $LN23@crt_wcstol
 $LN22@crt_wcstol:
-; Line 1870
+; Line 1848
 	jmp	SHORT $LN3@crt_wcstol
 $LN23@crt_wcstol:
 $LN21@crt_wcstol:
 $LN19@crt_wcstol:
-; Line 1873
+; Line 1851
 	mov	eax, DWORD PTR base$[rsp]
 	cmp	DWORD PTR digit$2[rsp], eax
 	jl	SHORT $LN24@crt_wcstol
-; Line 1874
+; Line 1852
 	jmp	SHORT $LN3@crt_wcstol
 $LN24@crt_wcstol:
-; Line 1877
+; Line 1855
 	mov	eax, -1					; ffffffffH
 	sub	eax, DWORD PTR digit$2[rsp]
 	xor	edx, edx
 	div	DWORD PTR base$[rsp]
 	cmp	DWORD PTR result$[rsp], eax
 	jbe	SHORT $LN25@crt_wcstol
-; Line 1878
+; Line 1856
 	mov	DWORD PTR overflow$[rsp], 1
 $LN25@crt_wcstol:
-; Line 1880
+; Line 1858
 	mov	eax, DWORD PTR result$[rsp]
 	imul	eax, DWORD PTR base$[rsp]
 	add	eax, DWORD PTR digit$2[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 1881
+; Line 1859
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
-; Line 1882
+; Line 1860
 	jmp	$LN2@crt_wcstol
 $LN3@crt_wcstol:
-; Line 1884
+; Line 1862
 	cmp	QWORD PTR endptr$[rsp], 0
 	je	SHORT $LN26@crt_wcstol
-; Line 1885
+; Line 1863
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN26@crt_wcstol:
-; Line 1888
+; Line 1866
 	cmp	DWORD PTR overflow$[rsp], 0
 	je	SHORT $LN27@crt_wcstol
-; Line 1889
+; Line 1867
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN29@crt_wcstol
 	mov	DWORD PTR tv162[rsp], -2147483648	; ffffffff80000000H
@@ -6749,7 +6733,7 @@ $LN30@crt_wcstol:
 	mov	eax, DWORD PTR tv162[rsp]
 	jmp	SHORT $LN1@crt_wcstol
 $LN27@crt_wcstol:
-; Line 1892
+; Line 1870
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN31@crt_wcstol
 	mov	eax, DWORD PTR result$[rsp]
@@ -6762,7 +6746,7 @@ $LN31@crt_wcstol:
 $LN32@crt_wcstol:
 	mov	eax, DWORD PTR tv165[rsp]
 $LN1@crt_wcstol:
-; Line 1893
+; Line 1871
 	add	rsp, 88					; 00000058H
 	ret	0
 ?crt_wcstol@@YAJPEB_WPEAPEA_WH@Z ENDP			; crt_wcstol
@@ -6782,67 +6766,67 @@ endptr$ = 104
 base$ = 112
 ?crt_wcstoll@@YA_JPEB_WPEAPEA_WH@Z PROC			; crt_wcstoll
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1895
+; Line 1873
 $LN33:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
-; Line 1896
+; Line 1874
 	cmp	QWORD PTR nptr$[rsp], 0
 	jne	SHORT $LN4@crt_wcstol
-; Line 1897
+; Line 1875
 	cmp	QWORD PTR endptr$[rsp], 0
 	je	SHORT $LN5@crt_wcstol
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR nptr$[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN5@crt_wcstol:
-; Line 1898
+; Line 1876
 	xor	eax, eax
 	jmp	$LN1@crt_wcstol
 $LN4@crt_wcstol:
-; Line 1901
+; Line 1879
 	mov	rcx, QWORD PTR nptr$[rsp]
 	call	?crt_wcskip_isspace@@YAPEB_WPEB_W@Z	; crt_wcskip_isspace
 	mov	QWORD PTR p$[rsp], rax
-; Line 1903
+; Line 1881
 	mov	DWORD PTR negative$[rsp], 0
-; Line 1904
+; Line 1882
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 45					; 0000002dH
 	jne	SHORT $LN6@crt_wcstol
-; Line 1905
+; Line 1883
 	mov	DWORD PTR negative$[rsp], 1
-; Line 1906
+; Line 1884
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
 	jmp	SHORT $LN7@crt_wcstol
 $LN6@crt_wcstol:
-; Line 1907
+; Line 1885
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 43					; 0000002bH
 	jne	SHORT $LN8@crt_wcstol
-; Line 1908
+; Line 1886
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
 $LN8@crt_wcstol:
 $LN7@crt_wcstol:
-; Line 1911
+; Line 1889
 	cmp	DWORD PTR base$[rsp], 0
 	jne	SHORT $LN9@crt_wcstol
-; Line 1912
+; Line 1890
 	mov	DWORD PTR base$[rsp], 10
-; Line 1913
+; Line 1891
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
 	jne	SHORT $LN11@crt_wcstol
-; Line 1914
+; Line 1892
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -6856,26 +6840,26 @@ $LN7@crt_wcstol:
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN12@crt_wcstol
 $LN14@crt_wcstol:
-; Line 1915
+; Line 1893
 	mov	DWORD PTR base$[rsp], 16
-; Line 1916
+; Line 1894
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
-; Line 1917
+; Line 1895
 	jmp	SHORT $LN13@crt_wcstol
 $LN12@crt_wcstol:
-; Line 1918
+; Line 1896
 	mov	DWORD PTR base$[rsp], 8
 $LN13@crt_wcstol:
 $LN11@crt_wcstol:
-; Line 1920
+; Line 1898
 	jmp	SHORT $LN10@crt_wcstol
 $LN9@crt_wcstol:
-; Line 1921
+; Line 1899
 	cmp	DWORD PTR base$[rsp], 16
 	jne	SHORT $LN15@crt_wcstol
-; Line 1922
+; Line 1900
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -6893,80 +6877,80 @@ $LN9@crt_wcstol:
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN16@crt_wcstol
 $LN17@crt_wcstol:
-; Line 1923
+; Line 1901
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
 $LN16@crt_wcstol:
 $LN15@crt_wcstol:
 $LN10@crt_wcstol:
-; Line 1927
+; Line 1905
 	mov	QWORD PTR result$[rsp], 0
-; Line 1928
+; Line 1906
 	mov	DWORD PTR overflow$[rsp], 0
 $LN2@crt_wcstol:
-; Line 1930
+; Line 1908
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_wcstol
-; Line 1931
+; Line 1909
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	mov	WORD PTR c$1[rsp], ax
-; Line 1934
+; Line 1912
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 48					; 00000030H
 	jl	SHORT $LN18@crt_wcstol
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN18@crt_wcstol
-; Line 1935
+; Line 1913
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 48					; 00000030H
 	mov	DWORD PTR digit$2[rsp], eax
 	jmp	SHORT $LN19@crt_wcstol
 $LN18@crt_wcstol:
-; Line 1936
+; Line 1914
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 97					; 00000061H
 	jl	SHORT $LN20@crt_wcstol
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 122				; 0000007aH
 	jg	SHORT $LN20@crt_wcstol
-; Line 1937
+; Line 1915
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 87					; 00000057H
 	mov	DWORD PTR digit$2[rsp], eax
 	jmp	SHORT $LN21@crt_wcstol
 $LN20@crt_wcstol:
-; Line 1938
+; Line 1916
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 65					; 00000041H
 	jl	SHORT $LN22@crt_wcstol
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 90					; 0000005aH
 	jg	SHORT $LN22@crt_wcstol
-; Line 1939
+; Line 1917
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 55					; 00000037H
 	mov	DWORD PTR digit$2[rsp], eax
-; Line 1940
+; Line 1918
 	jmp	SHORT $LN23@crt_wcstol
 $LN22@crt_wcstol:
-; Line 1941
+; Line 1919
 	jmp	SHORT $LN3@crt_wcstol
 $LN23@crt_wcstol:
 $LN21@crt_wcstol:
 $LN19@crt_wcstol:
-; Line 1944
+; Line 1922
 	mov	eax, DWORD PTR base$[rsp]
 	cmp	DWORD PTR digit$2[rsp], eax
 	jl	SHORT $LN24@crt_wcstol
-; Line 1945
+; Line 1923
 	jmp	SHORT $LN3@crt_wcstol
 $LN24@crt_wcstol:
-; Line 1948
+; Line 1926
 	movsxd	rax, DWORD PTR digit$2[rsp]
 	mov	rcx, -1
 	sub	rcx, rax
@@ -6976,10 +6960,10 @@ $LN24@crt_wcstol:
 	div	rcx
 	cmp	QWORD PTR result$[rsp], rax
 	jbe	SHORT $LN25@crt_wcstol
-; Line 1949
+; Line 1927
 	mov	DWORD PTR overflow$[rsp], 1
 $LN25@crt_wcstol:
-; Line 1951
+; Line 1929
 	movsxd	rax, DWORD PTR base$[rsp]
 	mov	rcx, QWORD PTR result$[rsp]
 	imul	rcx, rax
@@ -6987,25 +6971,25 @@ $LN25@crt_wcstol:
 	movsxd	rcx, DWORD PTR digit$2[rsp]
 	add	rax, rcx
 	mov	QWORD PTR result$[rsp], rax
-; Line 1952
+; Line 1930
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
-; Line 1953
+; Line 1931
 	jmp	$LN2@crt_wcstol
 $LN3@crt_wcstol:
-; Line 1955
+; Line 1933
 	cmp	QWORD PTR endptr$[rsp], 0
 	je	SHORT $LN26@crt_wcstol
-; Line 1956
+; Line 1934
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN26@crt_wcstol:
-; Line 1959
+; Line 1937
 	cmp	DWORD PTR overflow$[rsp], 0
 	je	SHORT $LN27@crt_wcstol
-; Line 1960
+; Line 1938
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN29@crt_wcstol
 	mov	rax, -9223372036854775808		; 8000000000000000H
@@ -7018,7 +7002,7 @@ $LN30@crt_wcstol:
 	mov	rax, QWORD PTR tv166[rsp]
 	jmp	SHORT $LN1@crt_wcstol
 $LN27@crt_wcstol:
-; Line 1963
+; Line 1941
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN31@crt_wcstol
 	mov	rax, QWORD PTR result$[rsp]
@@ -7031,7 +7015,7 @@ $LN31@crt_wcstol:
 $LN32@crt_wcstol:
 	mov	rax, QWORD PTR tv169[rsp]
 $LN1@crt_wcstol:
-; Line 1964
+; Line 1942
 	add	rsp, 88					; 00000058H
 	ret	0
 ?crt_wcstoll@@YA_JPEB_WPEAPEA_WH@Z ENDP			; crt_wcstoll
@@ -7048,51 +7032,51 @@ endptr$ = 88
 base$ = 96
 ?crt_wcstoull@@YA_KPEB_WPEAPEA_WH@Z PROC		; crt_wcstoull
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1966
+; Line 1944
 $LN27:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
-; Line 1967
+; Line 1945
 	cmp	QWORD PTR nptr$[rsp], 0
 	jne	SHORT $LN4@crt_wcstou
-; Line 1968
+; Line 1946
 	cmp	QWORD PTR endptr$[rsp], 0
 	je	SHORT $LN5@crt_wcstou
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR nptr$[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN5@crt_wcstou:
-; Line 1969
+; Line 1947
 	xor	eax, eax
 	jmp	$LN1@crt_wcstou
 $LN4@crt_wcstou:
-; Line 1972
+; Line 1950
 	mov	rcx, QWORD PTR nptr$[rsp]
 	call	?crt_wcskip_isspace@@YAPEB_WPEB_W@Z	; crt_wcskip_isspace
 	mov	QWORD PTR p$[rsp], rax
-; Line 1974
+; Line 1952
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 43					; 0000002bH
 	jne	SHORT $LN6@crt_wcstou
-; Line 1975
+; Line 1953
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
 $LN6@crt_wcstou:
-; Line 1978
+; Line 1956
 	cmp	DWORD PTR base$[rsp], 0
 	jne	SHORT $LN7@crt_wcstou
-; Line 1979
+; Line 1957
 	mov	DWORD PTR base$[rsp], 10
-; Line 1980
+; Line 1958
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
 	jne	SHORT $LN9@crt_wcstou
-; Line 1981
+; Line 1959
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -7106,26 +7090,26 @@ $LN6@crt_wcstou:
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN10@crt_wcstou
 $LN12@crt_wcstou:
-; Line 1982
+; Line 1960
 	mov	DWORD PTR base$[rsp], 16
-; Line 1983
+; Line 1961
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
-; Line 1984
+; Line 1962
 	jmp	SHORT $LN11@crt_wcstou
 $LN10@crt_wcstou:
-; Line 1985
+; Line 1963
 	mov	DWORD PTR base$[rsp], 8
 $LN11@crt_wcstou:
 $LN9@crt_wcstou:
-; Line 1987
+; Line 1965
 	jmp	SHORT $LN8@crt_wcstou
 $LN7@crt_wcstou:
-; Line 1988
+; Line 1966
 	cmp	DWORD PTR base$[rsp], 16
 	jne	SHORT $LN13@crt_wcstou
-; Line 1989
+; Line 1967
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -7143,80 +7127,80 @@ $LN7@crt_wcstou:
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN14@crt_wcstou
 $LN15@crt_wcstou:
-; Line 1990
+; Line 1968
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
 $LN14@crt_wcstou:
 $LN13@crt_wcstou:
 $LN8@crt_wcstou:
-; Line 1994
+; Line 1972
 	mov	QWORD PTR result$[rsp], 0
-; Line 1995
+; Line 1973
 	mov	DWORD PTR overflow$[rsp], 0
 $LN2@crt_wcstou:
-; Line 1997
+; Line 1975
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_wcstou
-; Line 1998
+; Line 1976
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	mov	WORD PTR c$1[rsp], ax
-; Line 2001
+; Line 1979
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 48					; 00000030H
 	jl	SHORT $LN16@crt_wcstou
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN16@crt_wcstou
-; Line 2002
+; Line 1980
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 48					; 00000030H
 	mov	DWORD PTR digit$2[rsp], eax
 	jmp	SHORT $LN17@crt_wcstou
 $LN16@crt_wcstou:
-; Line 2003
+; Line 1981
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 97					; 00000061H
 	jl	SHORT $LN18@crt_wcstou
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 122				; 0000007aH
 	jg	SHORT $LN18@crt_wcstou
-; Line 2004
+; Line 1982
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 87					; 00000057H
 	mov	DWORD PTR digit$2[rsp], eax
 	jmp	SHORT $LN19@crt_wcstou
 $LN18@crt_wcstou:
-; Line 2005
+; Line 1983
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 65					; 00000041H
 	jl	SHORT $LN20@crt_wcstou
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 90					; 0000005aH
 	jg	SHORT $LN20@crt_wcstou
-; Line 2006
+; Line 1984
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 55					; 00000037H
 	mov	DWORD PTR digit$2[rsp], eax
-; Line 2007
+; Line 1985
 	jmp	SHORT $LN21@crt_wcstou
 $LN20@crt_wcstou:
-; Line 2008
+; Line 1986
 	jmp	SHORT $LN3@crt_wcstou
 $LN21@crt_wcstou:
 $LN19@crt_wcstou:
 $LN17@crt_wcstou:
-; Line 2011
+; Line 1989
 	mov	eax, DWORD PTR base$[rsp]
 	cmp	DWORD PTR digit$2[rsp], eax
 	jl	SHORT $LN22@crt_wcstou
-; Line 2012
+; Line 1990
 	jmp	SHORT $LN3@crt_wcstou
 $LN22@crt_wcstou:
-; Line 2015
+; Line 1993
 	movsxd	rax, DWORD PTR digit$2[rsp]
 	mov	rcx, -1
 	sub	rcx, rax
@@ -7226,10 +7210,10 @@ $LN22@crt_wcstou:
 	div	rcx
 	cmp	QWORD PTR result$[rsp], rax
 	jbe	SHORT $LN23@crt_wcstou
-; Line 2016
+; Line 1994
 	mov	DWORD PTR overflow$[rsp], 1
 $LN23@crt_wcstou:
-; Line 2018
+; Line 1996
 	movsxd	rax, DWORD PTR base$[rsp]
 	mov	rcx, QWORD PTR result$[rsp]
 	imul	rcx, rax
@@ -7237,32 +7221,32 @@ $LN23@crt_wcstou:
 	movsxd	rcx, DWORD PTR digit$2[rsp]
 	add	rax, rcx
 	mov	QWORD PTR result$[rsp], rax
-; Line 2019
+; Line 1997
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
-; Line 2020
+; Line 1998
 	jmp	$LN2@crt_wcstou
 $LN3@crt_wcstou:
-; Line 2022
+; Line 2000
 	cmp	QWORD PTR endptr$[rsp], 0
 	je	SHORT $LN24@crt_wcstou
-; Line 2023
+; Line 2001
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN24@crt_wcstou:
-; Line 2026
+; Line 2004
 	cmp	DWORD PTR overflow$[rsp], 0
 	je	SHORT $LN25@crt_wcstou
-; Line 2027
+; Line 2005
 	mov	rax, -1
 	jmp	SHORT $LN1@crt_wcstou
 $LN25@crt_wcstou:
-; Line 2030
+; Line 2008
 	mov	rax, QWORD PTR result$[rsp]
 $LN1@crt_wcstou:
-; Line 2031
+; Line 2009
 	add	rsp, 72					; 00000048H
 	ret	0
 ?crt_wcstoull@@YA_KPEB_WPEAPEA_WH@Z ENDP		; crt_wcstoull
@@ -7274,18 +7258,18 @@ endptr$ = 56
 base$ = 64
 ?crt_wcstoull_val@@YAKPEB_WPEAPEA_WH@Z PROC		; crt_wcstoull_val
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2033
+; Line 2011
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 2034
+; Line 2012
 	mov	r8d, DWORD PTR base$[rsp]
 	mov	rdx, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR nptr$[rsp]
 	call	?crt_wcstoull@@YA_KPEB_WPEAPEA_WH@Z	; crt_wcstoull
-; Line 2035
+; Line 2013
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_wcstoull_val@@YAKPEB_WPEAPEA_WH@Z ENDP		; crt_wcstoull_val
@@ -7299,28 +7283,28 @@ count$ = 72
 fmt$ = 80
 ?crt_swprintf@@YAHPEA_W_KPEB_WZZ PROC			; crt_swprintf
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2331
+; Line 2309
 $LN3:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	mov	QWORD PTR [rsp+32], r9
 	sub	rsp, 56					; 00000038H
-; Line 2333
+; Line 2311
 	lea	rax, QWORD PTR fmt$[rsp+8]
 	mov	QWORD PTR args$[rsp], rax
-; Line 2334
+; Line 2312
 	mov	r9, QWORD PTR args$[rsp]
 	mov	r8, QWORD PTR fmt$[rsp]
 	mov	rdx, QWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	?crt_vswprintf@@YAHPEA_W_KPEB_WPEAD@Z	; crt_vswprintf
 	mov	DWORD PTR result$[rsp], eax
-; Line 2335
+; Line 2313
 	mov	QWORD PTR args$[rsp], 0
-; Line 2336
+; Line 2314
 	mov	eax, DWORD PTR result$[rsp]
-; Line 2337
+; Line 2315
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_swprintf@@YAHPEA_W_KPEB_WZZ ENDP			; crt_swprintf
@@ -7383,14 +7367,14 @@ fmt$ = 512
 args$ = 520
 ?crt_vswprintf@@YAHPEA_W_KPEB_WPEAD@Z PROC		; crt_vswprintf
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2339
+; Line 2317
 $LN89:
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 488				; 000001e8H
-; Line 2340
+; Line 2318
 	cmp	QWORD PTR buf$[rsp], 0
 	je	SHORT $LN8@crt_vswpri
 	cmp	QWORD PTR fmt$[rsp], 0
@@ -7398,36 +7382,36 @@ $LN89:
 	cmp	QWORD PTR count$[rsp], 0
 	jne	SHORT $LN7@crt_vswpri
 $LN8@crt_vswpri:
-; Line 2341
+; Line 2319
 	mov	eax, -1
 	jmp	$LN1@crt_vswpri
 $LN7@crt_vswpri:
-; Line 2345
+; Line 2323
 	mov	rax, QWORD PTR fmt$[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 2346
+; Line 2324
 	mov	rax, QWORD PTR buf$[rsp]
 	mov	QWORD PTR out$[rsp], rax
-; Line 2347
+; Line 2325
 	mov	rax, QWORD PTR count$[rsp]
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 2348
+; Line 2326
 	mov	DWORD PTR total$[rsp], 0
 $LN88@crt_vswpri:
 $LN2@crt_vswpri:
-; Line 2350
+; Line 2328
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_vswpri
 	cmp	QWORD PTR remaining$[rsp], 1
 	jbe	$LN3@crt_vswpri
-; Line 2351
+; Line 2329
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 37					; 00000025H
 	je	SHORT $LN9@crt_vswpri
-; Line 2352
+; Line 2330
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	mov	WORD PTR tv75[rsp], ax
@@ -7440,25 +7424,25 @@ $LN2@crt_vswpri:
 	mov	rax, QWORD PTR out$[rsp]
 	add	rax, 2
 	mov	QWORD PTR out$[rsp], rax
-; Line 2353
+; Line 2331
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 2354
+; Line 2332
 	mov	eax, DWORD PTR total$[rsp]
 	inc	eax
 	mov	DWORD PTR total$[rsp], eax
-; Line 2355
+; Line 2333
 	jmp	$LN2@crt_vswpri
 $LN9@crt_vswpri:
-; Line 2358
+; Line 2336
 	mov	DWORD PTR width$4[rsp], 0
 	mov	DWORD PTR prec$3[rsp], -1
 	mov	DWORD PTR flags$5[rsp], 0
-; Line 2359
+; Line 2337
 	xor	eax, eax
 	mov	WORD PTR spec$1[rsp], ax
-; Line 2360
+; Line 2338
 	lea	rax, QWORD PTR spec$1[rsp]
 	mov	QWORD PTR [rsp+32], rax
 	lea	r9, QWORD PTR flags$5[rsp]
@@ -7467,9 +7451,9 @@ $LN9@crt_vswpri:
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?crt_wcformat_next@@YAPEB_WPEB_WPEAH11PEA_W@Z ; crt_wcformat_next
 	mov	QWORD PTR next$29[rsp], rax
-; Line 2361
+; Line 2339
 	mov	DWORD PTR chars$2[rsp], 0
-; Line 2363
+; Line 2341
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 100				; 00000064H
 	je	SHORT $LN12@crt_vswpri
@@ -7477,7 +7461,7 @@ $LN9@crt_vswpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN10@crt_vswpri
 $LN12@crt_vswpri:
-; Line 2365
+; Line 2343
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN58@crt_vswpri
@@ -7499,25 +7483,25 @@ $LN58@crt_vswpri:
 $LN59@crt_vswpri:
 	mov	eax, DWORD PTR tv94[rsp]
 	mov	DWORD PTR v$8[rsp], eax
-; Line 2367
+; Line 2345
 	mov	DWORD PTR neg$10[rsp], 0
-; Line 2369
+; Line 2347
 	cmp	DWORD PTR v$8[rsp], 0
 	jge	SHORT $LN13@crt_vswpri
-; Line 2371
+; Line 2349
 	xor	eax, eax
 	sub	eax, DWORD PTR v$8[rsp]
 	mov	DWORD PTR uv$15[rsp], eax
-; Line 2372
+; Line 2350
 	mov	DWORD PTR neg$10[rsp], 1
-; Line 2373
+; Line 2351
 	jmp	SHORT $LN14@crt_vswpri
 $LN13@crt_vswpri:
-; Line 2376
+; Line 2354
 	mov	eax, DWORD PTR v$8[rsp]
 	mov	DWORD PTR uv$15[rsp], eax
 $LN14@crt_vswpri:
-; Line 2379
+; Line 2357
 	mov	eax, DWORD PTR uv$15[rsp]
 	mov	DWORD PTR [rsp+48], 0
 	mov	ecx, DWORD PTR neg$10[rsp]
@@ -7530,14 +7514,14 @@ $LN14@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputint@@YAHPEA_W_KHHHHH@Z	; crt_wcputint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2380
+; Line 2358
 	jmp	$LN11@crt_vswpri
 $LN10@crt_vswpri:
-; Line 2381
+; Line 2359
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 117				; 00000075H
 	jne	$LN15@crt_vswpri
-; Line 2383
+; Line 2361
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN60@crt_vswpri
@@ -7559,7 +7543,7 @@ $LN60@crt_vswpri:
 $LN61@crt_vswpri:
 	mov	eax, DWORD PTR tv146[rsp]
 	mov	DWORD PTR v$19[rsp], eax
-; Line 2384
+; Line 2362
 	mov	eax, DWORD PTR v$19[rsp]
 	mov	DWORD PTR [rsp+48], 10
 	mov	DWORD PTR [rsp+40], 0
@@ -7571,14 +7555,14 @@ $LN61@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z	; crt_wcputunsigned
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2385
+; Line 2363
 	jmp	$LN16@crt_vswpri
 $LN15@crt_vswpri:
-; Line 2386
+; Line 2364
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 111				; 0000006fH
 	jne	$LN17@crt_vswpri
-; Line 2388
+; Line 2366
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN62@crt_vswpri
@@ -7600,7 +7584,7 @@ $LN62@crt_vswpri:
 $LN63@crt_vswpri:
 	mov	eax, DWORD PTR tv164[rsp]
 	mov	DWORD PTR v$17[rsp], eax
-; Line 2389
+; Line 2367
 	mov	eax, DWORD PTR v$17[rsp]
 	mov	DWORD PTR [rsp+48], 8
 	mov	DWORD PTR [rsp+40], 0
@@ -7612,10 +7596,10 @@ $LN63@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z	; crt_wcputunsigned
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2390
+; Line 2368
 	jmp	$LN18@crt_vswpri
 $LN17@crt_vswpri:
-; Line 2391
+; Line 2369
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 120				; 00000078H
 	je	SHORT $LN21@crt_vswpri
@@ -7623,7 +7607,7 @@ $LN17@crt_vswpri:
 	cmp	eax, 88					; 00000058H
 	jne	$LN19@crt_vswpri
 $LN21@crt_vswpri:
-; Line 2393
+; Line 2371
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN64@crt_vswpri
@@ -7645,7 +7629,7 @@ $LN64@crt_vswpri:
 $LN65@crt_vswpri:
 	mov	eax, DWORD PTR tv184[rsp]
 	mov	DWORD PTR v$18[rsp], eax
-; Line 2394
+; Line 2372
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN66@crt_vswpri
@@ -7665,14 +7649,14 @@ $LN67@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputhex@@YAHPEA_W_KHHHH@Z		; crt_wcputhex
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2396
+; Line 2374
 	jmp	$LN20@crt_vswpri
 $LN19@crt_vswpri:
-; Line 2397
+; Line 2375
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 99					; 00000063H
 	jne	$LN22@crt_vswpri
-; Line 2399
+; Line 2377
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN68@crt_vswpri
@@ -7694,21 +7678,21 @@ $LN68@crt_vswpri:
 $LN69@crt_vswpri:
 	movzx	eax, WORD PTR tv204[rsp]
 	mov	WORD PTR c$7[rsp], ax
-; Line 2400
+; Line 2378
 	mov	eax, 2
 	imul	rax, rax, 0
 	movzx	ecx, WORD PTR c$7[rsp]
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2401
+; Line 2379
 	mov	DWORD PTR chars$2[rsp], 1
-; Line 2402
+; Line 2380
 	jmp	$LN23@crt_vswpri
 $LN22@crt_vswpri:
-; Line 2403
+; Line 2381
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 115				; 00000073H
 	jne	$LN24@crt_vswpri
-; Line 2405
+; Line 2383
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN70@crt_vswpri
@@ -7730,21 +7714,21 @@ $LN70@crt_vswpri:
 $LN71@crt_vswpri:
 	mov	rax, QWORD PTR tv216[rsp]
 	mov	QWORD PTR s$25[rsp], rax
-; Line 2406
+; Line 2384
 	mov	r9d, DWORD PTR prec$3[rsp]
 	mov	r8d, DWORD PTR width$4[rsp]
 	mov	rdx, QWORD PTR s$25[rsp]
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputstring@@YAHPEA_WPEB_WHH@Z	; crt_wcputstring
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2407
+; Line 2385
 	jmp	$LN25@crt_vswpri
 $LN24@crt_vswpri:
-; Line 2408
+; Line 2386
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 112				; 00000070H
 	jne	$LN26@crt_vswpri
-; Line 2410
+; Line 2388
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN72@crt_vswpri
@@ -7766,33 +7750,33 @@ $LN72@crt_vswpri:
 $LN73@crt_vswpri:
 	mov	rax, QWORD PTR tv230[rsp]
 	mov	QWORD PTR ptr$26[rsp], rax
-; Line 2411
+; Line 2389
 	mov	rdx, QWORD PTR ptr$26[rsp]
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputpointer@@YAHPEA_WPEAX@Z	; crt_wcputpointer
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2412
+; Line 2390
 	jmp	$LN27@crt_vswpri
 $LN26@crt_vswpri:
-; Line 2413
+; Line 2391
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 37					; 00000025H
 	jne	SHORT $LN28@crt_vswpri
-; Line 2415
+; Line 2393
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	ecx, 37					; 00000025H
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2416
+; Line 2394
 	mov	DWORD PTR chars$2[rsp], 1
-; Line 2417
+; Line 2395
 	jmp	$LN29@crt_vswpri
 $LN28@crt_vswpri:
-; Line 2418
+; Line 2396
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 110				; 0000006eH
 	jne	$LN30@crt_vswpri
-; Line 2420
+; Line 2398
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN74@crt_vswpri
@@ -7814,24 +7798,24 @@ $LN74@crt_vswpri:
 $LN75@crt_vswpri:
 	mov	rax, QWORD PTR tv246[rsp]
 	mov	QWORD PTR np$22[rsp], rax
-; Line 2421
+; Line 2399
 	cmp	QWORD PTR np$22[rsp], 0
 	je	SHORT $LN32@crt_vswpri
-; Line 2422
+; Line 2400
 	mov	rax, QWORD PTR np$22[rsp]
 	mov	ecx, DWORD PTR total$[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN32@crt_vswpri:
-; Line 2424
+; Line 2402
 	mov	DWORD PTR chars$2[rsp], 0
-; Line 2425
+; Line 2403
 	jmp	$LN31@crt_vswpri
 $LN30@crt_vswpri:
-; Line 2426
+; Line 2404
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 108				; 0000006cH
 	jne	$LN33@crt_vswpri
-; Line 2428
+; Line 2406
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -7845,7 +7829,7 @@ $LN30@crt_vswpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN35@crt_vswpri
 $LN37@crt_vswpri:
-; Line 2430
+; Line 2408
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN76@crt_vswpri
@@ -7867,25 +7851,25 @@ $LN76@crt_vswpri:
 $LN77@crt_vswpri:
 	mov	eax, DWORD PTR tv264[rsp]
 	mov	DWORD PTR v$9[rsp], eax
-; Line 2432
+; Line 2410
 	mov	DWORD PTR neg$12[rsp], 0
-; Line 2434
+; Line 2412
 	cmp	DWORD PTR v$9[rsp], 0
 	jge	SHORT $LN38@crt_vswpri
-; Line 2436
+; Line 2414
 	xor	eax, eax
 	sub	eax, DWORD PTR v$9[rsp]
 	mov	DWORD PTR uv$11[rsp], eax
-; Line 2437
+; Line 2415
 	mov	DWORD PTR neg$12[rsp], 1
-; Line 2438
+; Line 2416
 	jmp	SHORT $LN39@crt_vswpri
 $LN38@crt_vswpri:
-; Line 2441
+; Line 2419
 	mov	eax, DWORD PTR v$9[rsp]
 	mov	DWORD PTR uv$11[rsp], eax
 $LN39@crt_vswpri:
-; Line 2444
+; Line 2422
 	mov	eax, DWORD PTR uv$11[rsp]
 	mov	DWORD PTR [rsp+48], 0
 	mov	ecx, DWORD PTR neg$12[rsp]
@@ -7898,17 +7882,17 @@ $LN39@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputint@@YAHPEA_W_KHHHHH@Z	; crt_wcputint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2445
+; Line 2423
 	jmp	$LN36@crt_vswpri
 $LN35@crt_vswpri:
-; Line 2446
+; Line 2424
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rcx+rax]
 	cmp	eax, 117				; 00000075H
 	jne	$LN40@crt_vswpri
-; Line 2448
+; Line 2426
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN78@crt_vswpri
@@ -7930,7 +7914,7 @@ $LN78@crt_vswpri:
 $LN79@crt_vswpri:
 	mov	eax, DWORD PTR tv286[rsp]
 	mov	DWORD PTR v$16[rsp], eax
-; Line 2449
+; Line 2427
 	mov	eax, DWORD PTR v$16[rsp]
 	mov	DWORD PTR [rsp+48], 10
 	mov	DWORD PTR [rsp+40], 0
@@ -7942,10 +7926,10 @@ $LN79@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z	; crt_wcputunsigned
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2450
+; Line 2428
 	jmp	$LN41@crt_vswpri
 $LN40@crt_vswpri:
-; Line 2451
+; Line 2429
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -7965,7 +7949,7 @@ $LN40@crt_vswpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN42@crt_vswpri
 $LN44@crt_vswpri:
-; Line 2453
+; Line 2431
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN80@crt_vswpri
@@ -7987,25 +7971,25 @@ $LN80@crt_vswpri:
 $LN81@crt_vswpri:
 	mov	rax, QWORD PTR tv314[rsp]
 	mov	QWORD PTR v$20[rsp], rax
-; Line 2455
+; Line 2433
 	mov	DWORD PTR neg$13[rsp], 0
-; Line 2457
+; Line 2435
 	cmp	QWORD PTR v$20[rsp], 0
 	jge	SHORT $LN45@crt_vswpri
-; Line 2459
+; Line 2437
 	xor	eax, eax
 	sub	rax, QWORD PTR v$20[rsp]
 	mov	QWORD PTR uv$23[rsp], rax
-; Line 2460
+; Line 2438
 	mov	DWORD PTR neg$13[rsp], 1
-; Line 2461
+; Line 2439
 	jmp	SHORT $LN46@crt_vswpri
 $LN45@crt_vswpri:
-; Line 2464
+; Line 2442
 	mov	rax, QWORD PTR v$20[rsp]
 	mov	QWORD PTR uv$23[rsp], rax
 $LN46@crt_vswpri:
-; Line 2467
+; Line 2445
 	mov	DWORD PTR [rsp+48], 0
 	mov	eax, DWORD PTR neg$13[rsp]
 	mov	DWORD PTR [rsp+40], eax
@@ -8017,14 +8001,14 @@ $LN46@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputint@@YAHPEA_W_KHHHHH@Z	; crt_wcputint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2468
+; Line 2446
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
-; Line 2469
+; Line 2447
 	jmp	$LN43@crt_vswpri
 $LN42@crt_vswpri:
-; Line 2470
+; Line 2448
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -8037,7 +8021,7 @@ $LN42@crt_vswpri:
 	movzx	eax, WORD PTR [rcx+rax]
 	cmp	eax, 117				; 00000075H
 	jne	$LN47@crt_vswpri
-; Line 2472
+; Line 2450
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN82@crt_vswpri
@@ -8059,7 +8043,7 @@ $LN82@crt_vswpri:
 $LN83@crt_vswpri:
 	mov	rax, QWORD PTR tv372[rsp]
 	mov	QWORD PTR v$27[rsp], rax
-; Line 2475
+; Line 2453
 	mov	DWORD PTR [rsp+48], 10
 	mov	DWORD PTR [rsp+40], 0
 	mov	eax, DWORD PTR flags$5[rsp]
@@ -8070,39 +8054,39 @@ $LN83@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z	; crt_wcputunsigned
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2484
+; Line 2462
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
-; Line 2485
+; Line 2463
 	jmp	SHORT $LN48@crt_vswpri
 $LN47@crt_vswpri:
-; Line 2488
+; Line 2466
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	ecx, 108				; 0000006cH
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2489
+; Line 2467
 	mov	DWORD PTR chars$2[rsp], 1
 $LN48@crt_vswpri:
 $LN43@crt_vswpri:
 $LN41@crt_vswpri:
 $LN36@crt_vswpri:
-; Line 2491
+; Line 2469
 	jmp	$LN34@crt_vswpri
 $LN33@crt_vswpri:
-; Line 2492
+; Line 2470
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 122				; 0000007aH
 	jne	$LN49@crt_vswpri
-; Line 2494
+; Line 2472
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rcx+rax]
 	cmp	eax, 117				; 00000075H
 	jne	$LN51@crt_vswpri
-; Line 2496
+; Line 2474
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN84@crt_vswpri
@@ -8124,7 +8108,7 @@ $LN84@crt_vswpri:
 $LN85@crt_vswpri:
 	mov	rax, QWORD PTR tv396[rsp]
 	mov	QWORD PTR v$28[rsp], rax
-; Line 2498
+; Line 2476
 	mov	DWORD PTR [rsp+48], 10
 	mov	DWORD PTR [rsp+40], 0
 	mov	eax, DWORD PTR flags$5[rsp]
@@ -8135,10 +8119,10 @@ $LN85@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z	; crt_wcputunsigned
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2506
+; Line 2484
 	jmp	$LN52@crt_vswpri
 $LN51@crt_vswpri:
-; Line 2507
+; Line 2485
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -8152,7 +8136,7 @@ $LN51@crt_vswpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN53@crt_vswpri
 $LN55@crt_vswpri:
-; Line 2509
+; Line 2487
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN86@crt_vswpri
@@ -8174,22 +8158,22 @@ $LN86@crt_vswpri:
 $LN87@crt_vswpri:
 	mov	rax, QWORD PTR tv419[rsp]
 	mov	QWORD PTR v$21[rsp], rax
-; Line 2510
+; Line 2488
 	mov	rax, QWORD PTR v$21[rsp]
 	mov	QWORD PTR uv$24[rsp], rax
-; Line 2511
+; Line 2489
 	mov	DWORD PTR neg$14[rsp], 0
-; Line 2513
+; Line 2491
 	cmp	DWORD PTR v$21[rsp], 0
 	jge	SHORT $LN56@crt_vswpri
-; Line 2515
+; Line 2493
 	xor	eax, eax
 	sub	rax, QWORD PTR v$21[rsp]
 	mov	QWORD PTR uv$24[rsp], rax
-; Line 2516
+; Line 2494
 	mov	DWORD PTR neg$14[rsp], 1
 $LN56@crt_vswpri:
-; Line 2519
+; Line 2497
 	mov	DWORD PTR [rsp+48], 0
 	mov	eax, DWORD PTR neg$14[rsp]
 	mov	DWORD PTR [rsp+40], eax
@@ -8201,28 +8185,28 @@ $LN56@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputint@@YAHPEA_W_KHHHHH@Z	; crt_wcputint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2527
+; Line 2505
 	jmp	SHORT $LN54@crt_vswpri
 $LN53@crt_vswpri:
-; Line 2530
+; Line 2508
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	ecx, 122				; 0000007aH
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2531
+; Line 2509
 	mov	DWORD PTR chars$2[rsp], 1
 $LN54@crt_vswpri:
 $LN52@crt_vswpri:
-; Line 2533
+; Line 2511
 	jmp	SHORT $LN50@crt_vswpri
 $LN49@crt_vswpri:
-; Line 2536
+; Line 2514
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR p$[rsp]
 	movzx	ecx, WORD PTR [rcx]
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2537
+; Line 2515
 	mov	DWORD PTR chars$2[rsp], 1
 $LN50@crt_vswpri:
 $LN34@crt_vswpri:
@@ -8235,7 +8219,7 @@ $LN20@crt_vswpri:
 $LN18@crt_vswpri:
 $LN16@crt_vswpri:
 $LN11@crt_vswpri:
-; Line 2540
+; Line 2518
 	mov	DWORD PTR i$6[rsp], 0
 	jmp	SHORT $LN6@crt_vswpri
 $LN4@crt_vswpri:
@@ -8248,7 +8232,7 @@ $LN6@crt_vswpri:
 	jge	SHORT $LN5@crt_vswpri
 	cmp	QWORD PTR remaining$[rsp], 1
 	jbe	SHORT $LN5@crt_vswpri
-; Line 2541
+; Line 2519
 	movsxd	rax, DWORD PTR i$6[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	movzx	eax, WORD PTR temp$[rsp+rax*2]
@@ -8256,31 +8240,31 @@ $LN6@crt_vswpri:
 	mov	rax, QWORD PTR out$[rsp]
 	add	rax, 2
 	mov	QWORD PTR out$[rsp], rax
-; Line 2542
+; Line 2520
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 2543
+; Line 2521
 	mov	eax, DWORD PTR total$[rsp]
 	inc	eax
 	mov	DWORD PTR total$[rsp], eax
-; Line 2544
+; Line 2522
 	jmp	SHORT $LN4@crt_vswpri
 $LN5@crt_vswpri:
-; Line 2546
+; Line 2524
 	mov	rax, QWORD PTR next$29[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 2547
+; Line 2525
 	jmp	$LN88@crt_vswpri
 $LN3@crt_vswpri:
-; Line 2549
+; Line 2527
 	xor	eax, eax
 	mov	rcx, QWORD PTR out$[rsp]
 	mov	WORD PTR [rcx], ax
-; Line 2550
+; Line 2528
 	mov	eax, DWORD PTR total$[rsp]
 $LN1@crt_vswpri:
-; Line 2551
+; Line 2529
 	add	rsp, 488				; 000001e8H
 	ret	0
 ?crt_vswprintf@@YAHPEA_W_KPEB_WPEAD@Z ENDP		; crt_vswprintf
@@ -8294,14 +8278,14 @@ bufSize$ = 72
 fmt$ = 80
 ?crt_swprintf_s@@YAHPEA_W_KPEB_WZZ PROC			; crt_swprintf_s
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2553
+; Line 2531
 $LN5:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	mov	QWORD PTR [rsp+32], r9
 	sub	rsp, 56					; 00000038H
-; Line 2554
+; Line 2532
 	cmp	QWORD PTR buf$[rsp], 0
 	je	SHORT $LN3@crt_swprin
 	cmp	QWORD PTR bufSize$[rsp], 0
@@ -8309,26 +8293,26 @@ $LN5:
 	cmp	QWORD PTR fmt$[rsp], 0
 	jne	SHORT $LN2@crt_swprin
 $LN3@crt_swprin:
-; Line 2555
+; Line 2533
 	mov	eax, -1
 	jmp	SHORT $LN1@crt_swprin
 $LN2@crt_swprin:
-; Line 2559
+; Line 2537
 	lea	rax, QWORD PTR fmt$[rsp+8]
 	mov	QWORD PTR args$[rsp], rax
-; Line 2560
+; Line 2538
 	mov	r9, QWORD PTR args$[rsp]
 	mov	r8, QWORD PTR fmt$[rsp]
 	mov	rdx, QWORD PTR bufSize$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	?crt_vswprintf@@YAHPEA_W_KPEB_WPEAD@Z	; crt_vswprintf
 	mov	DWORD PTR result$[rsp], eax
-; Line 2561
+; Line 2539
 	mov	QWORD PTR args$[rsp], 0
-; Line 2562
+; Line 2540
 	mov	eax, DWORD PTR result$[rsp]
 $LN1@crt_swprin:
-; Line 2563
+; Line 2541
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_swprintf_s@@YAHPEA_W_KPEB_WZZ ENDP			; crt_swprintf_s
@@ -8385,14 +8369,14 @@ fmt$ = 496
 args$ = 504
 ?crt_vswprintf_s@@YAHPEA_W_KPEB_WPEAD@Z PROC		; crt_vswprintf_s
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2565
+; Line 2543
 $LN78:
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 472				; 000001d8H
-; Line 2566
+; Line 2544
 	cmp	QWORD PTR buf$[rsp], 0
 	je	SHORT $LN14@crt_vswpri
 	cmp	QWORD PTR bufSize$[rsp], 0
@@ -8400,38 +8384,38 @@ $LN78:
 	cmp	QWORD PTR fmt$[rsp], 0
 	jne	SHORT $LN13@crt_vswpri
 $LN14@crt_vswpri:
-; Line 2567
+; Line 2545
 	mov	eax, -1
 	jmp	$LN1@crt_vswpri
 $LN13@crt_vswpri:
-; Line 2571
+; Line 2549
 	mov	rax, QWORD PTR fmt$[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 2572
+; Line 2550
 	mov	rax, QWORD PTR buf$[rsp]
 	mov	QWORD PTR out$[rsp], rax
-; Line 2573
+; Line 2551
 	mov	rax, QWORD PTR bufSize$[rsp]
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 2574
+; Line 2552
 	mov	DWORD PTR total$[rsp], 0
 $LN77@crt_vswpri:
 $LN76@crt_vswpri:
 $LN75@crt_vswpri:
 $LN2@crt_vswpri:
-; Line 2576
+; Line 2554
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_vswpri
 	cmp	QWORD PTR remaining$[rsp], 1
 	jbe	$LN3@crt_vswpri
-; Line 2577
+; Line 2555
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 37					; 00000025H
 	je	SHORT $LN15@crt_vswpri
-; Line 2578
+; Line 2556
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	mov	WORD PTR tv75[rsp], ax
@@ -8444,25 +8428,25 @@ $LN2@crt_vswpri:
 	mov	rax, QWORD PTR out$[rsp]
 	add	rax, 2
 	mov	QWORD PTR out$[rsp], rax
-; Line 2579
+; Line 2557
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 2580
+; Line 2558
 	mov	eax, DWORD PTR total$[rsp]
 	inc	eax
 	mov	DWORD PTR total$[rsp], eax
-; Line 2581
+; Line 2559
 	jmp	SHORT $LN2@crt_vswpri
 $LN15@crt_vswpri:
-; Line 2584
+; Line 2562
 	mov	DWORD PTR width$5[rsp], 0
 	mov	DWORD PTR prec$3[rsp], -1
 	mov	DWORD PTR flags$4[rsp], 0
-; Line 2585
+; Line 2563
 	xor	eax, eax
 	mov	WORD PTR spec$1[rsp], ax
-; Line 2586
+; Line 2564
 	lea	rax, QWORD PTR spec$1[rsp]
 	mov	QWORD PTR [rsp+32], rax
 	lea	r9, QWORD PTR flags$4[rsp]
@@ -8471,13 +8455,13 @@ $LN15@crt_vswpri:
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?crt_wcformat_next@@YAPEB_WPEB_WPEAH11PEA_W@Z ; crt_wcformat_next
 	mov	QWORD PTR next$13[rsp], rax
-; Line 2587
+; Line 2565
 	mov	DWORD PTR chars$2[rsp], 0
-; Line 2589
+; Line 2567
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 115				; 00000073H
 	jne	$LN16@crt_vswpri
-; Line 2590
+; Line 2568
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN55@crt_vswpri
@@ -8499,10 +8483,10 @@ $LN55@crt_vswpri:
 $LN56@crt_vswpri:
 	mov	rax, QWORD PTR tv92[rsp]
 	mov	QWORD PTR s$23[rsp], rax
-; Line 2591
+; Line 2569
 	cmp	QWORD PTR s$23[rsp], 0
 	jne	$LN17@crt_vswpri
-; Line 2592
+; Line 2570
 	mov	eax, 110				; 0000006eH
 	mov	WORD PTR wsNull$19[rsp], ax
 	mov	eax, 117				; 00000075H
@@ -8513,31 +8497,31 @@ $LN56@crt_vswpri:
 	mov	WORD PTR wsNull$19[rsp+6], ax
 	xor	eax, eax
 	mov	WORD PTR wsNull$19[rsp+8], ax
-; Line 2593
+; Line 2571
 	mov	r8, QWORD PTR remaining$[rsp]
 	lea	rdx, QWORD PTR wsNull$19[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	call	?crt_wcsncpy@@YAPEA_WPEA_WPEB_W_K@Z	; crt_wcsncpy
-; Line 2594
+; Line 2572
 	lea	rcx, QWORD PTR wsNull$19[rsp]
 	call	?crt_wcslen@@YA_KPEB_W@Z		; crt_wcslen
 	mov	QWORD PTR null_len$21[rsp], rax
-; Line 2595
+; Line 2573
 	mov	rax, QWORD PTR remaining$[rsp]
 	cmp	QWORD PTR null_len$21[rsp], rax
 	jb	SHORT $LN18@crt_vswpri
-; Line 2596
+; Line 2574
 	xor	eax, eax
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	rdx, QWORD PTR bufSize$[rsp]
 	mov	WORD PTR [rcx+rdx*2-2], ax
-; Line 2597
+; Line 2575
 	mov	DWORD PTR fmt_remaining$7[rsp], 0
-; Line 2598
+; Line 2576
 	mov	rax, QWORD PTR next$13[rsp]
 	mov	QWORD PTR r$20[rsp], rax
 $LN4@crt_vswpri:
-; Line 2599
+; Line 2577
 	cmp	QWORD PTR r$20[rsp], 0
 	je	SHORT $LN5@crt_vswpri
 	mov	rax, QWORD PTR r$20[rsp]
@@ -8552,71 +8536,71 @@ $LN4@crt_vswpri:
 	mov	QWORD PTR r$20[rsp], rax
 	jmp	SHORT $LN4@crt_vswpri
 $LN5@crt_vswpri:
-; Line 2600
+; Line 2578
 	mov	eax, DWORD PTR fmt_remaining$7[rsp]
 	mov	ecx, DWORD PTR total$[rsp]
 	add	ecx, eax
 	mov	eax, ecx
 	jmp	$LN1@crt_vswpri
 $LN18@crt_vswpri:
-; Line 2602
+; Line 2580
 	mov	rax, QWORD PTR out$[rsp]
 	mov	rcx, QWORD PTR null_len$21[rsp]
 	lea	rax, QWORD PTR [rax+rcx*2]
 	mov	QWORD PTR out$[rsp], rax
-; Line 2603
+; Line 2581
 	mov	rax, QWORD PTR null_len$21[rsp]
 	mov	rcx, QWORD PTR remaining$[rsp]
 	sub	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 2604
+; Line 2582
 	movsxd	rax, DWORD PTR total$[rsp]
 	add	rax, QWORD PTR null_len$21[rsp]
 	mov	DWORD PTR total$[rsp], eax
-; Line 2605
+; Line 2583
 	mov	rax, QWORD PTR next$13[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 2606
+; Line 2584
 	jmp	$LN75@crt_vswpri
 $LN17@crt_vswpri:
-; Line 2608
+; Line 2586
 	mov	rcx, QWORD PTR s$23[rsp]
 	call	?crt_wcslen@@YA_KPEB_W@Z		; crt_wcslen
 	mov	QWORD PTR s_len$12[rsp], rax
-; Line 2609
+; Line 2587
 	cmp	DWORD PTR prec$3[rsp], 0
 	jl	SHORT $LN19@crt_vswpri
 	movsxd	rax, DWORD PTR prec$3[rsp]
 	cmp	rax, QWORD PTR s_len$12[rsp]
 	jae	SHORT $LN19@crt_vswpri
-; Line 2610
+; Line 2588
 	movsxd	rax, DWORD PTR prec$3[rsp]
 	mov	QWORD PTR s_len$12[rsp], rax
 $LN19@crt_vswpri:
-; Line 2612
+; Line 2590
 	mov	rax, QWORD PTR remaining$[rsp]
 	cmp	QWORD PTR s_len$12[rsp], rax
 	jb	$LN20@crt_vswpri
-; Line 2613
+; Line 2591
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	r8, rax
 	mov	rdx, QWORD PTR s$23[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	call	?crt_wcsncpy@@YAPEA_WPEA_WPEB_W_K@Z	; crt_wcsncpy
-; Line 2614
+; Line 2592
 	xor	eax, eax
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	rdx, QWORD PTR bufSize$[rsp]
 	mov	WORD PTR [rcx+rdx*2-2], ax
-; Line 2615
+; Line 2593
 	mov	DWORD PTR fmt_remaining$8[rsp], 0
-; Line 2616
+; Line 2594
 	mov	rax, QWORD PTR next$13[rsp]
 	mov	QWORD PTR r$22[rsp], rax
 $LN6@crt_vswpri:
-; Line 2617
+; Line 2595
 	cmp	QWORD PTR r$22[rsp], 0
 	je	SHORT $LN7@crt_vswpri
 	mov	rax, QWORD PTR r$22[rsp]
@@ -8631,40 +8615,40 @@ $LN6@crt_vswpri:
 	mov	QWORD PTR r$22[rsp], rax
 	jmp	SHORT $LN6@crt_vswpri
 $LN7@crt_vswpri:
-; Line 2618
+; Line 2596
 	mov	eax, DWORD PTR fmt_remaining$8[rsp]
 	mov	ecx, DWORD PTR total$[rsp]
 	add	ecx, eax
 	mov	eax, ecx
 	jmp	$LN1@crt_vswpri
 $LN20@crt_vswpri:
-; Line 2620
+; Line 2598
 	mov	r8, QWORD PTR s_len$12[rsp]
 	mov	rdx, QWORD PTR s$23[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	call	?crt_wcsncpy@@YAPEA_WPEA_WPEB_W_K@Z	; crt_wcsncpy
-; Line 2621
+; Line 2599
 	mov	rax, QWORD PTR out$[rsp]
 	mov	rcx, QWORD PTR s_len$12[rsp]
 	lea	rax, QWORD PTR [rax+rcx*2]
 	mov	QWORD PTR out$[rsp], rax
-; Line 2622
+; Line 2600
 	mov	rax, QWORD PTR s_len$12[rsp]
 	mov	rcx, QWORD PTR remaining$[rsp]
 	sub	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 2623
+; Line 2601
 	movsxd	rax, DWORD PTR total$[rsp]
 	add	rax, QWORD PTR s_len$12[rsp]
 	mov	DWORD PTR total$[rsp], eax
-; Line 2624
+; Line 2602
 	mov	rax, QWORD PTR next$13[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 2625
+; Line 2603
 	jmp	$LN76@crt_vswpri
 $LN16@crt_vswpri:
-; Line 2628
+; Line 2606
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 100				; 00000064H
 	je	SHORT $LN23@crt_vswpri
@@ -8672,7 +8656,7 @@ $LN16@crt_vswpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN21@crt_vswpri
 $LN23@crt_vswpri:
-; Line 2630
+; Line 2608
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN57@crt_vswpri
@@ -8694,25 +8678,25 @@ $LN57@crt_vswpri:
 $LN58@crt_vswpri:
 	mov	eax, DWORD PTR tv186[rsp]
 	mov	DWORD PTR v$9[rsp], eax
-; Line 2632
+; Line 2610
 	mov	DWORD PTR neg$18[rsp], 0
-; Line 2634
+; Line 2612
 	cmp	DWORD PTR v$9[rsp], 0
 	jge	SHORT $LN24@crt_vswpri
-; Line 2636
+; Line 2614
 	xor	eax, eax
 	sub	eax, DWORD PTR v$9[rsp]
 	mov	DWORD PTR uv$16[rsp], eax
-; Line 2637
+; Line 2615
 	mov	DWORD PTR neg$18[rsp], 1
-; Line 2638
+; Line 2616
 	jmp	SHORT $LN25@crt_vswpri
 $LN24@crt_vswpri:
-; Line 2641
+; Line 2619
 	mov	eax, DWORD PTR v$9[rsp]
 	mov	DWORD PTR uv$16[rsp], eax
 $LN25@crt_vswpri:
-; Line 2644
+; Line 2622
 	mov	eax, DWORD PTR uv$16[rsp]
 	mov	DWORD PTR [rsp+48], 0
 	mov	ecx, DWORD PTR neg$18[rsp]
@@ -8725,10 +8709,10 @@ $LN25@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputint@@YAHPEA_W_KHHHHH@Z	; crt_wcputint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2645
+; Line 2623
 	jmp	$LN22@crt_vswpri
 $LN21@crt_vswpri:
-; Line 2646
+; Line 2624
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 117				; 00000075H
 	je	SHORT $LN28@crt_vswpri
@@ -8742,7 +8726,7 @@ $LN21@crt_vswpri:
 	cmp	eax, 88					; 00000058H
 	jne	$LN26@crt_vswpri
 $LN28@crt_vswpri:
-; Line 2648
+; Line 2626
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN59@crt_vswpri
@@ -8764,11 +8748,11 @@ $LN59@crt_vswpri:
 $LN60@crt_vswpri:
 	mov	eax, DWORD PTR tv244[rsp]
 	mov	DWORD PTR v$15[rsp], eax
-; Line 2650
+; Line 2628
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 111				; 0000006fH
 	jne	SHORT $LN29@crt_vswpri
-; Line 2652
+; Line 2630
 	mov	eax, DWORD PTR v$15[rsp]
 	mov	DWORD PTR [rsp+48], 8
 	mov	DWORD PTR [rsp+40], 0
@@ -8780,10 +8764,10 @@ $LN60@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z	; crt_wcputunsigned
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2653
+; Line 2631
 	jmp	SHORT $LN30@crt_vswpri
 $LN29@crt_vswpri:
-; Line 2656
+; Line 2634
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN61@crt_vswpri
@@ -8804,14 +8788,14 @@ $LN62@crt_vswpri:
 	call	?crt_wcputhex@@YAHPEA_W_KHHHH@Z		; crt_wcputhex
 	mov	DWORD PTR chars$2[rsp], eax
 $LN30@crt_vswpri:
-; Line 2659
+; Line 2637
 	jmp	$LN27@crt_vswpri
 $LN26@crt_vswpri:
-; Line 2660
+; Line 2638
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 99					; 00000063H
 	jne	SHORT $LN31@crt_vswpri
-; Line 2662
+; Line 2640
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN63@crt_vswpri
@@ -8835,16 +8819,16 @@ $LN64@crt_vswpri:
 	imul	rax, rax, 0
 	movzx	ecx, WORD PTR tv277[rsp]
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2663
+; Line 2641
 	mov	DWORD PTR chars$2[rsp], 1
-; Line 2664
+; Line 2642
 	jmp	$LN32@crt_vswpri
 $LN31@crt_vswpri:
-; Line 2665
+; Line 2643
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 112				; 00000070H
 	jne	$LN33@crt_vswpri
-; Line 2667
+; Line 2645
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN65@crt_vswpri
@@ -8866,33 +8850,33 @@ $LN65@crt_vswpri:
 $LN66@crt_vswpri:
 	mov	rax, QWORD PTR tv287[rsp]
 	mov	QWORD PTR ptr$27[rsp], rax
-; Line 2668
+; Line 2646
 	mov	rdx, QWORD PTR ptr$27[rsp]
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputpointer@@YAHPEA_WPEAX@Z	; crt_wcputpointer
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2669
+; Line 2647
 	jmp	$LN34@crt_vswpri
 $LN33@crt_vswpri:
-; Line 2670
+; Line 2648
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 37					; 00000025H
 	jne	SHORT $LN35@crt_vswpri
-; Line 2672
+; Line 2650
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	ecx, 37					; 00000025H
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2673
+; Line 2651
 	mov	DWORD PTR chars$2[rsp], 1
-; Line 2674
+; Line 2652
 	jmp	$LN36@crt_vswpri
 $LN35@crt_vswpri:
-; Line 2675
+; Line 2653
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 110				; 0000006eH
 	jne	$LN37@crt_vswpri
-; Line 2677
+; Line 2655
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN67@crt_vswpri
@@ -8914,24 +8898,24 @@ $LN67@crt_vswpri:
 $LN68@crt_vswpri:
 	mov	rax, QWORD PTR tv303[rsp]
 	mov	QWORD PTR np$26[rsp], rax
-; Line 2678
+; Line 2656
 	cmp	QWORD PTR np$26[rsp], 0
 	je	SHORT $LN39@crt_vswpri
-; Line 2679
+; Line 2657
 	mov	rax, QWORD PTR np$26[rsp]
 	mov	ecx, DWORD PTR total$[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN39@crt_vswpri:
-; Line 2681
+; Line 2659
 	mov	DWORD PTR chars$2[rsp], 0
-; Line 2682
+; Line 2660
 	jmp	$LN38@crt_vswpri
 $LN37@crt_vswpri:
-; Line 2683
+; Line 2661
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 108				; 0000006cH
 	jne	$LN40@crt_vswpri
-; Line 2685
+; Line 2663
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -8945,7 +8929,7 @@ $LN37@crt_vswpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN42@crt_vswpri
 $LN44@crt_vswpri:
-; Line 2687
+; Line 2665
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN69@crt_vswpri
@@ -8967,25 +8951,25 @@ $LN69@crt_vswpri:
 $LN70@crt_vswpri:
 	mov	eax, DWORD PTR tv321[rsp]
 	mov	DWORD PTR v$10[rsp], eax
-; Line 2689
+; Line 2667
 	mov	DWORD PTR neg$17[rsp], 0
-; Line 2691
+; Line 2669
 	cmp	DWORD PTR v$10[rsp], 0
 	jge	SHORT $LN45@crt_vswpri
-; Line 2693
+; Line 2671
 	xor	eax, eax
 	sub	eax, DWORD PTR v$10[rsp]
 	mov	DWORD PTR uv$14[rsp], eax
-; Line 2694
+; Line 2672
 	mov	DWORD PTR neg$17[rsp], 1
-; Line 2695
+; Line 2673
 	jmp	SHORT $LN46@crt_vswpri
 $LN45@crt_vswpri:
-; Line 2698
+; Line 2676
 	mov	eax, DWORD PTR v$10[rsp]
 	mov	DWORD PTR uv$14[rsp], eax
 $LN46@crt_vswpri:
-; Line 2701
+; Line 2679
 	mov	eax, DWORD PTR uv$14[rsp]
 	mov	DWORD PTR [rsp+48], 0
 	mov	ecx, DWORD PTR neg$17[rsp]
@@ -8998,17 +8982,17 @@ $LN46@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputint@@YAHPEA_W_KHHHHH@Z	; crt_wcputint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2702
+; Line 2680
 	jmp	$LN43@crt_vswpri
 $LN42@crt_vswpri:
-; Line 2703
+; Line 2681
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rcx+rax]
 	cmp	eax, 117				; 00000075H
 	jne	$LN47@crt_vswpri
-; Line 2705
+; Line 2683
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN71@crt_vswpri
@@ -9030,7 +9014,7 @@ $LN71@crt_vswpri:
 $LN72@crt_vswpri:
 	mov	eax, DWORD PTR tv343[rsp]
 	mov	DWORD PTR v$25[rsp], eax
-; Line 2706
+; Line 2684
 	mov	eax, DWORD PTR v$25[rsp]
 	mov	DWORD PTR [rsp+48], 10
 	mov	DWORD PTR [rsp+40], 0
@@ -9042,33 +9026,33 @@ $LN72@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z	; crt_wcputunsigned
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2707
+; Line 2685
 	jmp	SHORT $LN48@crt_vswpri
 $LN47@crt_vswpri:
-; Line 2710
+; Line 2688
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	ecx, 108				; 0000006cH
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2711
+; Line 2689
 	mov	DWORD PTR chars$2[rsp], 1
 $LN48@crt_vswpri:
 $LN43@crt_vswpri:
-; Line 2713
+; Line 2691
 	jmp	$LN41@crt_vswpri
 $LN40@crt_vswpri:
-; Line 2714
+; Line 2692
 	movzx	eax, WORD PTR spec$1[rsp]
 	cmp	eax, 122				; 0000007aH
 	jne	$LN49@crt_vswpri
-; Line 2716
+; Line 2694
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rcx+rax]
 	cmp	eax, 117				; 00000075H
 	jne	$LN51@crt_vswpri
-; Line 2718
+; Line 2696
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN73@crt_vswpri
@@ -9090,7 +9074,7 @@ $LN73@crt_vswpri:
 $LN74@crt_vswpri:
 	mov	rax, QWORD PTR tv367[rsp]
 	mov	QWORD PTR v$28[rsp], rax
-; Line 2720
+; Line 2698
 	mov	DWORD PTR [rsp+48], 10
 	mov	DWORD PTR [rsp+40], 0
 	mov	eax, DWORD PTR flags$4[rsp]
@@ -9101,27 +9085,27 @@ $LN74@crt_vswpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z	; crt_wcputunsigned
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 2728
+; Line 2706
 	jmp	SHORT $LN52@crt_vswpri
 $LN51@crt_vswpri:
-; Line 2731
+; Line 2709
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	ecx, 122				; 0000007aH
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2732
+; Line 2710
 	mov	DWORD PTR chars$2[rsp], 1
 $LN52@crt_vswpri:
-; Line 2734
+; Line 2712
 	jmp	SHORT $LN50@crt_vswpri
 $LN49@crt_vswpri:
-; Line 2737
+; Line 2715
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR p$[rsp]
 	movzx	ecx, WORD PTR [rcx]
 	mov	WORD PTR temp$[rsp+rax], cx
-; Line 2738
+; Line 2716
 	mov	DWORD PTR chars$2[rsp], 1
 $LN50@crt_vswpri:
 $LN41@crt_vswpri:
@@ -9131,29 +9115,29 @@ $LN34@crt_vswpri:
 $LN32@crt_vswpri:
 $LN27@crt_vswpri:
 $LN22@crt_vswpri:
-; Line 2741
+; Line 2719
 	mov	eax, DWORD PTR remaining$[rsp]
 	cmp	DWORD PTR chars$2[rsp], eax
 	jl	$LN53@crt_vswpri
-; Line 2742
+; Line 2720
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	r8, rax
 	lea	rdx, QWORD PTR temp$[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	call	?crt_wcsncpy@@YAPEA_WPEA_WPEB_W_K@Z	; crt_wcsncpy
-; Line 2743
+; Line 2721
 	xor	eax, eax
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	rdx, QWORD PTR bufSize$[rsp]
 	mov	WORD PTR [rcx+rdx*2-2], ax
-; Line 2744
+; Line 2722
 	mov	DWORD PTR fmt_remaining$11[rsp], 0
-; Line 2745
+; Line 2723
 	mov	rax, QWORD PTR next$13[rsp]
 	mov	QWORD PTR r$24[rsp], rax
 $LN8@crt_vswpri:
-; Line 2746
+; Line 2724
 	cmp	QWORD PTR r$24[rsp], 0
 	je	SHORT $LN9@crt_vswpri
 	mov	rax, QWORD PTR r$24[rsp]
@@ -9168,14 +9152,14 @@ $LN8@crt_vswpri:
 	mov	QWORD PTR r$24[rsp], rax
 	jmp	SHORT $LN8@crt_vswpri
 $LN9@crt_vswpri:
-; Line 2747
+; Line 2725
 	mov	eax, DWORD PTR fmt_remaining$11[rsp]
 	mov	ecx, DWORD PTR total$[rsp]
 	add	ecx, eax
 	mov	eax, ecx
 	jmp	SHORT $LN1@crt_vswpri
 $LN53@crt_vswpri:
-; Line 2750
+; Line 2728
 	mov	DWORD PTR i$6[rsp], 0
 	jmp	SHORT $LN12@crt_vswpri
 $LN10@crt_vswpri:
@@ -9186,7 +9170,7 @@ $LN12@crt_vswpri:
 	mov	eax, DWORD PTR chars$2[rsp]
 	cmp	DWORD PTR i$6[rsp], eax
 	jge	SHORT $LN11@crt_vswpri
-; Line 2751
+; Line 2729
 	movsxd	rax, DWORD PTR i$6[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	movzx	eax, WORD PTR temp$[rsp+rax*2]
@@ -9194,31 +9178,31 @@ $LN12@crt_vswpri:
 	mov	rax, QWORD PTR out$[rsp]
 	add	rax, 2
 	mov	QWORD PTR out$[rsp], rax
-; Line 2752
+; Line 2730
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 2753
+; Line 2731
 	mov	eax, DWORD PTR total$[rsp]
 	inc	eax
 	mov	DWORD PTR total$[rsp], eax
-; Line 2754
+; Line 2732
 	jmp	SHORT $LN10@crt_vswpri
 $LN11@crt_vswpri:
-; Line 2756
+; Line 2734
 	mov	rax, QWORD PTR next$13[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 2757
+; Line 2735
 	jmp	$LN77@crt_vswpri
 $LN3@crt_vswpri:
-; Line 2759
+; Line 2737
 	xor	eax, eax
 	mov	rcx, QWORD PTR out$[rsp]
 	mov	WORD PTR [rcx], ax
-; Line 2760
+; Line 2738
 	mov	eax, DWORD PTR total$[rsp]
 $LN1@crt_vswpri:
-; Line 2761
+; Line 2739
 	add	rsp, 472				; 000001d8H
 	ret	0
 ?crt_vswprintf_s@@YAHPEA_W_KPEB_WPEAD@Z ENDP		; crt_vswprintf_s
@@ -9230,26 +9214,26 @@ args$ = 40
 fmt$ = 64
 ?crt_printf@@YAHPEBDZZ PROC				; crt_printf
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3973
+; Line 3951
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+32], r9
 	sub	rsp, 56					; 00000038H
-; Line 3975
+; Line 3953
 	lea	rax, QWORD PTR fmt$[rsp+8]
 	mov	QWORD PTR args$[rsp], rax
-; Line 3976
+; Line 3954
 	mov	rdx, QWORD PTR args$[rsp]
 	mov	rcx, QWORD PTR fmt$[rsp]
 	call	?crt_vprintf@@YAHPEBDPEAD@Z		; crt_vprintf
 	mov	DWORD PTR result$[rsp], eax
-; Line 3977
+; Line 3955
 	mov	QWORD PTR args$[rsp], 0
-; Line 3978
+; Line 3956
 	mov	eax, DWORD PTR result$[rsp]
-; Line 3979
+; Line 3957
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_printf@@YAHPEBDZZ ENDP				; crt_printf
@@ -9262,31 +9246,31 @@ fmt$ = 576
 args$ = 584
 ?crt_vprintf@@YAHPEBDPEAD@Z PROC			; crt_vprintf
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3964
+; Line 3942
 $LN4:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 568				; 00000238H
-; Line 3966
+; Line 3944
 	mov	r9, QWORD PTR args$[rsp]
 	mov	r8, QWORD PTR fmt$[rsp]
 	mov	edx, 512				; 00000200H
 	lea	rcx, QWORD PTR buffer$[rsp]
 	call	?crt_vsnprintf@@YAHPEAD_KPEBD0@Z	; crt_vsnprintf
 	mov	DWORD PTR len$[rsp], eax
-; Line 3967
+; Line 3945
 	cmp	DWORD PTR len$[rsp], 0
 	jle	SHORT $LN2@crt_vprint
-; Line 3968
+; Line 3946
 	movsxd	rax, DWORD PTR len$[rsp]
 	mov	rdx, rax
 	lea	rcx, QWORD PTR buffer$[rsp]
 	call	?crt_cpputs@@YAHPEBD_K@Z		; crt_cpputs
 	npad	1
 $LN2@crt_vprint:
-; Line 3970
+; Line 3948
 	mov	eax, DWORD PTR len$[rsp]
-; Line 3971
+; Line 3949
 	add	rsp, 568				; 00000238H
 	ret	0
 ?crt_vprintf@@YAHPEBDPEAD@Z ENDP			; crt_vprintf
@@ -9299,28 +9283,28 @@ buf$ = 64
 fmt$ = 72
 ?crt_sprintf@@YAHPEADPEBDZZ PROC			; crt_sprintf
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3981
+; Line 3959
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+32], r9
 	sub	rsp, 56					; 00000038H
-; Line 3983
+; Line 3961
 	lea	rax, QWORD PTR fmt$[rsp+8]
 	mov	QWORD PTR args$[rsp], rax
-; Line 3984
+; Line 3962
 	mov	r9, QWORD PTR args$[rsp]
 	mov	r8, QWORD PTR fmt$[rsp]
 	mov	rdx, -1
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	?crt_vsnprintf_impl@@YAHPEAD_KPEBD0@Z	; crt_vsnprintf_impl
 	mov	DWORD PTR result$[rsp], eax
-; Line 3985
+; Line 3963
 	mov	QWORD PTR args$[rsp], 0
-; Line 3986
+; Line 3964
 	mov	eax, DWORD PTR result$[rsp]
-; Line 3987
+; Line 3965
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_sprintf@@YAHPEADPEBDZZ ENDP			; crt_sprintf
@@ -9332,19 +9316,19 @@ fmt$ = 56
 args$ = 64
 ?crt_vsprintf@@YAHPEADPEBD0@Z PROC			; crt_vsprintf
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3989
+; Line 3967
 $LN3:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 3990
+; Line 3968
 	mov	r9, QWORD PTR args$[rsp]
 	mov	r8, QWORD PTR fmt$[rsp]
 	mov	rdx, -1
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	?crt_vsnprintf_impl@@YAHPEAD_KPEBD0@Z	; crt_vsnprintf_impl
-; Line 3991
+; Line 3969
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_vsprintf@@YAHPEADPEBD0@Z ENDP			; crt_vsprintf
@@ -9358,28 +9342,28 @@ count$ = 72
 fmt$ = 80
 ?crt_snprintf@@YAHPEAD_KPEBDZZ PROC			; crt_snprintf
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3993
+; Line 3971
 $LN3:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	mov	QWORD PTR [rsp+32], r9
 	sub	rsp, 56					; 00000038H
-; Line 3995
+; Line 3973
 	lea	rax, QWORD PTR fmt$[rsp+8]
 	mov	QWORD PTR args$[rsp], rax
-; Line 3996
+; Line 3974
 	mov	r9, QWORD PTR args$[rsp]
 	mov	r8, QWORD PTR fmt$[rsp]
 	mov	rdx, QWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	?crt_vsnprintf_impl@@YAHPEAD_KPEBD0@Z	; crt_vsnprintf_impl
 	mov	DWORD PTR result$[rsp], eax
-; Line 3997
+; Line 3975
 	mov	QWORD PTR args$[rsp], 0
-; Line 3998
+; Line 3976
 	mov	eax, DWORD PTR result$[rsp]
-; Line 3999
+; Line 3977
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_snprintf@@YAHPEAD_KPEBDZZ ENDP			; crt_snprintf
@@ -9394,28 +9378,28 @@ fmt$ = 80
 args$ = 88
 ?crt_vsnprintf@@YAHPEAD_KPEBD0@Z PROC			; crt_vsnprintf
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3956
+; Line 3934
 $LN3:
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
-; Line 3958
+; Line 3936
 	mov	rax, QWORD PTR args$[rsp]
 	mov	QWORD PTR args_copy$[rsp], rax
-; Line 3959
+; Line 3937
 	mov	r9, QWORD PTR args_copy$[rsp]
 	mov	r8, QWORD PTR fmt$[rsp]
 	mov	rdx, QWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	?crt_vsnprintf_impl@@YAHPEAD_KPEBD0@Z	; crt_vsnprintf_impl
 	mov	DWORD PTR result$[rsp], eax
-; Line 3960
+; Line 3938
 	mov	QWORD PTR args_copy$[rsp], 0
-; Line 3961
+; Line 3939
 	mov	eax, DWORD PTR result$[rsp]
-; Line 3962
+; Line 3940
 	add	rsp, 56					; 00000038H
 	ret	0
 ?crt_vsnprintf@@YAHPEAD_KPEBD0@Z ENDP			; crt_vsnprintf
@@ -9429,14 +9413,14 @@ width$ = 96
 compare$ = 104
 ?crt_qsort@@YAXPEAX_K1P6AHPEBX2@Z@Z PROC		; crt_qsort
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 4053
+; Line 4031
 $LN6:
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
-; Line 4054
+; Line 4032
 	cmp	QWORD PTR base$[rsp], 0
 	je	SHORT $LN3@crt_qsort
 	cmp	QWORD PTR num$[rsp], 1
@@ -9446,20 +9430,20 @@ $LN6:
 	cmp	QWORD PTR compare$[rsp], 0
 	jne	SHORT $LN2@crt_qsort
 $LN3@crt_qsort:
-; Line 4055
+; Line 4033
 	jmp	SHORT $LN1@crt_qsort
 $LN2@crt_qsort:
-; Line 4058
+; Line 4036
 	mov	rcx, QWORD PTR width$[rsp]
 	call	?crt_malloc@@YAPEAX_K@Z			; crt_malloc
 	mov	QWORD PTR work_buffer$[rsp], rax
-; Line 4059
+; Line 4037
 	cmp	QWORD PTR work_buffer$[rsp], 0
 	jne	SHORT $LN4@crt_qsort
-; Line 4060
+; Line 4038
 	jmp	SHORT $LN1@crt_qsort
 $LN4@crt_qsort:
-; Line 4063
+; Line 4041
 	mov	rax, QWORD PTR work_buffer$[rsp]
 	mov	QWORD PTR [rsp+32], rax
 	mov	r9, QWORD PTR compare$[rsp]
@@ -9467,12 +9451,12 @@ $LN4@crt_qsort:
 	mov	rdx, QWORD PTR num$[rsp]
 	mov	rcx, QWORD PTR base$[rsp]
 	call	?quick_sort_helper@@YAXPEAX_K1P6AHPEBX2@ZPEAD@Z ; quick_sort_helper
-; Line 4065
+; Line 4043
 	mov	rcx, QWORD PTR work_buffer$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
 $LN1@crt_qsort:
-; Line 4066
+; Line 4044
 	add	rsp, 72					; 00000048H
 	ret	0
 ?crt_qsort@@YAXPEAX_K1P6AHPEBX2@Z@Z ENDP		; crt_qsort
@@ -9493,14 +9477,14 @@ width$ = 136
 compare$ = 144
 ?crt_bsearch@@YAPEAXPEBX0_K1P6AH00@Z@Z PROC		; crt_bsearch
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 4070
+; Line 4048
 $LN12:
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
-; Line 4071
+; Line 4049
 	cmp	QWORD PTR key$[rsp], 0
 	je	SHORT $LN5@crt_bsearc
 	cmp	QWORD PTR base$[rsp], 0
@@ -9512,24 +9496,24 @@ $LN12:
 	cmp	QWORD PTR compare$[rsp], 0
 	jne	SHORT $LN4@crt_bsearc
 $LN5@crt_bsearc:
-; Line 4072
+; Line 4050
 	xor	eax, eax
 	jmp	$LN1@crt_bsearc
 $LN4@crt_bsearc:
-; Line 4075
+; Line 4053
 	mov	rax, QWORD PTR base$[rsp]
 	mov	QWORD PTR arr$[rsp], rax
-; Line 4076
+; Line 4054
 	mov	QWORD PTR left$[rsp], 0
-; Line 4077
+; Line 4055
 	mov	rax, QWORD PTR num$[rsp]
 	mov	QWORD PTR right$[rsp], rax
 $LN2@crt_bsearc:
-; Line 4079
+; Line 4057
 	mov	rax, QWORD PTR right$[rsp]
 	cmp	QWORD PTR left$[rsp], rax
 	jae	$LN3@crt_bsearc
-; Line 4080
+; Line 4058
 	mov	rax, QWORD PTR left$[rsp]
 	mov	rcx, QWORD PTR right$[rsp]
 	sub	rcx, rax
@@ -9541,55 +9525,55 @@ $LN2@crt_bsearc:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR mid$2[rsp], rax
-; Line 4081
+; Line 4059
 	mov	rax, QWORD PTR mid$2[rsp]
 	imul	rax, QWORD PTR width$[rsp]
 	mov	rcx, QWORD PTR arr$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR middle$3[rsp], rax
-; Line 4083
+; Line 4061
 	mov	rax, QWORD PTR compare$[rsp]
 	mov	QWORD PTR tv79[rsp], rax
 	mov	rdx, QWORD PTR middle$3[rsp]
 	mov	rcx, QWORD PTR key$[rsp]
 	call	QWORD PTR tv79[rsp]
 	mov	DWORD PTR cmp$1[rsp], eax
-; Line 4085
+; Line 4063
 	cmp	DWORD PTR cmp$1[rsp], 0
 	jne	SHORT $LN6@crt_bsearc
-; Line 4086
+; Line 4064
 	mov	rax, QWORD PTR middle$3[rsp]
 	jmp	SHORT $LN1@crt_bsearc
 	jmp	SHORT $LN7@crt_bsearc
 $LN6@crt_bsearc:
-; Line 4087
+; Line 4065
 	cmp	DWORD PTR cmp$1[rsp], 0
 	jge	SHORT $LN8@crt_bsearc
-; Line 4088
+; Line 4066
 	cmp	QWORD PTR mid$2[rsp], 0
 	jne	SHORT $LN10@crt_bsearc
 	jmp	SHORT $LN3@crt_bsearc
 $LN10@crt_bsearc:
-; Line 4089
+; Line 4067
 	mov	rax, QWORD PTR mid$2[rsp]
 	mov	QWORD PTR right$[rsp], rax
-; Line 4090
+; Line 4068
 	jmp	SHORT $LN9@crt_bsearc
 $LN8@crt_bsearc:
-; Line 4091
+; Line 4069
 	mov	rax, QWORD PTR mid$2[rsp]
 	inc	rax
 	mov	QWORD PTR left$[rsp], rax
 $LN9@crt_bsearc:
 $LN7@crt_bsearc:
-; Line 4093
+; Line 4071
 	jmp	$LN2@crt_bsearc
 $LN3@crt_bsearc:
-; Line 4095
+; Line 4073
 	xor	eax, eax
 $LN1@crt_bsearc:
-; Line 4096
+; Line 4074
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_bsearch@@YAPEAXPEBX0_K1P6AH00@Z@Z ENDP		; crt_bsearch
@@ -9600,16 +9584,16 @@ rand_seed$ = 0
 seed$ = 32
 ?crt_srand@@YAXI@Z PROC					; crt_srand
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2767
+; Line 2745
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 24
-; Line 2768
+; Line 2746
 	mov	DWORD PTR rand_seed$[rsp], 1
-; Line 2769
+; Line 2747
 	mov	eax, DWORD PTR seed$[rsp]
 	mov	DWORD PTR rand_seed$[rsp], eax
-; Line 2770
+; Line 2748
 	add	rsp, 24
 	ret	0
 ?crt_srand@@YAXI@Z ENDP					; crt_srand
@@ -9619,20 +9603,20 @@ _TEXT	SEGMENT
 rand_seed$ = 0
 ?crt_rand@@YAHXZ PROC					; crt_rand
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2772
+; Line 2750
 $LN3:
 	sub	rsp, 24
-; Line 2773
+; Line 2751
 	mov	DWORD PTR rand_seed$[rsp], 1
-; Line 2774
+; Line 2752
 	imul	eax, DWORD PTR rand_seed$[rsp], 1103515245 ; 41c64e6dH
 	add	eax, 12345				; 00003039H
 	mov	DWORD PTR rand_seed$[rsp], eax
-; Line 2775
+; Line 2753
 	mov	eax, DWORD PTR rand_seed$[rsp]
 	shr	eax, 16
 	and	eax, 32767				; 00007fffH
-; Line 2776
+; Line 2754
 	add	rsp, 24
 	ret	0
 ?crt_rand@@YAHXZ ENDP					; crt_rand
@@ -9642,20 +9626,20 @@ _TEXT	SEGMENT
 value$ = 8
 ?crt_abs@@YAHH@Z PROC					; crt_abs
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2778
+; Line 2756
 	mov	DWORD PTR [rsp+8], ecx
-; Line 2779
+; Line 2757
 	cmp	DWORD PTR value$[rsp], 0
 	jge	SHORT $LN2@crt_abs
-; Line 2780
+; Line 2758
 	mov	eax, DWORD PTR value$[rsp]
 	neg	eax
 	jmp	SHORT $LN1@crt_abs
 $LN2@crt_abs:
-; Line 2782
+; Line 2760
 	mov	eax, DWORD PTR value$[rsp]
 $LN1@crt_abs:
-; Line 2783
+; Line 2761
 	ret	0
 ?crt_abs@@YAHH@Z ENDP					; crt_abs
 _TEXT	ENDS
@@ -9664,20 +9648,20 @@ _TEXT	SEGMENT
 value$ = 8
 ?crt_labs@@YAJJ@Z PROC					; crt_labs
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2785
+; Line 2763
 	mov	DWORD PTR [rsp+8], ecx
-; Line 2786
+; Line 2764
 	cmp	DWORD PTR value$[rsp], 0
 	jge	SHORT $LN2@crt_labs
-; Line 2787
+; Line 2765
 	mov	eax, DWORD PTR value$[rsp]
 	neg	eax
 	jmp	SHORT $LN1@crt_labs
 $LN2@crt_labs:
-; Line 2789
+; Line 2767
 	mov	eax, DWORD PTR value$[rsp]
 $LN1@crt_labs:
-; Line 2790
+; Line 2768
 	ret	0
 ?crt_labs@@YAJJ@Z ENDP					; crt_labs
 _TEXT	ENDS
@@ -9686,20 +9670,20 @@ _TEXT	SEGMENT
 value$ = 8
 ?crt_llabs@@YA_J_J@Z PROC				; crt_llabs
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2792
+; Line 2770
 	mov	QWORD PTR [rsp+8], rcx
-; Line 2793
+; Line 2771
 	cmp	QWORD PTR value$[rsp], 0
 	jge	SHORT $LN2@crt_llabs
-; Line 2794
+; Line 2772
 	mov	rax, QWORD PTR value$[rsp]
 	neg	rax
 	jmp	SHORT $LN1@crt_llabs
 $LN2@crt_llabs:
-; Line 2796
+; Line 2774
 	mov	rax, QWORD PTR value$[rsp]
 $LN1@crt_llabs:
-; Line 2797
+; Line 2775
 	ret	0
 ?crt_llabs@@YA_J_J@Z ENDP				; crt_llabs
 _TEXT	ENDS
@@ -9728,91 +9712,91 @@ filename$ = 224
 mode$ = 232
 ?crt_fopen@@YAPEAUcrt_FILE@@PEBD0@Z PROC		; crt_fopen
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2914
+; Line 2892
 $LN11:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 216				; 000000d8H
-; Line 2915
+; Line 2893
 	cmp	QWORD PTR filename$[rsp], 0
 	je	SHORT $LN3@crt_fopen
 	cmp	QWORD PTR mode$[rsp], 0
 	jne	SHORT $LN2@crt_fopen
 $LN3@crt_fopen:
-; Line 2916
+; Line 2894
 	xor	eax, eax
 	jmp	$LN1@crt_fopen
 $LN2@crt_fopen:
-; Line 2919
+; Line 2897
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 2920
+; Line 2898
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 2921
+; Line 2899
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 2932
+; Line 2910
 	mov	DWORD PTR hashCreateFileW$[rsp], 896765690 ; 35738efaH
-; Line 2933
+; Line 2911
 	mov	r8d, 896765690				; 35738efaH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCreateFileW$[rsp], rax
-; Line 2935
+; Line 2913
 	mov	DWORD PTR hashCloseHandle$[rsp], 1729908677 ; 671c4fc5H
-; Line 2936
+; Line 2914
 	mov	r8d, 1729908677				; 671c4fc5H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCloseHandle$[rsp], rax
-; Line 2938
+; Line 2916
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	?crt_atowc@@YAPEA_WPEBD@Z		; crt_atowc
 	mov	QWORD PTR wFilename$[rsp], rax
-; Line 2939
+; Line 2917
 	mov	rcx, QWORD PTR mode$[rsp]
 	call	?crt_atowc@@YAPEA_WPEBD@Z		; crt_atowc
 	mov	QWORD PTR wMode$[rsp], rax
-; Line 2941
+; Line 2919
 	cmp	QWORD PTR wFilename$[rsp], 0
 	je	SHORT $LN5@crt_fopen
 	cmp	QWORD PTR wMode$[rsp], 0
 	jne	SHORT $LN4@crt_fopen
 $LN5@crt_fopen:
-; Line 2942
+; Line 2920
 	cmp	QWORD PTR wFilename$[rsp], 0
 	je	SHORT $LN6@crt_fopen
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
 $LN6@crt_fopen:
-; Line 2943
+; Line 2921
 	cmp	QWORD PTR wMode$[rsp], 0
 	je	SHORT $LN7@crt_fopen
 	mov	rcx, QWORD PTR wMode$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
 $LN7@crt_fopen:
-; Line 2944
+; Line 2922
 	mov	QWORD PTR $T1[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T1[rsp]
 	jmp	$LN1@crt_fopen
 $LN4@crt_fopen:
-; Line 2947
+; Line 2925
 	mov	rcx, QWORD PTR wMode$[rsp]
 	call	?crt_access_mode_to_winapi_w@@YAKPEB_W@Z ; crt_access_mode_to_winapi_w
 	mov	DWORD PTR dwAccess$[rsp], eax
-; Line 2948
+; Line 2926
 	mov	rcx, QWORD PTR wMode$[rsp]
 	call	?crt_creation_mode_w@@YAKPEB_W@Z	; crt_creation_mode_w
 	mov	DWORD PTR dwCreation$[rsp], eax
-; Line 2950
+; Line 2928
 	mov	rax, QWORD PTR pCreateFileW$[rsp]
 	mov	QWORD PTR tv136[rsp], rax
 	call	?crt_file_share_mode@@YAKXZ		; crt_file_share_mode
@@ -9826,69 +9810,69 @@ $LN4@crt_fopen:
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	QWORD PTR tv136[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 2960
+; Line 2938
 	cmp	QWORD PTR hFile$[rsp], -1
 	jne	SHORT $LN8@crt_fopen
-; Line 2961
+; Line 2939
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
-; Line 2962
+; Line 2940
 	mov	rcx, QWORD PTR wMode$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
-; Line 2963
+; Line 2941
 	mov	QWORD PTR $T2[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T2[rsp]
 	jmp	$LN1@crt_fopen
 $LN8@crt_fopen:
-; Line 2966
+; Line 2944
 	mov	ecx, 16
 	call	?crt_malloc@@YAPEAX_K@Z			; crt_malloc
 	mov	QWORD PTR f$[rsp], rax
-; Line 2967
+; Line 2945
 	cmp	QWORD PTR f$[rsp], 0
 	jne	SHORT $LN9@crt_fopen
-; Line 2968
+; Line 2946
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv146[rsp], rax
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv146[rsp]
-; Line 2969
+; Line 2947
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
-; Line 2970
+; Line 2948
 	mov	rcx, QWORD PTR wMode$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
-; Line 2971
+; Line 2949
 	mov	QWORD PTR $T3[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T3[rsp]
 	jmp	SHORT $LN1@crt_fopen
 $LN9@crt_fopen:
-; Line 2974
+; Line 2952
 	mov	r8, QWORD PTR wMode$[rsp]
 	mov	rdx, QWORD PTR f$[rsp]
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	?crt_create_file_common@@YAPEAXPEAXPEAUcrt_FILE@@PEB_W@Z ; crt_create_file_common
-; Line 2975
+; Line 2953
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
-; Line 2976
+; Line 2954
 	mov	rcx, QWORD PTR wMode$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
-; Line 2977
+; Line 2955
 	mov	rax, QWORD PTR f$[rsp]
 	mov	QWORD PTR $T4[rsp], rax
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T4[rsp]
 $LN1@crt_fopen:
-; Line 2978
+; Line 2956
 	add	rsp, 216				; 000000d8H
 	ret	0
 ?crt_fopen@@YAPEAUcrt_FILE@@PEBD0@Z ENDP		; crt_fopen
@@ -9915,56 +9899,56 @@ filename$ = 192
 mode$ = 200
 ?crt_wfopen@@YAPEAUcrt_FILE@@PEB_W0@Z PROC		; crt_wfopen
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2980
+; Line 2958
 $LN7:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 184				; 000000b8H
-; Line 2981
+; Line 2959
 	cmp	QWORD PTR filename$[rsp], 0
 	je	SHORT $LN3@crt_wfopen
 	cmp	QWORD PTR mode$[rsp], 0
 	jne	SHORT $LN2@crt_wfopen
 $LN3@crt_wfopen:
-; Line 2982
+; Line 2960
 	xor	eax, eax
 	jmp	$LN1@crt_wfopen
 $LN2@crt_wfopen:
-; Line 2985
+; Line 2963
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 2986
+; Line 2964
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 2987
+; Line 2965
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 2998
+; Line 2976
 	mov	DWORD PTR hashCreateFileW$[rsp], 896765690 ; 35738efaH
-; Line 2999
+; Line 2977
 	mov	r8d, 896765690				; 35738efaH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCreateFileW$[rsp], rax
-; Line 3001
+; Line 2979
 	mov	DWORD PTR hashCloseHandle$[rsp], 1729908677 ; 671c4fc5H
-; Line 3002
+; Line 2980
 	mov	r8d, 1729908677				; 671c4fc5H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCloseHandle$[rsp], rax
-; Line 3004
+; Line 2982
 	mov	rcx, QWORD PTR mode$[rsp]
 	call	?crt_access_mode_to_winapi_w@@YAKPEB_W@Z ; crt_access_mode_to_winapi_w
 	mov	DWORD PTR dwAccess$[rsp], eax
-; Line 3005
+; Line 2983
 	mov	rcx, QWORD PTR mode$[rsp]
 	call	?crt_creation_mode_w@@YAKPEB_W@Z	; crt_creation_mode_w
 	mov	DWORD PTR dwCreation$[rsp], eax
-; Line 3007
+; Line 2985
 	mov	rax, QWORD PTR pCreateFileW$[rsp]
 	mov	QWORD PTR tv94[rsp], rax
 	call	?crt_file_share_mode@@YAKXZ		; crt_file_share_mode
@@ -9978,50 +9962,50 @@ $LN2@crt_wfopen:
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	QWORD PTR tv94[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 3017
+; Line 2995
 	cmp	QWORD PTR hFile$[rsp], -1
 	jne	SHORT $LN4@crt_wfopen
-; Line 3018
+; Line 2996
 	mov	QWORD PTR $T1[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T1[rsp]
 	jmp	$LN1@crt_wfopen
 $LN4@crt_wfopen:
-; Line 3021
+; Line 2999
 	mov	ecx, 16
 	call	?crt_malloc@@YAPEAX_K@Z			; crt_malloc
 	mov	QWORD PTR f$[rsp], rax
-; Line 3022
+; Line 3000
 	cmp	QWORD PTR f$[rsp], 0
 	jne	SHORT $LN5@crt_wfopen
-; Line 3023
+; Line 3001
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv134[rsp], rax
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv134[rsp]
 	npad	1
-; Line 3024
+; Line 3002
 	mov	QWORD PTR $T2[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T2[rsp]
 	jmp	SHORT $LN1@crt_wfopen
 $LN5@crt_wfopen:
-; Line 3027
+; Line 3005
 	mov	r8, QWORD PTR mode$[rsp]
 	mov	rdx, QWORD PTR f$[rsp]
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	?crt_create_file_common@@YAPEAXPEAXPEAUcrt_FILE@@PEB_W@Z ; crt_create_file_common
 	npad	1
-; Line 3028
+; Line 3006
 	mov	rax, QWORD PTR f$[rsp]
 	mov	QWORD PTR $T3[rsp], rax
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T3[rsp]
 $LN1@crt_wfopen:
-; Line 3029
+; Line 3007
 	add	rsp, 184				; 000000b8H
 	ret	0
 ?crt_wfopen@@YAPEAUcrt_FILE@@PEB_W0@Z ENDP		; crt_wfopen
@@ -10040,47 +10024,47 @@ tv79 = 80
 stream$ = 112
 ?crt_fclose@@YAHPEAUcrt_FILE@@@Z PROC			; crt_fclose
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3031
+; Line 3009
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
-; Line 3032
+; Line 3010
 	cmp	QWORD PTR stream$[rsp], 0
 	jne	SHORT $LN2@crt_fclose
-; Line 3033
+; Line 3011
 	mov	eax, -1
 	jmp	$LN1@crt_fclose
 $LN2@crt_fclose:
-; Line 3036
+; Line 3014
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3037
+; Line 3015
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3038
+; Line 3016
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3040
+; Line 3018
 	mov	DWORD PTR hashCloseHandle$[rsp], 1729908677 ; 671c4fc5H
-; Line 3041
+; Line 3019
 	mov	r8d, 1729908677				; 671c4fc5H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCloseHandle$[rsp], rax
-; Line 3043
+; Line 3021
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv79[rsp], rax
 	mov	rax, QWORD PTR stream$[rsp]
 	mov	rcx, QWORD PTR [rax]
 	call	QWORD PTR tv79[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 3044
+; Line 3022
 	mov	rcx, QWORD PTR stream$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
-; Line 3045
+; Line 3023
 	cmp	DWORD PTR result$[rsp], 0
 	je	SHORT $LN4@crt_fclose
 	mov	DWORD PTR tv82[rsp], 0
@@ -10094,7 +10078,7 @@ $LN5@crt_fclose:
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 $LN1@crt_fclose:
-; Line 3046
+; Line 3024
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_fclose@@YAHPEAUcrt_FILE@@@Z ENDP			; crt_fclose
@@ -10118,14 +10102,14 @@ count$ = 160
 stream$ = 168
 ?crt_fread@@YA_KPEAX_K1PEAUcrt_FILE@@@Z PROC		; crt_fread
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3048
+; Line 3026
 $LN8:
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 136				; 00000088H
-; Line 3049
+; Line 3027
 	cmp	QWORD PTR buffer$[rsp], 0
 	je	SHORT $LN3@crt_fread
 	cmp	QWORD PTR stream$[rsp], 0
@@ -10133,42 +10117,42 @@ $LN8:
 	cmp	QWORD PTR size$[rsp], 0
 	jne	SHORT $LN2@crt_fread
 $LN3@crt_fread:
-; Line 3050
+; Line 3028
 	xor	eax, eax
 	jmp	$LN1@crt_fread
 $LN2@crt_fread:
-; Line 3053
+; Line 3031
 	mov	rax, QWORD PTR size$[rsp]
 	imul	rax, QWORD PTR count$[rsp]
 	mov	QWORD PTR totalBytes$[rsp], rax
-; Line 3054
+; Line 3032
 	cmp	QWORD PTR totalBytes$[rsp], 0
 	jne	SHORT $LN4@crt_fread
-; Line 3055
+; Line 3033
 	xor	eax, eax
 	jmp	$LN1@crt_fread
 $LN4@crt_fread:
-; Line 3058
+; Line 3036
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3059
+; Line 3037
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3060
+; Line 3038
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3068
+; Line 3046
 	mov	DWORD PTR hashReadFile$[rsp], -1576683562 ; a205b7d6H
-; Line 3069
+; Line 3047
 	mov	r8d, -1576683562			; a205b7d6H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pReadFile$[rsp], rax
-; Line 3071
+; Line 3049
 	mov	DWORD PTR bytesRead$[rsp], 0
-; Line 3072
+; Line 3050
 	mov	rax, QWORD PTR pReadFile$[rsp]
 	mov	QWORD PTR tv87[rsp], rax
 	mov	QWORD PTR [rsp+32], 0
@@ -10179,34 +10163,34 @@ $LN4@crt_fread:
 	mov	rcx, QWORD PTR [rax]
 	call	QWORD PTR tv87[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 3074
+; Line 3052
 	cmp	DWORD PTR result$[rsp], 0
 	jne	SHORT $LN5@crt_fread
-; Line 3075
+; Line 3053
 	mov	rax, QWORD PTR stream$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	or	eax, 32					; 00000020H
 	mov	rcx, QWORD PTR stream$[rsp]
 	mov	BYTE PTR [rcx+8], al
-; Line 3076
+; Line 3054
 	mov	QWORD PTR $T1[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T1[rsp]
 	jmp	SHORT $LN1@crt_fread
 $LN5@crt_fread:
-; Line 3079
+; Line 3057
 	mov	eax, DWORD PTR bytesRead$[rsp]
 	cmp	rax, QWORD PTR totalBytes$[rsp]
 	jae	SHORT $LN6@crt_fread
-; Line 3080
+; Line 3058
 	mov	rax, QWORD PTR stream$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	or	eax, 16
 	mov	rcx, QWORD PTR stream$[rsp]
 	mov	BYTE PTR [rcx+8], al
 $LN6@crt_fread:
-; Line 3083
+; Line 3061
 	mov	eax, DWORD PTR bytesRead$[rsp]
 	xor	edx, edx
 	div	QWORD PTR size$[rsp]
@@ -10215,7 +10199,7 @@ $LN6@crt_fread:
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T2[rsp]
 $LN1@crt_fread:
-; Line 3084
+; Line 3062
 	add	rsp, 136				; 00000088H
 	ret	0
 ?crt_fread@@YA_KPEAX_K1PEAUcrt_FILE@@@Z ENDP		; crt_fread
@@ -10239,14 +10223,14 @@ count$ = 160
 stream$ = 168
 ?crt_fwrite@@YA_KPEBX_K1PEAUcrt_FILE@@@Z PROC		; crt_fwrite
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3086
+; Line 3064
 $LN7:
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 136				; 00000088H
-; Line 3087
+; Line 3065
 	cmp	QWORD PTR buffer$[rsp], 0
 	je	SHORT $LN3@crt_fwrite
 	cmp	QWORD PTR stream$[rsp], 0
@@ -10254,42 +10238,42 @@ $LN7:
 	cmp	QWORD PTR size$[rsp], 0
 	jne	SHORT $LN2@crt_fwrite
 $LN3@crt_fwrite:
-; Line 3088
+; Line 3066
 	xor	eax, eax
 	jmp	$LN1@crt_fwrite
 $LN2@crt_fwrite:
-; Line 3091
+; Line 3069
 	mov	rax, QWORD PTR size$[rsp]
 	imul	rax, QWORD PTR count$[rsp]
 	mov	QWORD PTR totalBytes$[rsp], rax
-; Line 3092
+; Line 3070
 	cmp	QWORD PTR totalBytes$[rsp], 0
 	jne	SHORT $LN4@crt_fwrite
-; Line 3093
+; Line 3071
 	xor	eax, eax
 	jmp	$LN1@crt_fwrite
 $LN4@crt_fwrite:
-; Line 3096
+; Line 3074
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3097
+; Line 3075
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3098
+; Line 3076
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3106
+; Line 3084
 	mov	DWORD PTR hashWriteFile$[rsp], -339353823 ; ebc5df21H
-; Line 3107
+; Line 3085
 	mov	r8d, -339353823				; ebc5df21H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pWriteFile$[rsp], rax
-; Line 3109
+; Line 3087
 	mov	DWORD PTR bytesWritten$[rsp], 0
-; Line 3110
+; Line 3088
 	mov	rax, QWORD PTR pWriteFile$[rsp]
 	mov	QWORD PTR tv87[rsp], rax
 	mov	QWORD PTR [rsp+32], 0
@@ -10300,23 +10284,23 @@ $LN4@crt_fwrite:
 	mov	rcx, QWORD PTR [rax]
 	call	QWORD PTR tv87[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 3112
+; Line 3090
 	cmp	DWORD PTR result$[rsp], 0
 	jne	SHORT $LN5@crt_fwrite
-; Line 3113
+; Line 3091
 	mov	rax, QWORD PTR stream$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	or	eax, 32					; 00000020H
 	mov	rcx, QWORD PTR stream$[rsp]
 	mov	BYTE PTR [rcx+8], al
-; Line 3114
+; Line 3092
 	mov	QWORD PTR $T1[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T1[rsp]
 	jmp	SHORT $LN1@crt_fwrite
 $LN5@crt_fwrite:
-; Line 3117
+; Line 3095
 	mov	eax, DWORD PTR bytesWritten$[rsp]
 	xor	edx, edx
 	div	QWORD PTR size$[rsp]
@@ -10325,7 +10309,7 @@ $LN5@crt_fwrite:
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T2[rsp]
 $LN1@crt_fwrite:
-; Line 3118
+; Line 3096
 	add	rsp, 136				; 00000088H
 	ret	0
 ?crt_fwrite@@YA_KPEBX_K1PEAUcrt_FILE@@@Z ENDP		; crt_fwrite
@@ -10348,67 +10332,67 @@ offset$ = 120
 origin$ = 128
 ?crt_fseek@@YAHPEAUcrt_FILE@@JH@Z PROC			; crt_fseek
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3120
+; Line 3098
 $LN11:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
-; Line 3121
+; Line 3099
 	cmp	QWORD PTR stream$[rsp], 0
 	jne	SHORT $LN2@crt_fseek
-; Line 3122
+; Line 3100
 	mov	eax, -1
 	jmp	$LN1@crt_fseek
 $LN2@crt_fseek:
-; Line 3125
+; Line 3103
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3126
+; Line 3104
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3127
+; Line 3105
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3134
+; Line 3112
 	mov	DWORD PTR hashSetFilePointer$[rsp], 1990967623 ; 76abc147H
-; Line 3135
+; Line 3113
 	mov	r8d, 1990967623				; 76abc147H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pSetFilePointer$[rsp], rax
-; Line 3138
+; Line 3116
 	cmp	DWORD PTR origin$[rsp], 0
 	jne	SHORT $LN3@crt_fseek
-; Line 3139
+; Line 3117
 	mov	DWORD PTR dwOrigin$[rsp], 0
 	jmp	SHORT $LN4@crt_fseek
 $LN3@crt_fseek:
-; Line 3140
+; Line 3118
 	cmp	DWORD PTR origin$[rsp], 1
 	jne	SHORT $LN5@crt_fseek
-; Line 3141
+; Line 3119
 	mov	DWORD PTR dwOrigin$[rsp], 1
 	jmp	SHORT $LN4@crt_fseek
 $LN5@crt_fseek:
-; Line 3142
+; Line 3120
 	cmp	DWORD PTR origin$[rsp], 2
 	jne	SHORT $LN7@crt_fseek
-; Line 3143
+; Line 3121
 	mov	DWORD PTR dwOrigin$[rsp], 2
-; Line 3144
+; Line 3122
 	jmp	SHORT $LN4@crt_fseek
 $LN7@crt_fseek:
-; Line 3145
+; Line 3123
 	mov	DWORD PTR $T1[rsp], -1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 	jmp	SHORT $LN1@crt_fseek
 $LN4@crt_fseek:
-; Line 3148
+; Line 3126
 	mov	rax, QWORD PTR pSetFilePointer$[rsp]
 	mov	QWORD PTR tv85[rsp], rax
 	mov	r9d, DWORD PTR dwOrigin$[rsp]
@@ -10418,29 +10402,29 @@ $LN4@crt_fseek:
 	mov	rcx, QWORD PTR [rax]
 	call	QWORD PTR tv85[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 3149
+; Line 3127
 	cmp	DWORD PTR result$[rsp], -1		; ffffffffH
 	jne	SHORT $LN9@crt_fseek
-; Line 3150
+; Line 3128
 	mov	DWORD PTR $T2[rsp], -1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T2[rsp]
 	jmp	SHORT $LN1@crt_fseek
 $LN9@crt_fseek:
-; Line 3153
+; Line 3131
 	mov	rax, QWORD PTR stream$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	and	eax, -17
 	mov	rcx, QWORD PTR stream$[rsp]
 	mov	BYTE PTR [rcx+8], al
-; Line 3154
+; Line 3132
 	mov	DWORD PTR $T3[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T3[rsp]
 $LN1@crt_fseek:
-; Line 3155
+; Line 3133
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_fseek@@YAHPEAUcrt_FILE@@JH@Z ENDP			; crt_fseek
@@ -10459,36 +10443,36 @@ tv82 = 80
 stream$ = 112
 ?crt_ftell@@YAJPEAUcrt_FILE@@@Z PROC			; crt_ftell
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3157
+; Line 3135
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
-; Line 3158
+; Line 3136
 	cmp	QWORD PTR stream$[rsp], 0
 	jne	SHORT $LN2@crt_ftell
-; Line 3159
+; Line 3137
 	mov	eax, -1
 	jmp	$LN1@crt_ftell
 $LN2@crt_ftell:
-; Line 3162
+; Line 3140
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3163
+; Line 3141
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3164
+; Line 3142
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3171
+; Line 3149
 	mov	DWORD PTR hashSetFilePointer$[rsp], 1990967623 ; 76abc147H
-; Line 3172
+; Line 3150
 	mov	r8d, 1990967623				; 76abc147H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pSetFilePointer$[rsp], rax
-; Line 3174
+; Line 3152
 	mov	rax, QWORD PTR pSetFilePointer$[rsp]
 	mov	QWORD PTR tv82[rsp], rax
 	mov	r9d, 1
@@ -10498,24 +10482,24 @@ $LN2@crt_ftell:
 	mov	rcx, QWORD PTR [rax]
 	call	QWORD PTR tv82[rsp]
 	mov	DWORD PTR pos$[rsp], eax
-; Line 3175
+; Line 3153
 	cmp	DWORD PTR pos$[rsp], -1			; ffffffffH
 	jne	SHORT $LN3@crt_ftell
-; Line 3176
+; Line 3154
 	mov	DWORD PTR $T1[rsp], -1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 	jmp	SHORT $LN1@crt_ftell
 $LN3@crt_ftell:
-; Line 3179
+; Line 3157
 	mov	eax, DWORD PTR pos$[rsp]
 	mov	DWORD PTR $T2[rsp], eax
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T2[rsp]
 $LN1@crt_ftell:
-; Line 3180
+; Line 3158
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_ftell@@YAJPEAUcrt_FILE@@@Z ENDP			; crt_ftell
@@ -10525,26 +10509,26 @@ _TEXT	SEGMENT
 stream$ = 48
 ?crt_rewind@@YAXPEAUcrt_FILE@@@Z PROC			; crt_rewind
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3182
+; Line 3160
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
-; Line 3183
+; Line 3161
 	cmp	QWORD PTR stream$[rsp], 0
 	je	SHORT $LN2@crt_rewind
-; Line 3184
+; Line 3162
 	xor	r8d, r8d
 	xor	edx, edx
 	mov	rcx, QWORD PTR stream$[rsp]
 	call	?crt_fseek@@YAHPEAUcrt_FILE@@JH@Z	; crt_fseek
-; Line 3185
+; Line 3163
 	mov	rax, QWORD PTR stream$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	and	eax, -33				; ffffffffffffffdfH
 	mov	rcx, QWORD PTR stream$[rsp]
 	mov	BYTE PTR [rcx+8], al
 $LN2@crt_rewind:
-; Line 3187
+; Line 3165
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_rewind@@YAXPEAUcrt_FILE@@@Z ENDP			; crt_rewind
@@ -10563,43 +10547,43 @@ tv79 = 80
 stream$ = 112
 ?crt_fflush@@YAHPEAUcrt_FILE@@@Z PROC			; crt_fflush
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3189
+; Line 3167
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
-; Line 3190
+; Line 3168
 	cmp	QWORD PTR stream$[rsp], 0
 	jne	SHORT $LN2@crt_fflush
-; Line 3191
+; Line 3169
 	xor	eax, eax
 	jmp	$LN1@crt_fflush
 $LN2@crt_fflush:
-; Line 3194
+; Line 3172
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3195
+; Line 3173
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3196
+; Line 3174
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3198
+; Line 3176
 	mov	DWORD PTR hashFlushFileBuffers$[rsp], -2023237331 ; 8767d92dH
-; Line 3199
+; Line 3177
 	mov	r8d, -2023237331			; 8767d92dH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pFlushFileBuffers$[rsp], rax
-; Line 3201
+; Line 3179
 	mov	rax, QWORD PTR pFlushFileBuffers$[rsp]
 	mov	QWORD PTR tv79[rsp], rax
 	mov	rax, QWORD PTR stream$[rsp]
 	mov	rcx, QWORD PTR [rax]
 	call	QWORD PTR tv79[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 3202
+; Line 3180
 	cmp	DWORD PTR result$[rsp], 0
 	je	SHORT $LN4@crt_fflush
 	mov	DWORD PTR tv81[rsp], 0
@@ -10613,7 +10597,7 @@ $LN5@crt_fflush:
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 $LN1@crt_fflush:
-; Line 3203
+; Line 3181
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_fflush@@YAHPEAUcrt_FILE@@@Z ENDP			; crt_fflush
@@ -10624,18 +10608,18 @@ tv69 = 0
 stream$ = 32
 ?crt_feof@@YAHPEAUcrt_FILE@@@Z PROC			; crt_feof
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3205
+; Line 3183
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
-; Line 3206
+; Line 3184
 	cmp	QWORD PTR stream$[rsp], 0
 	jne	SHORT $LN2@crt_feof
-; Line 3207
+; Line 3185
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_feof
 $LN2@crt_feof:
-; Line 3209
+; Line 3187
 	mov	rax, QWORD PTR stream$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	and	eax, 16
@@ -10648,7 +10632,7 @@ $LN4@crt_feof:
 $LN5@crt_feof:
 	mov	eax, DWORD PTR tv69[rsp]
 $LN1@crt_feof:
-; Line 3210
+; Line 3188
 	add	rsp, 24
 	ret	0
 ?crt_feof@@YAHPEAUcrt_FILE@@@Z ENDP			; crt_feof
@@ -10659,18 +10643,18 @@ tv69 = 0
 stream$ = 32
 ?crt_ferror@@YAHPEAUcrt_FILE@@@Z PROC			; crt_ferror
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3212
+; Line 3190
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
-; Line 3213
+; Line 3191
 	cmp	QWORD PTR stream$[rsp], 0
 	jne	SHORT $LN2@crt_ferror
-; Line 3214
+; Line 3192
 	xor	eax, eax
 	jmp	SHORT $LN1@crt_ferror
 $LN2@crt_ferror:
-; Line 3216
+; Line 3194
 	mov	rax, QWORD PTR stream$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	and	eax, 32					; 00000020H
@@ -10683,7 +10667,7 @@ $LN4@crt_ferror:
 $LN5@crt_ferror:
 	mov	eax, DWORD PTR tv69[rsp]
 $LN1@crt_ferror:
-; Line 3217
+; Line 3195
 	add	rsp, 24
 	ret	0
 ?crt_ferror@@YAHPEAUcrt_FILE@@@Z ENDP			; crt_ferror
@@ -10693,19 +10677,19 @@ _TEXT	SEGMENT
 stream$ = 8
 ?crt_clearerr@@YAXPEAUcrt_FILE@@@Z PROC			; crt_clearerr
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3219
+; Line 3197
 	mov	QWORD PTR [rsp+8], rcx
-; Line 3220
+; Line 3198
 	cmp	QWORD PTR stream$[rsp], 0
 	je	SHORT $LN2@crt_cleare
-; Line 3221
+; Line 3199
 	mov	rax, QWORD PTR stream$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	and	eax, -49				; ffffffffffffffcfH
 	mov	rcx, QWORD PTR stream$[rsp]
 	mov	BYTE PTR [rcx+8], al
 $LN2@crt_cleare:
-; Line 3223
+; Line 3201
 	ret	0
 ?crt_clearerr@@YAXPEAUcrt_FILE@@@Z ENDP			; crt_clearerr
 _TEXT	ENDS
@@ -10725,17 +10709,103 @@ tv81 = 96
 filename$ = 128
 ?crt_remove@@YAHPEBD@Z PROC				; crt_remove
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3225
+; Line 3203
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
-; Line 3226
+; Line 3204
 	cmp	QWORD PTR filename$[rsp], 0
 	jne	SHORT $LN2@crt_remove
-; Line 3227
+; Line 3205
 	mov	eax, -1
 	jmp	$LN1@crt_remove
 $LN2@crt_remove:
+; Line 3208
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
+; Line 3209
+	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
+; Line 3210
+	mov	edx, 764661557				; 2d93cf35H
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
+	mov	QWORD PTR lpKernel32$[rsp], rax
+; Line 3212
+	mov	DWORD PTR hashDeleteFileW$[rsp], 861589981 ; 335ad1ddH
+; Line 3213
+	mov	r8d, 861589981				; 335ad1ddH
+	mov	rdx, QWORD PTR lpKernel32$[rsp]
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
+	mov	QWORD PTR pDeleteFileW$[rsp], rax
+; Line 3215
+	mov	rcx, QWORD PTR filename$[rsp]
+	call	?crt_atowc@@YAPEA_WPEBD@Z		; crt_atowc
+	mov	QWORD PTR wFilename$[rsp], rax
+; Line 3216
+	cmp	QWORD PTR wFilename$[rsp], 0
+	jne	SHORT $LN3@crt_remove
+; Line 3217
+	mov	DWORD PTR $T1[rsp], -1
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
+	mov	eax, DWORD PTR $T1[rsp]
+	jmp	SHORT $LN1@crt_remove
+$LN3@crt_remove:
+; Line 3220
+	mov	rax, QWORD PTR pDeleteFileW$[rsp]
+	mov	QWORD PTR tv81[rsp], rax
+	mov	rcx, QWORD PTR wFilename$[rsp]
+	call	QWORD PTR tv81[rsp]
+	mov	DWORD PTR result$[rsp], eax
+; Line 3221
+	mov	rcx, QWORD PTR wFilename$[rsp]
+	call	?crt_free@@YAXPEAX@Z			; crt_free
+	npad	1
+; Line 3222
+	cmp	DWORD PTR result$[rsp], 0
+	je	SHORT $LN5@crt_remove
+	mov	DWORD PTR tv84[rsp], 0
+	jmp	SHORT $LN6@crt_remove
+$LN5@crt_remove:
+	mov	DWORD PTR tv84[rsp], -1
+$LN6@crt_remove:
+	mov	eax, DWORD PTR tv84[rsp]
+	mov	DWORD PTR $T2[rsp], eax
+	lea	rcx, QWORD PTR apiResolve$[rsp]
+	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
+	mov	eax, DWORD PTR $T2[rsp]
+$LN1@crt_remove:
+; Line 3223
+	add	rsp, 120				; 00000078H
+	ret	0
+?crt_remove@@YAHPEBD@Z ENDP				; crt_remove
+_TEXT	ENDS
+; Function compile flags: /Odtp
+_TEXT	SEGMENT
+tv80 = 32
+result$ = 36
+$T1 = 40
+apiResolve$ = 48
+hashKernel32$ = 56
+hashDeleteFileW$ = 60
+lpKernel32$ = 64
+pDeleteFileW$ = 72
+tv78 = 80
+filename$ = 112
+?crt_wremove@@YAHPEB_W@Z PROC				; crt_wremove
+; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
+; Line 3225
+$LN6:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 104				; 00000068H
+; Line 3226
+	cmp	QWORD PTR filename$[rsp], 0
+	jne	SHORT $LN2@crt_wremov
+; Line 3227
+	mov	eax, -1
+	jmp	$LN1@crt_wremov
+$LN2@crt_wremov:
 ; Line 3230
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
@@ -10755,98 +10825,12 @@ $LN2@crt_remove:
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pDeleteFileW$[rsp], rax
 ; Line 3237
-	mov	rcx, QWORD PTR filename$[rsp]
-	call	?crt_atowc@@YAPEA_WPEBD@Z		; crt_atowc
-	mov	QWORD PTR wFilename$[rsp], rax
-; Line 3238
-	cmp	QWORD PTR wFilename$[rsp], 0
-	jne	SHORT $LN3@crt_remove
-; Line 3239
-	mov	DWORD PTR $T1[rsp], -1
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	mov	eax, DWORD PTR $T1[rsp]
-	jmp	SHORT $LN1@crt_remove
-$LN3@crt_remove:
-; Line 3242
-	mov	rax, QWORD PTR pDeleteFileW$[rsp]
-	mov	QWORD PTR tv81[rsp], rax
-	mov	rcx, QWORD PTR wFilename$[rsp]
-	call	QWORD PTR tv81[rsp]
-	mov	DWORD PTR result$[rsp], eax
-; Line 3243
-	mov	rcx, QWORD PTR wFilename$[rsp]
-	call	?crt_free@@YAXPEAX@Z			; crt_free
-	npad	1
-; Line 3244
-	cmp	DWORD PTR result$[rsp], 0
-	je	SHORT $LN5@crt_remove
-	mov	DWORD PTR tv84[rsp], 0
-	jmp	SHORT $LN6@crt_remove
-$LN5@crt_remove:
-	mov	DWORD PTR tv84[rsp], -1
-$LN6@crt_remove:
-	mov	eax, DWORD PTR tv84[rsp]
-	mov	DWORD PTR $T2[rsp], eax
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
-	mov	eax, DWORD PTR $T2[rsp]
-$LN1@crt_remove:
-; Line 3245
-	add	rsp, 120				; 00000078H
-	ret	0
-?crt_remove@@YAHPEBD@Z ENDP				; crt_remove
-_TEXT	ENDS
-; Function compile flags: /Odtp
-_TEXT	SEGMENT
-tv80 = 32
-result$ = 36
-$T1 = 40
-apiResolve$ = 48
-hashKernel32$ = 56
-hashDeleteFileW$ = 60
-lpKernel32$ = 64
-pDeleteFileW$ = 72
-tv78 = 80
-filename$ = 112
-?crt_wremove@@YAHPEB_W@Z PROC				; crt_wremove
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3247
-$LN6:
-	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 104				; 00000068H
-; Line 3248
-	cmp	QWORD PTR filename$[rsp], 0
-	jne	SHORT $LN2@crt_wremov
-; Line 3249
-	mov	eax, -1
-	jmp	$LN1@crt_wremov
-$LN2@crt_wremov:
-; Line 3252
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3253
-	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3254
-	mov	edx, 764661557				; 2d93cf35H
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
-	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3256
-	mov	DWORD PTR hashDeleteFileW$[rsp], 861589981 ; 335ad1ddH
-; Line 3257
-	mov	r8d, 861589981				; 335ad1ddH
-	mov	rdx, QWORD PTR lpKernel32$[rsp]
-	lea	rcx, QWORD PTR apiResolve$[rsp]
-	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
-	mov	QWORD PTR pDeleteFileW$[rsp], rax
-; Line 3259
 	mov	rax, QWORD PTR pDeleteFileW$[rsp]
 	mov	QWORD PTR tv78[rsp], rax
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	QWORD PTR tv78[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 3260
+; Line 3238
 	cmp	DWORD PTR result$[rsp], 0
 	je	SHORT $LN4@crt_wremov
 	mov	DWORD PTR tv80[rsp], 0
@@ -10860,7 +10844,7 @@ $LN5@crt_wremov:
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 $LN1@crt_wremov:
-; Line 3261
+; Line 3239
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_wremove@@YAHPEB_W@Z ENDP				; crt_wremove
@@ -10883,75 +10867,75 @@ oldname$ = 128
 newname$ = 136
 ?crt_rename@@YAHPEBD0@Z PROC				; crt_rename
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3263
+; Line 3241
 $LN11:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
-; Line 3264
+; Line 3242
 	cmp	QWORD PTR oldname$[rsp], 0
 	je	SHORT $LN3@crt_rename
 	cmp	QWORD PTR newname$[rsp], 0
 	jne	SHORT $LN2@crt_rename
 $LN3@crt_rename:
-; Line 3265
+; Line 3243
 	mov	eax, -1
 	jmp	$LN1@crt_rename
 $LN2@crt_rename:
-; Line 3268
+; Line 3246
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3269
+; Line 3247
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3270
+; Line 3248
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3276
+; Line 3254
 	mov	DWORD PTR hashMoveFileExW$[rsp], 1267030266 ; 4b8558faH
-; Line 3277
+; Line 3255
 	mov	r8d, 1267030266				; 4b8558faH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pMoveFileExW$[rsp], rax
-; Line 3279
+; Line 3257
 	mov	rcx, QWORD PTR oldname$[rsp]
 	call	?crt_atowc@@YAPEA_WPEBD@Z		; crt_atowc
 	mov	QWORD PTR wOldname$[rsp], rax
-; Line 3280
+; Line 3258
 	mov	rcx, QWORD PTR newname$[rsp]
 	call	?crt_atowc@@YAPEA_WPEBD@Z		; crt_atowc
 	mov	QWORD PTR wNewname$[rsp], rax
-; Line 3282
+; Line 3260
 	cmp	QWORD PTR wOldname$[rsp], 0
 	je	SHORT $LN5@crt_rename
 	cmp	QWORD PTR wNewname$[rsp], 0
 	jne	SHORT $LN4@crt_rename
 $LN5@crt_rename:
-; Line 3283
+; Line 3261
 	cmp	QWORD PTR wOldname$[rsp], 0
 	je	SHORT $LN6@crt_rename
 	mov	rcx, QWORD PTR wOldname$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
 $LN6@crt_rename:
-; Line 3284
+; Line 3262
 	cmp	QWORD PTR wNewname$[rsp], 0
 	je	SHORT $LN7@crt_rename
 	mov	rcx, QWORD PTR wNewname$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
 $LN7@crt_rename:
-; Line 3285
+; Line 3263
 	mov	DWORD PTR $T1[rsp], -1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 	jmp	SHORT $LN1@crt_rename
 $LN4@crt_rename:
-; Line 3288
+; Line 3266
 	mov	rax, QWORD PTR pMoveFileExW$[rsp]
 	mov	QWORD PTR tv91[rsp], rax
 	mov	r8d, 1
@@ -10959,14 +10943,14 @@ $LN4@crt_rename:
 	mov	rcx, QWORD PTR wOldname$[rsp]
 	call	QWORD PTR tv91[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 3289
+; Line 3267
 	mov	rcx, QWORD PTR wOldname$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
-; Line 3290
+; Line 3268
 	mov	rcx, QWORD PTR wNewname$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
-; Line 3291
+; Line 3269
 	cmp	DWORD PTR result$[rsp], 0
 	je	SHORT $LN9@crt_rename
 	mov	DWORD PTR tv95[rsp], 0
@@ -10980,7 +10964,7 @@ $LN10@crt_rename:
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T2[rsp]
 $LN1@crt_rename:
-; Line 3292
+; Line 3270
 	add	rsp, 120				; 00000078H
 	ret	0
 ?crt_rename@@YAHPEBD0@Z ENDP				; crt_rename
@@ -11000,40 +10984,40 @@ oldname$ = 112
 newname$ = 120
 ?crt_wrename@@YAHPEB_W0@Z PROC				; crt_wrename
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3294
+; Line 3272
 $LN7:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
-; Line 3295
+; Line 3273
 	cmp	QWORD PTR oldname$[rsp], 0
 	je	SHORT $LN3@crt_wrenam
 	cmp	QWORD PTR newname$[rsp], 0
 	jne	SHORT $LN2@crt_wrenam
 $LN3@crt_wrenam:
-; Line 3296
+; Line 3274
 	mov	eax, -1
 	jmp	$LN1@crt_wrenam
 $LN2@crt_wrenam:
-; Line 3299
+; Line 3277
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3300
+; Line 3278
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3301
+; Line 3279
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3307
+; Line 3285
 	mov	DWORD PTR hashMoveFileExW$[rsp], 1267030266 ; 4b8558faH
-; Line 3308
+; Line 3286
 	mov	r8d, 1267030266				; 4b8558faH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pMoveFileExW$[rsp], rax
-; Line 3310
+; Line 3288
 	mov	rax, QWORD PTR pMoveFileExW$[rsp]
 	mov	QWORD PTR tv81[rsp], rax
 	mov	r8d, 1
@@ -11041,7 +11025,7 @@ $LN2@crt_wrenam:
 	mov	rcx, QWORD PTR oldname$[rsp]
 	call	QWORD PTR tv81[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 3311
+; Line 3289
 	cmp	DWORD PTR result$[rsp], 0
 	je	SHORT $LN5@crt_wrenam
 	mov	DWORD PTR tv83[rsp], 0
@@ -11055,7 +11039,7 @@ $LN6@crt_wrenam:
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 $LN1@crt_wrenam:
-; Line 3312
+; Line 3290
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_wrename@@YAHPEB_W0@Z ENDP				; crt_wrename
@@ -11079,58 +11063,58 @@ tv129 = 152
 filename$ = 176
 ?crt_fileexists@@YAHPEBD@Z PROC				; crt_fileexists
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3314
+; Line 3292
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 168				; 000000a8H
-; Line 3315
+; Line 3293
 	cmp	QWORD PTR filename$[rsp], 0
 	jne	SHORT $LN2@crt_fileex
-; Line 3316
+; Line 3294
 	xor	eax, eax
 	jmp	$LN1@crt_fileex
 $LN2@crt_fileex:
-; Line 3319
+; Line 3297
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3320
+; Line 3298
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3321
+; Line 3299
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3331
+; Line 3309
 	mov	DWORD PTR hashCreateFileW$[rsp], 896765690 ; 35738efaH
-; Line 3332
+; Line 3310
 	mov	r8d, 896765690				; 35738efaH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCreateFileW$[rsp], rax
-; Line 3334
+; Line 3312
 	mov	DWORD PTR hashCloseHandle$[rsp], 1729908677 ; 671c4fc5H
-; Line 3335
+; Line 3313
 	mov	r8d, 1729908677				; 671c4fc5H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCloseHandle$[rsp], rax
-; Line 3337
+; Line 3315
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	?crt_atowc@@YAPEA_WPEBD@Z		; crt_atowc
 	mov	QWORD PTR wFilename$[rsp], rax
-; Line 3338
+; Line 3316
 	cmp	QWORD PTR wFilename$[rsp], 0
 	jne	SHORT $LN3@crt_fileex
-; Line 3339
+; Line 3317
 	mov	DWORD PTR $T1[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 	jmp	$LN1@crt_fileex
 $LN3@crt_fileex:
-; Line 3342
+; Line 3320
 	mov	rax, QWORD PTR pCreateFileW$[rsp]
 	mov	QWORD PTR tv91[rsp], rax
 	mov	QWORD PTR [rsp+48], 0
@@ -11142,33 +11126,33 @@ $LN3@crt_fileex:
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	QWORD PTR tv91[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 3344
+; Line 3322
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
-; Line 3346
+; Line 3324
 	cmp	QWORD PTR hFile$[rsp], -1
 	jne	SHORT $LN4@crt_fileex
-; Line 3347
+; Line 3325
 	mov	DWORD PTR $T2[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T2[rsp]
 	jmp	SHORT $LN1@crt_fileex
 $LN4@crt_fileex:
-; Line 3350
+; Line 3328
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv129[rsp], rax
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv129[rsp]
 	npad	1
-; Line 3351
+; Line 3329
 	mov	DWORD PTR $T3[rsp], 1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T3[rsp]
 $LN1@crt_fileex:
-; Line 3352
+; Line 3330
 	add	rsp, 168				; 000000a8H
 	ret	0
 ?crt_fileexists@@YAHPEBD@Z ENDP				; crt_fileexists
@@ -11190,44 +11174,44 @@ tv93 = 136
 filename$ = 160
 ?crt_wfileexists@@YAHPEB_W@Z PROC			; crt_wfileexists
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3354
+; Line 3332
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 152				; 00000098H
-; Line 3355
+; Line 3333
 	cmp	QWORD PTR filename$[rsp], 0
 	jne	SHORT $LN2@crt_wfilee
-; Line 3356
+; Line 3334
 	xor	eax, eax
 	jmp	$LN1@crt_wfilee
 $LN2@crt_wfilee:
-; Line 3359
+; Line 3337
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3360
+; Line 3338
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3361
+; Line 3339
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3371
+; Line 3349
 	mov	DWORD PTR hashCreateFileW$[rsp], 896765690 ; 35738efaH
-; Line 3372
+; Line 3350
 	mov	r8d, 896765690				; 35738efaH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCreateFileW$[rsp], rax
-; Line 3374
+; Line 3352
 	mov	DWORD PTR hashCloseHandle$[rsp], 1729908677 ; 671c4fc5H
-; Line 3375
+; Line 3353
 	mov	r8d, 1729908677				; 671c4fc5H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCloseHandle$[rsp], rax
-; Line 3377
+; Line 3355
 	mov	rax, QWORD PTR pCreateFileW$[rsp]
 	mov	QWORD PTR tv88[rsp], rax
 	mov	QWORD PTR [rsp+48], 0
@@ -11239,29 +11223,29 @@ $LN2@crt_wfilee:
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	QWORD PTR tv88[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 3380
+; Line 3358
 	cmp	QWORD PTR hFile$[rsp], -1
 	jne	SHORT $LN3@crt_wfilee
-; Line 3381
+; Line 3359
 	mov	DWORD PTR $T1[rsp], 0
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 	jmp	SHORT $LN1@crt_wfilee
 $LN3@crt_wfilee:
-; Line 3384
+; Line 3362
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv93[rsp], rax
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv93[rsp]
 	npad	1
-; Line 3385
+; Line 3363
 	mov	DWORD PTR $T2[rsp], 1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T2[rsp]
 $LN1@crt_wfilee:
-; Line 3386
+; Line 3364
 	add	rsp, 152				; 00000098H
 	ret	0
 ?crt_wfileexists@@YAHPEB_W@Z ENDP			; crt_wfileexists
@@ -11290,58 +11274,58 @@ $T3 = 192
 filename$ = 224
 ?crt_filesize@@YA_JPEBD@Z PROC				; crt_filesize
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3388
+; Line 3366
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 216				; 000000d8H
-; Line 3389
+; Line 3367
 	cmp	QWORD PTR filename$[rsp], 0
 	jne	SHORT $LN2@crt_filesi
-; Line 3390
+; Line 3368
 	mov	rax, -1
 	jmp	$LN1@crt_filesi
 $LN2@crt_filesi:
-; Line 3393
+; Line 3371
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3394
+; Line 3372
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3395
+; Line 3373
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3402
+; Line 3380
 	mov	DWORD PTR hashCreateFileW$[rsp], 896765690 ; 35738efaH
-; Line 3403
+; Line 3381
 	mov	r8d, 896765690				; 35738efaH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCreateFileW$[rsp], rax
-; Line 3405
+; Line 3383
 	mov	DWORD PTR hashCloseHandle$[rsp], 1729908677 ; 671c4fc5H
-; Line 3406
+; Line 3384
 	mov	r8d, 1729908677				; 671c4fc5H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCloseHandle$[rsp], rax
-; Line 3408
+; Line 3386
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	?crt_atowc@@YAPEA_WPEBD@Z		; crt_atowc
 	mov	QWORD PTR wFilename$[rsp], rax
-; Line 3409
+; Line 3387
 	cmp	QWORD PTR wFilename$[rsp], 0
 	jne	SHORT $LN3@crt_filesi
-; Line 3410
+; Line 3388
 	mov	QWORD PTR $T1[rsp], -1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T1[rsp]
 	jmp	$LN1@crt_filesi
 $LN3@crt_filesi:
-; Line 3413
+; Line 3391
 	mov	rax, QWORD PTR pCreateFileW$[rsp]
 	mov	QWORD PTR tv91[rsp], rax
 	mov	QWORD PTR [rsp+48], 0
@@ -11353,31 +11337,31 @@ $LN3@crt_filesi:
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	QWORD PTR tv91[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 3415
+; Line 3393
 	mov	rcx, QWORD PTR wFilename$[rsp]
 	call	?crt_free@@YAXPEAX@Z			; crt_free
 	npad	1
-; Line 3417
+; Line 3395
 	cmp	QWORD PTR hFile$[rsp], -1
 	jne	SHORT $LN4@crt_filesi
-; Line 3418
+; Line 3396
 	mov	QWORD PTR $T2[rsp], -1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T2[rsp]
 	jmp	$LN1@crt_filesi
 $LN4@crt_filesi:
-; Line 3422
+; Line 3400
 	mov	DWORD PTR hashGetFileSizeEx$[rsp], 242013387 ; 0e6cd4cbH
-; Line 3423
+; Line 3401
 	mov	r8d, 242013387				; 0e6cd4cbH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pGetFileSizeEx$[rsp], rax
-; Line 3426
+; Line 3404
 	mov	QWORD PTR result$[rsp], -1
-; Line 3427
+; Line 3405
 	mov	rax, QWORD PTR pGetFileSizeEx$[rsp]
 	mov	QWORD PTR tv134[rsp], rax
 	lea	rdx, QWORD PTR size$[rsp]
@@ -11385,24 +11369,24 @@ $LN4@crt_filesi:
 	call	QWORD PTR tv134[rsp]
 	test	eax, eax
 	je	SHORT $LN5@crt_filesi
-; Line 3428
+; Line 3406
 	mov	rax, QWORD PTR size$[rsp]
 	mov	QWORD PTR result$[rsp], rax
 $LN5@crt_filesi:
-; Line 3431
+; Line 3409
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv139[rsp], rax
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv139[rsp]
 	npad	1
-; Line 3432
+; Line 3410
 	mov	rax, QWORD PTR result$[rsp]
 	mov	QWORD PTR $T3[rsp], rax
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T3[rsp]
 $LN1@crt_filesi:
-; Line 3433
+; Line 3411
 	add	rsp, 216				; 000000d8H
 	ret	0
 ?crt_filesize@@YA_JPEBD@Z ENDP				; crt_filesize
@@ -11429,44 +11413,44 @@ $T2 = 176
 filename$ = 208
 ?crt_wfilesize@@YA_JPEB_W@Z PROC			; crt_wfilesize
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3435
+; Line 3413
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 200				; 000000c8H
-; Line 3436
+; Line 3414
 	cmp	QWORD PTR filename$[rsp], 0
 	jne	SHORT $LN2@crt_wfiles
-; Line 3437
+; Line 3415
 	mov	rax, -1
 	jmp	$LN1@crt_wfiles
 $LN2@crt_wfiles:
-; Line 3440
+; Line 3418
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3441
+; Line 3419
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3442
+; Line 3420
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3449
+; Line 3427
 	mov	DWORD PTR hashCreateFileW$[rsp], 896765690 ; 35738efaH
-; Line 3450
+; Line 3428
 	mov	r8d, 896765690				; 35738efaH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCreateFileW$[rsp], rax
-; Line 3452
+; Line 3430
 	mov	DWORD PTR hashCloseHandle$[rsp], 1729908677 ; 671c4fc5H
-; Line 3453
+; Line 3431
 	mov	r8d, 1729908677				; 671c4fc5H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pCloseHandle$[rsp], rax
-; Line 3455
+; Line 3433
 	mov	rax, QWORD PTR pCreateFileW$[rsp]
 	mov	QWORD PTR tv88[rsp], rax
 	mov	QWORD PTR [rsp+48], 0
@@ -11478,27 +11462,27 @@ $LN2@crt_wfiles:
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	QWORD PTR tv88[rsp]
 	mov	QWORD PTR hFile$[rsp], rax
-; Line 3458
+; Line 3436
 	cmp	QWORD PTR hFile$[rsp], -1
 	jne	SHORT $LN3@crt_wfiles
-; Line 3459
+; Line 3437
 	mov	QWORD PTR $T1[rsp], -1
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T1[rsp]
 	jmp	$LN1@crt_wfiles
 $LN3@crt_wfiles:
-; Line 3463
+; Line 3441
 	mov	DWORD PTR hashGetFileSizeEx$[rsp], 242013387 ; 0e6cd4cbH
-; Line 3464
+; Line 3442
 	mov	r8d, 242013387				; 0e6cd4cbH
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pGetFileSizeEx$[rsp], rax
-; Line 3467
+; Line 3445
 	mov	QWORD PTR result$[rsp], -1
-; Line 3468
+; Line 3446
 	mov	rax, QWORD PTR pGetFileSizeEx$[rsp]
 	mov	QWORD PTR tv130[rsp], rax
 	lea	rdx, QWORD PTR size$[rsp]
@@ -11506,24 +11490,24 @@ $LN3@crt_wfiles:
 	call	QWORD PTR tv130[rsp]
 	test	eax, eax
 	je	SHORT $LN4@crt_wfiles
-; Line 3469
+; Line 3447
 	mov	rax, QWORD PTR size$[rsp]
 	mov	QWORD PTR result$[rsp], rax
 $LN4@crt_wfiles:
-; Line 3472
+; Line 3450
 	mov	rax, QWORD PTR pCloseHandle$[rsp]
 	mov	QWORD PTR tv135[rsp], rax
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv135[rsp]
 	npad	1
-; Line 3473
+; Line 3451
 	mov	rax, QWORD PTR result$[rsp]
 	mov	QWORD PTR $T2[rsp], rax
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	rax, QWORD PTR $T2[rsp]
 $LN1@crt_wfiles:
-; Line 3474
+; Line 3452
 	add	rsp, 200				; 000000c8H
 	ret	0
 ?crt_wfilesize@@YA_JPEB_W@Z ENDP			; crt_wfilesize
@@ -11817,26 +11801,26 @@ _TEXT	SEGMENT
 str$ = 48
 ?crt_wcskip_isspace@@YAPEB_WPEB_W@Z PROC		; crt_wcskip_isspace
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1738
+; Line 1716
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 $LN2@crt_wcskip:
-; Line 1739
+; Line 1717
 	mov	rax, QWORD PTR str$[rsp]
 	movzx	ecx, WORD PTR [rax]
 	call	?crt_iswspace@@YAHG@Z			; crt_iswspace
 	test	eax, eax
 	je	SHORT $LN3@crt_wcskip
-; Line 1740
+; Line 1718
 	mov	rax, QWORD PTR str$[rsp]
 	add	rax, 2
 	mov	QWORD PTR str$[rsp], rax
-; Line 1741
+; Line 1719
 	jmp	SHORT $LN2@crt_wcskip
 $LN3@crt_wcskip:
-; Line 1742
+; Line 1720
 	mov	rax, QWORD PTR str$[rsp]
-; Line 1743
+; Line 1721
 	add	rsp, 40					; 00000028H
 	ret	0
 ?crt_wcskip_isspace@@YAPEB_WPEB_W@Z ENDP		; crt_wcskip_isspace
@@ -11855,66 +11839,66 @@ endptr$ = 88
 base$ = 96
 ?crt_wcstoul_base@@YAKPEB_WPEAPEA_WH@Z PROC		; crt_wcstoul_base
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 1745
+; Line 1723
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
-; Line 1746
+; Line 1724
 	cmp	QWORD PTR nptr$[rsp], 0
 	jne	SHORT $LN4@crt_wcstou
-; Line 1747
+; Line 1725
 	cmp	QWORD PTR endptr$[rsp], 0
 	je	SHORT $LN5@crt_wcstou
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR nptr$[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN5@crt_wcstou:
-; Line 1748
+; Line 1726
 	xor	eax, eax
 	jmp	$LN1@crt_wcstou
 $LN4@crt_wcstou:
-; Line 1751
+; Line 1729
 	mov	rcx, QWORD PTR nptr$[rsp]
 	call	?crt_wcskip_isspace@@YAPEB_WPEB_W@Z	; crt_wcskip_isspace
 	mov	QWORD PTR p$[rsp], rax
-; Line 1753
+; Line 1731
 	mov	DWORD PTR negative$[rsp], 0
-; Line 1754
+; Line 1732
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 45					; 0000002dH
 	jne	SHORT $LN6@crt_wcstou
-; Line 1755
+; Line 1733
 	mov	DWORD PTR negative$[rsp], 1
-; Line 1756
+; Line 1734
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
 	jmp	SHORT $LN7@crt_wcstou
 $LN6@crt_wcstou:
-; Line 1757
+; Line 1735
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 43					; 0000002bH
 	jne	SHORT $LN8@crt_wcstou
-; Line 1758
+; Line 1736
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
 $LN8@crt_wcstou:
 $LN7@crt_wcstou:
-; Line 1761
+; Line 1739
 	cmp	DWORD PTR base$[rsp], 0
 	jne	SHORT $LN9@crt_wcstou
-; Line 1762
+; Line 1740
 	mov	DWORD PTR base$[rsp], 10
-; Line 1763
+; Line 1741
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
 	jne	SHORT $LN11@crt_wcstou
-; Line 1764
+; Line 1742
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -11928,26 +11912,26 @@ $LN7@crt_wcstou:
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN12@crt_wcstou
 $LN14@crt_wcstou:
-; Line 1765
+; Line 1743
 	mov	DWORD PTR base$[rsp], 16
-; Line 1766
+; Line 1744
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
-; Line 1767
+; Line 1745
 	jmp	SHORT $LN13@crt_wcstou
 $LN12@crt_wcstou:
-; Line 1768
+; Line 1746
 	mov	DWORD PTR base$[rsp], 8
 $LN13@crt_wcstou:
 $LN11@crt_wcstou:
-; Line 1770
+; Line 1748
 	jmp	SHORT $LN10@crt_wcstou
 $LN9@crt_wcstou:
-; Line 1771
+; Line 1749
 	cmp	DWORD PTR base$[rsp], 16
 	jne	SHORT $LN15@crt_wcstou
-; Line 1772
+; Line 1750
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -11965,117 +11949,117 @@ $LN9@crt_wcstou:
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN16@crt_wcstou
 $LN17@crt_wcstou:
-; Line 1773
+; Line 1751
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 4
 	mov	QWORD PTR p$[rsp], rax
 $LN16@crt_wcstou:
 $LN15@crt_wcstou:
 $LN10@crt_wcstou:
-; Line 1777
+; Line 1755
 	mov	DWORD PTR result$[rsp], 0
-; Line 1778
+; Line 1756
 	mov	DWORD PTR overflow$[rsp], 0
 $LN2@crt_wcstou:
-; Line 1780
+; Line 1758
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_wcstou
-; Line 1781
+; Line 1759
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, WORD PTR [rax]
 	mov	WORD PTR c$1[rsp], ax
-; Line 1784
+; Line 1762
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 48					; 00000030H
 	jl	SHORT $LN18@crt_wcstou
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN18@crt_wcstou
-; Line 1785
+; Line 1763
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 48					; 00000030H
 	mov	DWORD PTR digit$2[rsp], eax
 	jmp	SHORT $LN19@crt_wcstou
 $LN18@crt_wcstou:
-; Line 1786
+; Line 1764
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 97					; 00000061H
 	jl	SHORT $LN20@crt_wcstou
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 122				; 0000007aH
 	jg	SHORT $LN20@crt_wcstou
-; Line 1787
+; Line 1765
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 87					; 00000057H
 	mov	DWORD PTR digit$2[rsp], eax
 	jmp	SHORT $LN21@crt_wcstou
 $LN20@crt_wcstou:
-; Line 1788
+; Line 1766
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 65					; 00000041H
 	jl	SHORT $LN22@crt_wcstou
 	movzx	eax, WORD PTR c$1[rsp]
 	cmp	eax, 90					; 0000005aH
 	jg	SHORT $LN22@crt_wcstou
-; Line 1789
+; Line 1767
 	movzx	eax, WORD PTR c$1[rsp]
 	sub	eax, 55					; 00000037H
 	mov	DWORD PTR digit$2[rsp], eax
-; Line 1790
+; Line 1768
 	jmp	SHORT $LN23@crt_wcstou
 $LN22@crt_wcstou:
-; Line 1791
+; Line 1769
 	jmp	SHORT $LN3@crt_wcstou
 $LN23@crt_wcstou:
 $LN21@crt_wcstou:
 $LN19@crt_wcstou:
-; Line 1794
+; Line 1772
 	mov	eax, DWORD PTR base$[rsp]
 	cmp	DWORD PTR digit$2[rsp], eax
 	jl	SHORT $LN24@crt_wcstou
-; Line 1795
+; Line 1773
 	jmp	SHORT $LN3@crt_wcstou
 $LN24@crt_wcstou:
-; Line 1798
+; Line 1776
 	mov	eax, -1					; ffffffffH
 	sub	eax, DWORD PTR digit$2[rsp]
 	xor	edx, edx
 	div	DWORD PTR base$[rsp]
 	cmp	DWORD PTR result$[rsp], eax
 	jbe	SHORT $LN25@crt_wcstou
-; Line 1799
+; Line 1777
 	mov	DWORD PTR overflow$[rsp], 1
 $LN25@crt_wcstou:
-; Line 1801
+; Line 1779
 	mov	eax, DWORD PTR result$[rsp]
 	imul	eax, DWORD PTR base$[rsp]
 	add	eax, DWORD PTR digit$2[rsp]
 	mov	DWORD PTR result$[rsp], eax
-; Line 1802
+; Line 1780
 	mov	rax, QWORD PTR p$[rsp]
 	add	rax, 2
 	mov	QWORD PTR p$[rsp], rax
-; Line 1803
+; Line 1781
 	jmp	$LN2@crt_wcstou
 $LN3@crt_wcstou:
-; Line 1805
+; Line 1783
 	cmp	QWORD PTR endptr$[rsp], 0
 	je	SHORT $LN26@crt_wcstou
-; Line 1806
+; Line 1784
 	mov	rax, QWORD PTR endptr$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN26@crt_wcstou:
-; Line 1809
+; Line 1787
 	cmp	DWORD PTR overflow$[rsp], 0
 	je	SHORT $LN27@crt_wcstou
-; Line 1810
+; Line 1788
 	mov	eax, -1					; ffffffffH
 	jmp	SHORT $LN1@crt_wcstou
 $LN27@crt_wcstou:
-; Line 1813
+; Line 1791
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN29@crt_wcstou
 	mov	eax, DWORD PTR result$[rsp]
@@ -12088,7 +12072,7 @@ $LN29@crt_wcstou:
 $LN30@crt_wcstou:
 	mov	eax, DWORD PTR tv163[rsp]
 $LN1@crt_wcstou:
-; Line 1814
+; Line 1792
 	add	rsp, 72					; 00000048H
 	ret	0
 ?crt_wcstoul_base@@YAKPEB_WPEAPEA_WH@Z ENDP		; crt_wcstoul_base
@@ -12106,26 +12090,26 @@ flags$ = 56
 spec$ = 64
 ?crt_wcformat_next@@YAPEB_WPEB_WPEAH11PEA_W@Z PROC	; crt_wcformat_next
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2041
+; Line 2019
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
-; Line 2042
+; Line 2020
 	mov	rax, QWORD PTR width$[rsp]
 	mov	DWORD PTR [rax], 0
-; Line 2043
+; Line 2021
 	mov	rax, QWORD PTR precision$[rsp]
 	mov	DWORD PTR [rax], -1
-; Line 2044
+; Line 2022
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	DWORD PTR [rax], 0
-; Line 2045
+; Line 2023
 	xor	eax, eax
 	mov	rcx, QWORD PTR spec$[rsp]
 	mov	WORD PTR [rcx], ax
-; Line 2047
+; Line 2025
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 37					; 00000025H
@@ -12133,107 +12117,107 @@ spec$ = 64
 	mov	rax, QWORD PTR fmt$[rsp]
 	jmp	$LN1@crt_wcform
 $LN8@crt_wcform:
-; Line 2048
+; Line 2026
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
 $LN2@crt_wcform:
-; Line 2050
+; Line 2028
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_wcform
-; Line 2052
+; Line 2030
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 45					; 0000002dH
 	jne	SHORT $LN9@crt_wcform
-; Line 2054
+; Line 2032
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 1
 	mov	rcx, QWORD PTR flags$[rsp]
 	mov	DWORD PTR [rcx], eax
-; Line 2055
+; Line 2033
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 2056
+; Line 2034
 	jmp	$LN10@crt_wcform
 $LN9@crt_wcform:
-; Line 2057
+; Line 2035
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 43					; 0000002bH
 	jne	SHORT $LN11@crt_wcform
-; Line 2059
+; Line 2037
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 2
 	mov	rcx, QWORD PTR flags$[rsp]
 	mov	DWORD PTR [rcx], eax
-; Line 2060
+; Line 2038
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 2061
+; Line 2039
 	jmp	$LN12@crt_wcform
 $LN11@crt_wcform:
-; Line 2062
+; Line 2040
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 32					; 00000020H
 	jne	SHORT $LN13@crt_wcform
-; Line 2064
+; Line 2042
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 4
 	mov	rcx, QWORD PTR flags$[rsp]
 	mov	DWORD PTR [rcx], eax
-; Line 2065
+; Line 2043
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 2066
+; Line 2044
 	jmp	SHORT $LN14@crt_wcform
 $LN13@crt_wcform:
-; Line 2067
+; Line 2045
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
 	jne	SHORT $LN15@crt_wcform
-; Line 2069
+; Line 2047
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 8
 	mov	rcx, QWORD PTR flags$[rsp]
 	mov	DWORD PTR [rcx], eax
-; Line 2070
+; Line 2048
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 2071
+; Line 2049
 	jmp	SHORT $LN16@crt_wcform
 $LN15@crt_wcform:
-; Line 2072
+; Line 2050
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 35					; 00000023H
 	jne	SHORT $LN17@crt_wcform
-; Line 2074
+; Line 2052
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 16
 	mov	rcx, QWORD PTR flags$[rsp]
 	mov	DWORD PTR [rcx], eax
-; Line 2075
+; Line 2053
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 2076
+; Line 2054
 	jmp	SHORT $LN18@crt_wcform
 $LN17@crt_wcform:
-; Line 2079
+; Line 2057
 	jmp	SHORT $LN19@crt_wcform
 	jmp	SHORT $width_parsing$25
 $LN18@crt_wcform:
@@ -12241,12 +12225,12 @@ $LN16@crt_wcform:
 $LN14@crt_wcform:
 $LN12@crt_wcform:
 $LN10@crt_wcform:
-; Line 2081
+; Line 2059
 	jmp	$LN2@crt_wcform
 $LN3@crt_wcform:
 $LN19@crt_wcform:
 $width_parsing$25:
-; Line 2084
+; Line 2062
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -12255,10 +12239,10 @@ $width_parsing$25:
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN20@crt_wcform
-; Line 2085
+; Line 2063
 	mov	DWORD PTR w$1[rsp], 0
 $LN4@crt_wcform:
-; Line 2086
+; Line 2064
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -12267,39 +12251,39 @@ $LN4@crt_wcform:
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN5@crt_wcform
-; Line 2087
+; Line 2065
 	imul	eax, DWORD PTR w$1[rsp], 10
 	mov	rcx, QWORD PTR fmt$[rsp]
 	movzx	ecx, WORD PTR [rcx]
 	lea	eax, DWORD PTR [rax+rcx-48]
 	mov	DWORD PTR w$1[rsp], eax
-; Line 2088
+; Line 2066
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 2089
+; Line 2067
 	jmp	SHORT $LN4@crt_wcform
 $LN5@crt_wcform:
-; Line 2090
+; Line 2068
 	mov	rax, QWORD PTR width$[rsp]
 	mov	ecx, DWORD PTR w$1[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN20@crt_wcform:
-; Line 2093
+; Line 2071
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 46					; 0000002eH
 	jne	$LN21@crt_wcform
-; Line 2094
+; Line 2072
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 2095
+; Line 2073
 	mov	DWORD PTR p$2[rsp], 0
-; Line 2096
+; Line 2074
 	mov	DWORD PTR has_digit$3[rsp], 0
 $LN6@crt_wcform:
-; Line 2097
+; Line 2075
 	mov	rax, QWORD PTR fmt$[rsp]
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -12308,22 +12292,22 @@ $LN6@crt_wcform:
 	movzx	eax, WORD PTR [rax]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN7@crt_wcform
-; Line 2098
+; Line 2076
 	imul	eax, DWORD PTR p$2[rsp], 10
 	mov	rcx, QWORD PTR fmt$[rsp]
 	movzx	ecx, WORD PTR [rcx]
 	lea	eax, DWORD PTR [rax+rcx-48]
 	mov	DWORD PTR p$2[rsp], eax
-; Line 2099
+; Line 2077
 	mov	DWORD PTR has_digit$3[rsp], 1
-; Line 2100
+; Line 2078
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 2101
+; Line 2079
 	jmp	SHORT $LN6@crt_wcform
 $LN7@crt_wcform:
-; Line 2102
+; Line 2080
 	cmp	DWORD PTR has_digit$3[rsp], 0
 	je	SHORT $LN23@crt_wcform
 	mov	eax, DWORD PTR p$2[rsp]
@@ -12336,16 +12320,16 @@ $LN24@crt_wcform:
 	mov	ecx, DWORD PTR tv147[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN21@crt_wcform:
-; Line 2105
+; Line 2083
 	mov	rax, QWORD PTR spec$[rsp]
 	mov	rcx, QWORD PTR fmt$[rsp]
 	movzx	ecx, WORD PTR [rcx]
 	mov	WORD PTR [rax], cx
-; Line 2106
+; Line 2084
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 $LN1@crt_wcform:
-; Line 2107
+; Line 2085
 	add	rsp, 24
 	ret	0
 ?crt_wcformat_next@@YAPEB_WPEB_WPEAH11PEA_W@Z ENDP	; crt_wcformat_next
@@ -12371,34 +12355,34 @@ negative$ = 168
 upper$ = 176
 ?crt_wcputint@@YAHPEA_W_KHHHHH@Z PROC			; crt_wcputint
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2109
+; Line 2087
 	mov	DWORD PTR [rsp+32], r9d
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
-; Line 2111
+; Line 2089
 	mov	DWORD PTR i$[rsp], 0
-; Line 2112
+; Line 2090
 	mov	DWORD PTR base$[rsp], 10
-; Line 2114
+; Line 2092
 	cmp	QWORD PTR val$[rsp], 0
 	jne	SHORT $LN14@crt_wcputi
-; Line 2115
+; Line 2093
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	WORD PTR tmp$[rsp+rax*2], cx
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 2116
+; Line 2094
 	jmp	$LN15@crt_wcputi
 $LN14@crt_wcputi:
 $LN2@crt_wcputi:
-; Line 2117
+; Line 2095
 	cmp	QWORD PTR val$[rsp], 0
 	jbe	$LN3@crt_wcputi
-; Line 2118
+; Line 2096
 	movsxd	rax, DWORD PTR base$[rsp]
 	mov	QWORD PTR tv70[rsp], rax
 	xor	edx, edx
@@ -12407,10 +12391,10 @@ $LN2@crt_wcputi:
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR d$1[rsp], eax
-; Line 2119
+; Line 2097
 	cmp	DWORD PTR d$1[rsp], 10
 	jge	SHORT $LN16@crt_wcputi
-; Line 2120
+; Line 2098
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -12418,10 +12402,10 @@ $LN2@crt_wcputi:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 2121
+; Line 2099
 	jmp	SHORT $LN17@crt_wcputi
 $LN16@crt_wcputi:
-; Line 2122
+; Line 2100
 	cmp	DWORD PTR upper$[rsp], 0
 	je	SHORT $LN31@crt_wcputi
 	mov	eax, 65					; 00000041H
@@ -12440,7 +12424,7 @@ $LN32@crt_wcputi:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN17@crt_wcputi:
-; Line 2124
+; Line 2102
 	movsxd	rax, DWORD PTR base$[rsp]
 	mov	QWORD PTR tv90[rsp], rax
 	xor	edx, edx
@@ -12448,29 +12432,29 @@ $LN17@crt_wcputi:
 	mov	rcx, QWORD PTR tv90[rsp]
 	div	rcx
 	mov	QWORD PTR val$[rsp], rax
-; Line 2125
+; Line 2103
 	jmp	$LN2@crt_wcputi
 $LN3@crt_wcputi:
 $LN15@crt_wcputi:
-; Line 2128
+; Line 2106
 	mov	eax, DWORD PTR i$[rsp]
 	cmp	DWORD PTR prec$[rsp], eax
 	jle	SHORT $LN18@crt_wcputi
-; Line 2129
+; Line 2107
 	mov	eax, DWORD PTR i$[rsp]
 	mov	DWORD PTR prec$[rsp], eax
 $LN18@crt_wcputi:
-; Line 2132
+; Line 2110
 	mov	eax, DWORD PTR i$[rsp]
 	mov	DWORD PTR total_width$[rsp], eax
-; Line 2133
+; Line 2111
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN19@crt_wcputi
 	mov	eax, DWORD PTR total_width$[rsp]
 	inc	eax
 	mov	DWORD PTR total_width$[rsp], eax
 $LN19@crt_wcputi:
-; Line 2134
+; Line 2112
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 8
 	test	eax, eax
@@ -12480,13 +12464,13 @@ $LN19@crt_wcputi:
 	mov	eax, DWORD PTR width$[rsp]
 	cmp	DWORD PTR prec$[rsp], eax
 	jge	SHORT $LN20@crt_wcputi
-; Line 2135
+; Line 2113
 	mov	eax, DWORD PTR width$[rsp]
 	mov	DWORD PTR total_width$[rsp], eax
 $LN20@crt_wcputi:
-; Line 2138
+; Line 2116
 	mov	DWORD PTR out_i$[rsp], 0
-; Line 2140
+; Line 2118
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
@@ -12498,11 +12482,11 @@ $LN20@crt_wcputi:
 	cmp	DWORD PTR negative$[rsp], 0
 	jne	SHORT $LN21@crt_wcputi
 $LN4@crt_wcputi:
-; Line 2141
+; Line 2119
 	mov	eax, DWORD PTR i$[rsp]
 	cmp	DWORD PTR total_width$[rsp], eax
 	jle	SHORT $LN5@crt_wcputi
-; Line 2142
+; Line 2120
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12510,18 +12494,18 @@ $LN4@crt_wcputi:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2143
+; Line 2121
 	mov	eax, DWORD PTR total_width$[rsp]
 	dec	eax
 	mov	DWORD PTR total_width$[rsp], eax
-; Line 2144
+; Line 2122
 	jmp	SHORT $LN4@crt_wcputi
 $LN5@crt_wcputi:
 $LN21@crt_wcputi:
-; Line 2147
+; Line 2125
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN22@crt_wcputi
-; Line 2148
+; Line 2126
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 45					; 0000002dH
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12531,14 +12515,14 @@ $LN21@crt_wcputi:
 	mov	DWORD PTR out_i$[rsp], eax
 	jmp	SHORT $LN23@crt_wcputi
 $LN22@crt_wcputi:
-; Line 2149
+; Line 2127
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 2
 	test	eax, eax
 	je	SHORT $LN24@crt_wcputi
 	cmp	DWORD PTR negative$[rsp], 0
 	jne	SHORT $LN24@crt_wcputi
-; Line 2150
+; Line 2128
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 43					; 0000002bH
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12548,14 +12532,14 @@ $LN22@crt_wcputi:
 	mov	DWORD PTR out_i$[rsp], eax
 	jmp	SHORT $LN25@crt_wcputi
 $LN24@crt_wcputi:
-; Line 2151
+; Line 2129
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 4
 	test	eax, eax
 	je	SHORT $LN26@crt_wcputi
 	cmp	DWORD PTR negative$[rsp], 0
 	jne	SHORT $LN26@crt_wcputi
-; Line 2152
+; Line 2130
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 32					; 00000020H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12566,13 +12550,13 @@ $LN24@crt_wcputi:
 $LN26@crt_wcputi:
 $LN25@crt_wcputi:
 $LN23@crt_wcputi:
-; Line 2155
+; Line 2133
 	mov	eax, DWORD PTR i$[rsp]
 	mov	ecx, DWORD PTR width$[rsp]
 	sub	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2156
+; Line 2134
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 8
 	test	eax, eax
@@ -12582,19 +12566,19 @@ $LN23@crt_wcputi:
 	mov	eax, DWORD PTR width$[rsp]
 	cmp	DWORD PTR prec$[rsp], eax
 	jl	SHORT $LN27@crt_wcputi
-; Line 2157
+; Line 2135
 	mov	DWORD PTR pad$[rsp], 0
 $LN27@crt_wcputi:
-; Line 2160
+; Line 2138
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN28@crt_wcputi
 $LN6@crt_wcputi:
-; Line 2161
+; Line 2139
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN7@crt_wcputi
-; Line 2162
+; Line 2140
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -12606,14 +12590,14 @@ $LN6@crt_wcputi:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2163
+; Line 2141
 	jmp	SHORT $LN6@crt_wcputi
 $LN7@crt_wcputi:
 $LN8@crt_wcputi:
-; Line 2164
+; Line 2142
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN9@crt_wcputi
-; Line 2165
+; Line 2143
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 32					; 00000020H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12621,25 +12605,25 @@ $LN8@crt_wcputi:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2166
+; Line 2144
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2167
+; Line 2145
 	jmp	SHORT $LN8@crt_wcputi
 $LN9@crt_wcputi:
-; Line 2168
+; Line 2146
 	jmp	SHORT $LN29@crt_wcputi
 $LN28@crt_wcputi:
 $LN10@crt_wcputi:
-; Line 2169
+; Line 2147
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN11@crt_wcputi
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 8
 	test	eax, eax
 	jne	SHORT $LN11@crt_wcputi
-; Line 2170
+; Line 2148
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 32					; 00000020H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12647,18 +12631,18 @@ $LN10@crt_wcputi:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2171
+; Line 2149
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2172
+; Line 2150
 	jmp	SHORT $LN10@crt_wcputi
 $LN11@crt_wcputi:
 $LN12@crt_wcputi:
-; Line 2173
+; Line 2151
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN13@crt_wcputi
-; Line 2174
+; Line 2152
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -12670,13 +12654,13 @@ $LN12@crt_wcputi:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2175
+; Line 2153
 	jmp	SHORT $LN12@crt_wcputi
 $LN13@crt_wcputi:
 $LN29@crt_wcputi:
-; Line 2178
+; Line 2156
 	mov	eax, DWORD PTR out_i$[rsp]
-; Line 2179
+; Line 2157
 	add	rsp, 120				; 00000078H
 	ret	0
 ?crt_wcputint@@YAHPEA_W_KHHHHH@Z ENDP			; crt_wcputint
@@ -12700,32 +12684,32 @@ upper$ = 168
 base$ = 176
 ?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z PROC		; crt_wcputunsigned
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2181
+; Line 2159
 	mov	DWORD PTR [rsp+32], r9d
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
-; Line 2183
+; Line 2161
 	mov	DWORD PTR i$[rsp], 0
-; Line 2185
+; Line 2163
 	cmp	QWORD PTR val$[rsp], 0
 	jne	SHORT $LN10@crt_wcputu
-; Line 2186
+; Line 2164
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	WORD PTR tmp$[rsp+rax*2], cx
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 2187
+; Line 2165
 	jmp	$LN11@crt_wcputu
 $LN10@crt_wcputu:
 $LN2@crt_wcputu:
-; Line 2188
+; Line 2166
 	cmp	QWORD PTR val$[rsp], 0
 	jbe	$LN3@crt_wcputu
-; Line 2189
+; Line 2167
 	movsxd	rax, DWORD PTR base$[rsp]
 	mov	QWORD PTR tv70[rsp], rax
 	xor	edx, edx
@@ -12734,10 +12718,10 @@ $LN2@crt_wcputu:
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR d$1[rsp], eax
-; Line 2190
+; Line 2168
 	cmp	DWORD PTR d$1[rsp], 10
 	jge	SHORT $LN12@crt_wcputu
-; Line 2191
+; Line 2169
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -12745,10 +12729,10 @@ $LN2@crt_wcputu:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 2192
+; Line 2170
 	jmp	SHORT $LN13@crt_wcputu
 $LN12@crt_wcputu:
-; Line 2193
+; Line 2171
 	cmp	DWORD PTR upper$[rsp], 0
 	je	SHORT $LN17@crt_wcputu
 	mov	eax, 65					; 00000041H
@@ -12767,7 +12751,7 @@ $LN18@crt_wcputu:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN13@crt_wcputu:
-; Line 2195
+; Line 2173
 	movsxd	rax, DWORD PTR base$[rsp]
 	mov	QWORD PTR tv90[rsp], rax
 	xor	edx, edx
@@ -12775,19 +12759,19 @@ $LN13@crt_wcputu:
 	mov	rcx, QWORD PTR tv90[rsp]
 	div	rcx
 	mov	QWORD PTR val$[rsp], rax
-; Line 2196
+; Line 2174
 	jmp	$LN2@crt_wcputu
 $LN3@crt_wcputu:
 $LN11@crt_wcputu:
-; Line 2199
+; Line 2177
 	mov	DWORD PTR out_i$[rsp], 0
-; Line 2200
+; Line 2178
 	mov	eax, DWORD PTR i$[rsp]
 	mov	ecx, DWORD PTR width$[rsp]
 	sub	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2202
+; Line 2180
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
@@ -12797,10 +12781,10 @@ $LN11@crt_wcputu:
 	test	eax, eax
 	je	SHORT $LN14@crt_wcputu
 $LN4@crt_wcputu:
-; Line 2203
+; Line 2181
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN5@crt_wcputu
-; Line 2204
+; Line 2182
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12808,19 +12792,19 @@ $LN4@crt_wcputu:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2205
+; Line 2183
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2206
+; Line 2184
 	jmp	SHORT $LN4@crt_wcputu
 $LN5@crt_wcputu:
 $LN14@crt_wcputu:
 $LN6@crt_wcputu:
-; Line 2209
+; Line 2187
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN7@crt_wcputu
-; Line 2210
+; Line 2188
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -12832,19 +12816,19 @@ $LN6@crt_wcputu:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2211
+; Line 2189
 	jmp	SHORT $LN6@crt_wcputu
 $LN7@crt_wcputu:
-; Line 2213
+; Line 2191
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN15@crt_wcputu
 $LN8@crt_wcputu:
-; Line 2214
+; Line 2192
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN9@crt_wcputu
-; Line 2215
+; Line 2193
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 32					; 00000020H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12852,17 +12836,17 @@ $LN8@crt_wcputu:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2216
+; Line 2194
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2217
+; Line 2195
 	jmp	SHORT $LN8@crt_wcputu
 $LN9@crt_wcputu:
 $LN15@crt_wcputu:
-; Line 2220
+; Line 2198
 	mov	eax, DWORD PTR out_i$[rsp]
-; Line 2221
+; Line 2199
 	add	rsp, 120				; 00000078H
 	ret	0
 ?crt_wcputunsigned@@YAHPEA_W_KHHHHH@Z ENDP		; crt_wcputunsigned
@@ -12884,42 +12868,42 @@ flags$ = 144
 upper$ = 152
 ?crt_wcputhex@@YAHPEA_W_KHHHH@Z PROC			; crt_wcputhex
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2223
+; Line 2201
 	mov	DWORD PTR [rsp+32], r9d
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
-; Line 2225
+; Line 2203
 	mov	DWORD PTR i$[rsp], 0
-; Line 2227
+; Line 2205
 	cmp	QWORD PTR val$[rsp], 0
 	jne	SHORT $LN10@crt_wcputh
-; Line 2228
+; Line 2206
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	WORD PTR tmp$[rsp+rax*2], cx
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 2229
+; Line 2207
 	jmp	$LN11@crt_wcputh
 $LN10@crt_wcputh:
 $LN2@crt_wcputh:
-; Line 2230
+; Line 2208
 	cmp	QWORD PTR val$[rsp], 0
 	jbe	$LN3@crt_wcputh
-; Line 2231
+; Line 2209
 	xor	edx, edx
 	mov	rax, QWORD PTR val$[rsp]
 	mov	ecx, 16
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR d$1[rsp], eax
-; Line 2232
+; Line 2210
 	cmp	DWORD PTR d$1[rsp], 10
 	jge	SHORT $LN12@crt_wcputh
-; Line 2233
+; Line 2211
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -12927,10 +12911,10 @@ $LN2@crt_wcputh:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 2234
+; Line 2212
 	jmp	SHORT $LN13@crt_wcputh
 $LN12@crt_wcputh:
-; Line 2235
+; Line 2213
 	cmp	DWORD PTR upper$[rsp], 0
 	je	SHORT $LN18@crt_wcputh
 	mov	eax, 65					; 00000041H
@@ -12949,19 +12933,19 @@ $LN19@crt_wcputh:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN13@crt_wcputh:
-; Line 2237
+; Line 2215
 	xor	edx, edx
 	mov	rax, QWORD PTR val$[rsp]
 	mov	ecx, 16
 	div	rcx
 	mov	QWORD PTR val$[rsp], rax
-; Line 2238
+; Line 2216
 	jmp	$LN2@crt_wcputh
 $LN3@crt_wcputh:
 $LN11@crt_wcputh:
-; Line 2241
+; Line 2219
 	mov	DWORD PTR out_i$[rsp], 0
-; Line 2243
+; Line 2221
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 16
 	test	eax, eax
@@ -12970,7 +12954,7 @@ $LN11@crt_wcputh:
 	jne	SHORT $LN14@crt_wcputh
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN14@crt_wcputh
-; Line 2244
+; Line 2222
 	cmp	DWORD PTR upper$[rsp], 0
 	je	SHORT $LN20@crt_wcputh
 	mov	eax, 88					; 00000058H
@@ -12987,7 +12971,7 @@ $LN21@crt_wcputh:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2245
+; Line 2223
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -12996,13 +12980,13 @@ $LN21@crt_wcputh:
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
 $LN14@crt_wcputh:
-; Line 2248
+; Line 2226
 	mov	eax, DWORD PTR i$[rsp]
 	mov	ecx, DWORD PTR width$[rsp]
 	sub	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2249
+; Line 2227
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
@@ -13012,10 +12996,10 @@ $LN14@crt_wcputh:
 	test	eax, eax
 	je	SHORT $LN15@crt_wcputh
 $LN4@crt_wcputh:
-; Line 2250
+; Line 2228
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN5@crt_wcputh
-; Line 2251
+; Line 2229
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -13023,19 +13007,19 @@ $LN4@crt_wcputh:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2252
+; Line 2230
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2253
+; Line 2231
 	jmp	SHORT $LN4@crt_wcputh
 $LN5@crt_wcputh:
 $LN15@crt_wcputh:
 $LN6@crt_wcputh:
-; Line 2256
+; Line 2234
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN7@crt_wcputh
-; Line 2257
+; Line 2235
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -13047,19 +13031,19 @@ $LN6@crt_wcputh:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2258
+; Line 2236
 	jmp	SHORT $LN6@crt_wcputh
 $LN7@crt_wcputh:
-; Line 2260
+; Line 2238
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN16@crt_wcputh
 $LN8@crt_wcputh:
-; Line 2261
+; Line 2239
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN9@crt_wcputh
-; Line 2262
+; Line 2240
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 32					; 00000020H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -13067,17 +13051,17 @@ $LN8@crt_wcputh:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2263
+; Line 2241
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2264
+; Line 2242
 	jmp	SHORT $LN8@crt_wcputh
 $LN9@crt_wcputh:
 $LN16@crt_wcputh:
-; Line 2267
+; Line 2245
 	mov	eax, DWORD PTR out_i$[rsp]
-; Line 2268
+; Line 2246
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_wcputhex@@YAHPEA_W_KHHHH@Z ENDP			; crt_wcputhex
@@ -13093,43 +13077,43 @@ buf$ = 112
 ptr$ = 120
 ?crt_wcputpointer@@YAHPEA_WPEAX@Z PROC			; crt_wcputpointer
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2270
+; Line 2248
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
-; Line 2271
+; Line 2249
 	mov	rax, QWORD PTR ptr$[rsp]
 	mov	QWORD PTR val$[rsp], rax
-; Line 2273
+; Line 2251
 	mov	DWORD PTR i$[rsp], 0
-; Line 2275
+; Line 2253
 	cmp	QWORD PTR val$[rsp], 0
 	jne	SHORT $LN6@crt_wcputp
-; Line 2276
+; Line 2254
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	WORD PTR tmp$[rsp+rax*2], cx
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 2277
+; Line 2255
 	jmp	SHORT $LN7@crt_wcputp
 $LN6@crt_wcputp:
 $LN2@crt_wcputp:
-; Line 2278
+; Line 2256
 	cmp	QWORD PTR val$[rsp], 0
 	jbe	SHORT $LN3@crt_wcputp
-; Line 2279
+; Line 2257
 	xor	edx, edx
 	mov	rax, QWORD PTR val$[rsp]
 	mov	ecx, 16
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR d$1[rsp], eax
-; Line 2280
+; Line 2258
 	cmp	DWORD PTR d$1[rsp], 10
 	jge	SHORT $LN8@crt_wcputp
-; Line 2281
+; Line 2259
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -13137,10 +13121,10 @@ $LN2@crt_wcputp:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 2282
+; Line 2260
 	jmp	SHORT $LN9@crt_wcputp
 $LN8@crt_wcputp:
-; Line 2283
+; Line 2261
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 87					; 00000057H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -13149,19 +13133,19 @@ $LN8@crt_wcputp:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN9@crt_wcputp:
-; Line 2285
+; Line 2263
 	xor	edx, edx
 	mov	rax, QWORD PTR val$[rsp]
 	mov	ecx, 16
 	div	rcx
 	mov	QWORD PTR val$[rsp], rax
-; Line 2286
+; Line 2264
 	jmp	SHORT $LN2@crt_wcputp
 $LN3@crt_wcputp:
 $LN7@crt_wcputp:
-; Line 2289
+; Line 2267
 	mov	DWORD PTR out_i$[rsp], 0
-; Line 2290
+; Line 2268
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 48					; 00000030H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -13169,7 +13153,7 @@ $LN7@crt_wcputp:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2291
+; Line 2269
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 120				; 00000078H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -13178,10 +13162,10 @@ $LN7@crt_wcputp:
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
 $LN4@crt_wcputp:
-; Line 2293
+; Line 2271
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN5@crt_wcputp
-; Line 2294
+; Line 2272
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -13193,12 +13177,12 @@ $LN4@crt_wcputp:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2295
+; Line 2273
 	jmp	SHORT $LN4@crt_wcputp
 $LN5@crt_wcputp:
-; Line 2297
+; Line 2275
 	mov	eax, DWORD PTR out_i$[rsp]
-; Line 2298
+; Line 2276
 	add	rsp, 104				; 00000068H
 	ret	0
 ?crt_wcputpointer@@YAHPEA_WPEAX@Z ENDP			; crt_wcputpointer
@@ -13215,58 +13199,58 @@ width$ = 48
 prec$ = 56
 ?crt_wcputstring@@YAHPEA_WPEB_WHH@Z PROC		; crt_wcputstring
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2300
+; Line 2278
 	mov	DWORD PTR [rsp+32], r9d
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
-; Line 2301
+; Line 2279
 	mov	DWORD PTR len$[rsp], 0
-; Line 2302
+; Line 2280
 	cmp	QWORD PTR str$[rsp], 0
 	je	SHORT $LN9@crt_wcputs
 $LN2@crt_wcputs:
-; Line 2303
+; Line 2281
 	movsxd	rax, DWORD PTR len$[rsp]
 	mov	rcx, QWORD PTR str$[rsp]
 	movzx	eax, WORD PTR [rcx+rax*2]
 	test	eax, eax
 	je	SHORT $LN3@crt_wcputs
-; Line 2304
+; Line 2282
 	mov	eax, DWORD PTR len$[rsp]
 	inc	eax
 	mov	DWORD PTR len$[rsp], eax
-; Line 2305
+; Line 2283
 	jmp	SHORT $LN2@crt_wcputs
 $LN3@crt_wcputs:
 $LN9@crt_wcputs:
-; Line 2308
+; Line 2286
 	cmp	DWORD PTR prec$[rsp], 0
 	jle	SHORT $LN10@crt_wcputs
 	mov	eax, DWORD PTR len$[rsp]
 	cmp	DWORD PTR prec$[rsp], eax
 	jge	SHORT $LN10@crt_wcputs
-; Line 2309
+; Line 2287
 	mov	eax, DWORD PTR prec$[rsp]
 	mov	DWORD PTR len$[rsp], eax
 $LN10@crt_wcputs:
-; Line 2312
+; Line 2290
 	mov	DWORD PTR out_i$[rsp], 0
-; Line 2313
+; Line 2291
 	mov	eax, DWORD PTR len$[rsp]
 	mov	ecx, DWORD PTR width$[rsp]
 	sub	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2315
+; Line 2293
 	cmp	DWORD PTR pad$[rsp], 0
 	jl	SHORT $LN11@crt_wcputs
 $LN4@crt_wcputs:
-; Line 2316
+; Line 2294
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN5@crt_wcputs
-; Line 2317
+; Line 2295
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	ecx, 32					; 00000020H
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -13274,18 +13258,18 @@ $LN4@crt_wcputs:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2318
+; Line 2296
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 2319
+; Line 2297
 	jmp	SHORT $LN4@crt_wcputs
 $LN5@crt_wcputs:
 $LN11@crt_wcputs:
-; Line 2322
+; Line 2300
 	cmp	QWORD PTR str$[rsp], 0
 	je	SHORT $LN12@crt_wcputs
-; Line 2323
+; Line 2301
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN8@crt_wcputs
 $LN6@crt_wcputs:
@@ -13296,7 +13280,7 @@ $LN8@crt_wcputs:
 	mov	eax, DWORD PTR len$[rsp]
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN7@crt_wcputs
-; Line 2324
+; Line 2302
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR out_i$[rsp]
 	mov	rdx, QWORD PTR buf$[rsp]
@@ -13306,13 +13290,13 @@ $LN8@crt_wcputs:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 2325
+; Line 2303
 	jmp	SHORT $LN6@crt_wcputs
 $LN7@crt_wcputs:
 $LN12@crt_wcputs:
-; Line 2328
+; Line 2306
 	mov	eax, DWORD PTR out_i$[rsp]
-; Line 2329
+; Line 2307
 	add	rsp, 24
 	ret	0
 ?crt_wcputstring@@YAHPEA_WPEB_WHH@Z ENDP		; crt_wcputstring
@@ -13322,9 +13306,9 @@ _TEXT	SEGMENT
 mode$ = 8
 ?crt_access_mode_to_winapi_w@@YAKPEB_W@Z PROC		; crt_access_mode_to_winapi_w
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2832
+; Line 2810
 	mov	QWORD PTR [rsp+8], rcx
-; Line 2833
+; Line 2811
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13338,7 +13322,7 @@ mode$ = 8
 	cmp	eax, 82					; 00000052H
 	jne	SHORT $LN2@crt_access
 $LN3@crt_access:
-; Line 2834
+; Line 2812
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13348,11 +13332,11 @@ $LN3@crt_access:
 	mov	eax, -1073741824			; c0000000H
 	jmp	$LN1@crt_access
 $LN4@crt_access:
-; Line 2835
+; Line 2813
 	mov	eax, -2147483648			; 80000000H
 	jmp	$LN1@crt_access
 $LN2@crt_access:
-; Line 2837
+; Line 2815
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13366,7 +13350,7 @@ $LN2@crt_access:
 	cmp	eax, 87					; 00000057H
 	jne	SHORT $LN5@crt_access
 $LN6@crt_access:
-; Line 2838
+; Line 2816
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13376,11 +13360,11 @@ $LN6@crt_access:
 	mov	eax, -1073741824			; c0000000H
 	jmp	SHORT $LN1@crt_access
 $LN7@crt_access:
-; Line 2839
+; Line 2817
 	mov	eax, 1073741824				; 40000000H
 	jmp	SHORT $LN1@crt_access
 $LN5@crt_access:
-; Line 2841
+; Line 2819
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13394,7 +13378,7 @@ $LN5@crt_access:
 	cmp	eax, 65					; 00000041H
 	jne	SHORT $LN8@crt_access
 $LN9@crt_access:
-; Line 2842
+; Line 2820
 	mov	eax, 2
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13404,14 +13388,14 @@ $LN9@crt_access:
 	mov	eax, -1073741824			; c0000000H
 	jmp	SHORT $LN1@crt_access
 $LN10@crt_access:
-; Line 2843
+; Line 2821
 	mov	eax, 1073741824				; 40000000H
 	jmp	SHORT $LN1@crt_access
 $LN8@crt_access:
-; Line 2845
+; Line 2823
 	mov	eax, -1073741824			; c0000000H
 $LN1@crt_access:
-; Line 2846
+; Line 2824
 	ret	0
 ?crt_access_mode_to_winapi_w@@YAKPEB_W@Z ENDP		; crt_access_mode_to_winapi_w
 _TEXT	ENDS
@@ -13420,9 +13404,9 @@ _TEXT	SEGMENT
 mode$ = 8
 ?crt_creation_mode_w@@YAKPEB_W@Z PROC			; crt_creation_mode_w
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2861
+; Line 2839
 	mov	QWORD PTR [rsp+8], rcx
-; Line 2862
+; Line 2840
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13436,11 +13420,11 @@ mode$ = 8
 	cmp	eax, 82					; 00000052H
 	jne	SHORT $LN2@crt_creati
 $LN3@crt_creati:
-; Line 2863
+; Line 2841
 	mov	eax, 3
 	jmp	SHORT $LN1@crt_creati
 $LN2@crt_creati:
-; Line 2865
+; Line 2843
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13454,11 +13438,11 @@ $LN2@crt_creati:
 	cmp	eax, 87					; 00000057H
 	jne	SHORT $LN4@crt_creati
 $LN5@crt_creati:
-; Line 2866
+; Line 2844
 	mov	eax, 2
 	jmp	SHORT $LN1@crt_creati
 $LN4@crt_creati:
-; Line 2868
+; Line 2846
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13472,14 +13456,14 @@ $LN4@crt_creati:
 	cmp	eax, 65					; 00000041H
 	jne	SHORT $LN6@crt_creati
 $LN7@crt_creati:
-; Line 2869
+; Line 2847
 	mov	eax, 4
 	jmp	SHORT $LN1@crt_creati
 $LN6@crt_creati:
-; Line 2871
+; Line 2849
 	mov	eax, 3
 $LN1@crt_creati:
-; Line 2872
+; Line 2850
 	ret	0
 ?crt_creation_mode_w@@YAKPEB_W@Z ENDP			; crt_creation_mode_w
 _TEXT	ENDS
@@ -13487,9 +13471,9 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?crt_file_share_mode@@YAKXZ PROC			; crt_file_share_mode
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2875
+; Line 2853
 	mov	eax, 3
-; Line 2876
+; Line 2854
 	ret	0
 ?crt_file_share_mode@@YAKXZ ENDP			; crt_file_share_mode
 _TEXT	ENDS
@@ -13506,12 +13490,12 @@ f$ = 104
 mode$ = 112
 ?crt_create_file_common@@YAPEAXPEAXPEAUcrt_FILE@@PEB_W@Z PROC ; crt_create_file_common
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 2878
+; Line 2856
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
-; Line 2879
+; Line 2857
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13531,25 +13515,25 @@ $LN3@crt_create:
 	movzx	eax, WORD PTR [rcx+rax]
 	cmp	eax, 43					; 0000002bH
 	je	SHORT $LN2@crt_create
-; Line 2881
+; Line 2859
 	lea	rcx, QWORD PTR apiResolve2$3[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 2882
+; Line 2860
 	mov	DWORD PTR hashKernel32$1[rsp], 764661557 ; 2d93cf35H
-; Line 2883
+; Line 2861
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve2$3[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel322$4[rsp], rax
-; Line 2890
+; Line 2868
 	mov	DWORD PTR hashSetFilePointer$2[rsp], 1990967623 ; 76abc147H
-; Line 2891
+; Line 2869
 	mov	r8d, 1990967623				; 76abc147H
 	mov	rdx, QWORD PTR lpKernel322$4[rsp]
 	lea	rcx, QWORD PTR apiResolve2$3[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pSetFilePointer$5[rsp], rax
-; Line 2892
+; Line 2870
 	mov	rax, QWORD PTR pSetFilePointer$5[rsp]
 	mov	QWORD PTR tv92[rsp], rax
 	mov	r9d, 2
@@ -13557,23 +13541,23 @@ $LN3@crt_create:
 	xor	edx, edx
 	mov	rcx, QWORD PTR hFile$[rsp]
 	call	QWORD PTR tv92[rsp]
-; Line 2893
+; Line 2871
 	lea	rcx, QWORD PTR apiResolve2$3[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	npad	1
 $LN2@crt_create:
-; Line 2895
+; Line 2873
 	mov	rax, QWORD PTR f$[rsp]
 	mov	rcx, QWORD PTR hFile$[rsp]
 	mov	QWORD PTR [rax], rcx
-; Line 2896
+; Line 2874
 	mov	rax, QWORD PTR f$[rsp]
 	mov	BYTE PTR [rax+8], 0
-; Line 2897
+; Line 2875
 	xor	eax, eax
 	mov	rcx, QWORD PTR f$[rsp]
 	mov	WORD PTR [rcx+10], ax
-; Line 2899
+; Line 2877
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13587,14 +13571,14 @@ $LN2@crt_create:
 	cmp	eax, 82					; 00000052H
 	jne	SHORT $LN4@crt_create
 $LN5@crt_create:
-; Line 2900
+; Line 2878
 	mov	rax, QWORD PTR f$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	or	eax, 1
 	mov	rcx, QWORD PTR f$[rsp]
 	mov	BYTE PTR [rcx+8], al
 $LN4@crt_create:
-; Line 2902
+; Line 2880
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13608,14 +13592,14 @@ $LN4@crt_create:
 	cmp	eax, 87					; 00000057H
 	jne	SHORT $LN6@crt_create
 $LN7@crt_create:
-; Line 2903
+; Line 2881
 	mov	rax, QWORD PTR f$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	or	eax, 2
 	mov	rcx, QWORD PTR f$[rsp]
 	mov	BYTE PTR [rcx+8], al
 $LN6@crt_create:
-; Line 2905
+; Line 2883
 	mov	eax, 2
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR mode$[rsp]
@@ -13629,7 +13613,7 @@ $LN6@crt_create:
 	cmp	eax, 65					; 00000041H
 	jne	SHORT $LN8@crt_create
 $LN9@crt_create:
-; Line 2906
+; Line 2884
 	mov	rax, QWORD PTR f$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	or	eax, 2
@@ -13637,13 +13621,13 @@ $LN9@crt_create:
 	mov	rcx, QWORD PTR f$[rsp]
 	mov	BYTE PTR [rcx+8], al
 $LN8@crt_create:
-; Line 2908
+; Line 2886
 	mov	dx, 43					; 0000002bH
 	mov	rcx, QWORD PTR mode$[rsp]
 	call	?crt_wcschr@@YAPEA_WPEB_W_W@Z		; crt_wcschr
 	test	rax, rax
 	je	SHORT $LN10@crt_create
-; Line 2909
+; Line 2887
 	mov	rax, QWORD PTR f$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	or	eax, 1
@@ -13651,9 +13635,9 @@ $LN8@crt_create:
 	mov	rcx, QWORD PTR f$[rsp]
 	mov	BYTE PTR [rcx+8], al
 $LN10@crt_create:
-; Line 2911
+; Line 2889
 	mov	rax, QWORD PTR hFile$[rsp]
-; Line 2912
+; Line 2890
 	add	rsp, 88					; 00000058H
 	ret	0
 ?crt_create_file_common@@YAPEAXPEAXPEAUcrt_FILE@@PEB_W@Z ENDP ; crt_create_file_common
@@ -13676,11 +13660,11 @@ str$ = 160
 len$ = 168
 ?crt_cpputs@@YAHPEBD_K@Z PROC				; crt_cpputs
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3511
+; Line 3489
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 152				; 00000098H
-; Line 3512
+; Line 3490
 	cmp	QWORD PTR str$[rsp], 0
 	je	SHORT $LN3@crt_cpputs
 	cmp	QWORD PTR len$[rsp], 0
@@ -13689,41 +13673,41 @@ $LN3@crt_cpputs:
 	xor	eax, eax
 	jmp	$LN1@crt_cpputs
 $LN2@crt_cpputs:
-; Line 3513
+; Line 3491
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??0ApiResolve@@QEAA@XZ			; ApiResolve::ApiResolve
-; Line 3514
+; Line 3492
 	mov	DWORD PTR hashKernel32$[rsp], 764661557	; 2d93cf35H
-; Line 3515
+; Line 3493
 	mov	edx, 764661557				; 2d93cf35H
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z ; ApiResolve::GetModuleBaseAddress
 	mov	QWORD PTR lpKernel32$[rsp], rax
-; Line 3517
+; Line 3495
 	mov	DWORD PTR hashGetStdHandle$[rsp], 1078847043 ; 404de643H
-; Line 3518
+; Line 3496
 	mov	r8d, 1078847043				; 404de643H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pGetStdHandle$[rsp], rax
-; Line 3524
+; Line 3502
 	mov	DWORD PTR hashWriteFile$[rsp], -339353823 ; ebc5df21H
-; Line 3525
+; Line 3503
 	mov	r8d, -339353823				; ebc5df21H
 	mov	rdx, QWORD PTR lpKernel32$[rsp]
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z ; ApiResolve::GetApiAddress
 	mov	QWORD PTR pWriteFile$[rsp], rax
-; Line 3527
+; Line 3505
 	mov	rax, QWORD PTR pGetStdHandle$[rsp]
 	mov	QWORD PTR tv83[rsp], rax
 	mov	ecx, -11				; fffffff5H
 	call	QWORD PTR tv83[rsp]
 	mov	QWORD PTR hStdout$[rsp], rax
-; Line 3528
+; Line 3506
 	mov	DWORD PTR written$[rsp], 0
-; Line 3529
+; Line 3507
 	mov	rax, QWORD PTR pWriteFile$[rsp]
 	mov	QWORD PTR tv91[rsp], rax
 	mov	QWORD PTR [rsp+32], 0
@@ -13733,14 +13717,14 @@ $LN2@crt_cpputs:
 	mov	rcx, QWORD PTR hStdout$[rsp]
 	call	QWORD PTR tv91[rsp]
 	npad	1
-; Line 3530
+; Line 3508
 	mov	eax, DWORD PTR written$[rsp]
 	mov	DWORD PTR $T1[rsp], eax
 	lea	rcx, QWORD PTR apiResolve$[rsp]
 	call	??1ApiResolve@@QEAA@XZ			; ApiResolve::~ApiResolve
 	mov	eax, DWORD PTR $T1[rsp]
 $LN1@crt_cpputs:
-; Line 3531
+; Line 3509
 	add	rsp, 152				; 00000098H
 	ret	0
 ?crt_cpputs@@YAHPEBD_K@Z ENDP				; crt_cpputs
@@ -13758,25 +13742,25 @@ flags$ = 56
 spec$ = 64
 ?crt_format_next@@YAPEBDPEBDPEAH11PEAD@Z PROC		; crt_format_next
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3533
+; Line 3511
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
-; Line 3534
+; Line 3512
 	mov	rax, QWORD PTR width$[rsp]
 	mov	DWORD PTR [rax], 0
-; Line 3535
+; Line 3513
 	mov	rax, QWORD PTR precision$[rsp]
 	mov	DWORD PTR [rax], -1
-; Line 3536
+; Line 3514
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	DWORD PTR [rax], 0
-; Line 3537
+; Line 3515
 	mov	rax, QWORD PTR spec$[rsp]
 	mov	BYTE PTR [rax], 0
-; Line 3539
+; Line 3517
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 37					; 00000025H
@@ -13784,22 +13768,22 @@ spec$ = 64
 	mov	rax, QWORD PTR fmt$[rsp]
 	jmp	$LN1@crt_format
 $LN8@crt_format:
-; Line 3540
+; Line 3518
 	mov	rax, QWORD PTR fmt$[rsp]
 	inc	rax
 	mov	QWORD PTR fmt$[rsp], rax
 $LN2@crt_format:
-; Line 3542
+; Line 3520
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_format
-; Line 3543
+; Line 3521
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 45					; 0000002dH
 	jne	SHORT $LN9@crt_format
-; Line 3544
+; Line 3522
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 1
@@ -13810,12 +13794,12 @@ $LN2@crt_format:
 	mov	QWORD PTR fmt$[rsp], rax
 	jmp	$LN10@crt_format
 $LN9@crt_format:
-; Line 3545
+; Line 3523
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 43					; 0000002bH
 	jne	SHORT $LN11@crt_format
-; Line 3546
+; Line 3524
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 2
@@ -13826,12 +13810,12 @@ $LN9@crt_format:
 	mov	QWORD PTR fmt$[rsp], rax
 	jmp	$LN12@crt_format
 $LN11@crt_format:
-; Line 3547
+; Line 3525
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 32					; 00000020H
 	jne	SHORT $LN13@crt_format
-; Line 3548
+; Line 3526
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 4
@@ -13842,12 +13826,12 @@ $LN11@crt_format:
 	mov	QWORD PTR fmt$[rsp], rax
 	jmp	$LN14@crt_format
 $LN13@crt_format:
-; Line 3549
+; Line 3527
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 48					; 00000030H
 	jne	SHORT $LN15@crt_format
-; Line 3550
+; Line 3528
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 8
@@ -13858,12 +13842,12 @@ $LN13@crt_format:
 	mov	QWORD PTR fmt$[rsp], rax
 	jmp	$LN16@crt_format
 $LN15@crt_format:
-; Line 3551
+; Line 3529
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 35					; 00000023H
 	jne	SHORT $LN17@crt_format
-; Line 3552
+; Line 3530
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	eax, DWORD PTR [rax]
 	or	eax, 16
@@ -13874,37 +13858,37 @@ $LN15@crt_format:
 	mov	QWORD PTR fmt$[rsp], rax
 	jmp	SHORT $LN18@crt_format
 $LN17@crt_format:
-; Line 3553
+; Line 3531
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 108				; 0000006cH
 	jne	SHORT $LN19@crt_format
-; Line 3554
+; Line 3532
 	mov	eax, 1
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax]
 	cmp	eax, 108				; 0000006cH
 	jne	SHORT $LN21@crt_format
-; Line 3555
+; Line 3533
 	mov	rax, QWORD PTR spec$[rsp]
 	mov	BYTE PTR [rax], 76			; 0000004cH
-; Line 3556
+; Line 3534
 	mov	rax, QWORD PTR fmt$[rsp]
 	add	rax, 2
 	jmp	$LN1@crt_format
 $LN21@crt_format:
-; Line 3558
+; Line 3536
 	mov	rax, QWORD PTR spec$[rsp]
 	mov	BYTE PTR [rax], 108			; 0000006cH
-; Line 3559
+; Line 3537
 	mov	rax, QWORD PTR fmt$[rsp]
 	inc	rax
 	jmp	$LN1@crt_format
-; Line 3560
+; Line 3538
 	jmp	SHORT $LN20@crt_format
 $LN19@crt_format:
-; Line 3561
+; Line 3539
 	jmp	SHORT $LN22@crt_format
 	jmp	SHORT $width_parse$28
 $LN20@crt_format:
@@ -13913,12 +13897,12 @@ $LN16@crt_format:
 $LN14@crt_format:
 $LN12@crt_format:
 $LN10@crt_format:
-; Line 3563
+; Line 3541
 	jmp	$LN2@crt_format
 $LN3@crt_format:
 $LN22@crt_format:
 $width_parse$28:
-; Line 3566
+; Line 3544
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -13927,10 +13911,10 @@ $width_parse$28:
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN23@crt_format
-; Line 3567
+; Line 3545
 	mov	DWORD PTR w$1[rsp], 0
 $LN4@crt_format:
-; Line 3568
+; Line 3546
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -13939,39 +13923,39 @@ $LN4@crt_format:
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN5@crt_format
-; Line 3569
+; Line 3547
 	imul	eax, DWORD PTR w$1[rsp], 10
 	mov	rcx, QWORD PTR fmt$[rsp]
 	movsx	ecx, BYTE PTR [rcx]
 	lea	eax, DWORD PTR [rax+rcx-48]
 	mov	DWORD PTR w$1[rsp], eax
-; Line 3570
+; Line 3548
 	mov	rax, QWORD PTR fmt$[rsp]
 	inc	rax
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 3571
+; Line 3549
 	jmp	SHORT $LN4@crt_format
 $LN5@crt_format:
-; Line 3572
+; Line 3550
 	mov	rax, QWORD PTR width$[rsp]
 	mov	ecx, DWORD PTR w$1[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN23@crt_format:
-; Line 3575
+; Line 3553
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 46					; 0000002eH
 	jne	$LN24@crt_format
-; Line 3576
+; Line 3554
 	mov	rax, QWORD PTR fmt$[rsp]
 	inc	rax
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 3577
+; Line 3555
 	mov	DWORD PTR p$2[rsp], 0
-; Line 3578
+; Line 3556
 	mov	DWORD PTR has_digit$3[rsp], 0
 $LN6@crt_format:
-; Line 3579
+; Line 3557
 	mov	rax, QWORD PTR fmt$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 48					; 00000030H
@@ -13980,22 +13964,22 @@ $LN6@crt_format:
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN7@crt_format
-; Line 3580
+; Line 3558
 	imul	eax, DWORD PTR p$2[rsp], 10
 	mov	rcx, QWORD PTR fmt$[rsp]
 	movsx	ecx, BYTE PTR [rcx]
 	lea	eax, DWORD PTR [rax+rcx-48]
 	mov	DWORD PTR p$2[rsp], eax
-; Line 3581
+; Line 3559
 	mov	DWORD PTR has_digit$3[rsp], 1
-; Line 3582
+; Line 3560
 	mov	rax, QWORD PTR fmt$[rsp]
 	inc	rax
 	mov	QWORD PTR fmt$[rsp], rax
-; Line 3583
+; Line 3561
 	jmp	SHORT $LN6@crt_format
 $LN7@crt_format:
-; Line 3584
+; Line 3562
 	cmp	DWORD PTR has_digit$3[rsp], 0
 	je	SHORT $LN26@crt_format
 	mov	eax, DWORD PTR p$2[rsp]
@@ -14008,16 +13992,16 @@ $LN27@crt_format:
 	mov	ecx, DWORD PTR tv155[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN24@crt_format:
-; Line 3587
+; Line 3565
 	mov	rax, QWORD PTR spec$[rsp]
 	mov	rcx, QWORD PTR fmt$[rsp]
 	movzx	ecx, BYTE PTR [rcx]
 	mov	BYTE PTR [rax], cl
-; Line 3588
+; Line 3566
 	mov	rax, QWORD PTR fmt$[rsp]
 	inc	rax
 $LN1@crt_format:
-; Line 3589
+; Line 3567
 	add	rsp, 24
 	ret	0
 ?crt_format_next@@YAPEBDPEBDPEAH11PEAD@Z ENDP		; crt_format_next
@@ -14042,31 +14026,31 @@ upper$ = 144
 base$ = 152
 ?crt_putint@@YAHPEAD_KHHHHHH@Z PROC			; crt_putint
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3591
+; Line 3569
 	mov	DWORD PTR [rsp+32], r9d
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
-; Line 3593
+; Line 3571
 	mov	DWORD PTR i$[rsp], 0
-; Line 3595
+; Line 3573
 	cmp	QWORD PTR val$[rsp], 0
 	jne	SHORT $LN14@crt_putint
-; Line 3596
+; Line 3574
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	BYTE PTR tmp$[rsp+rax], 48		; 00000030H
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 3597
+; Line 3575
 	jmp	$LN15@crt_putint
 $LN14@crt_putint:
 $LN2@crt_putint:
-; Line 3598
+; Line 3576
 	cmp	QWORD PTR val$[rsp], 0
 	jbe	$LN3@crt_putint
-; Line 3599
+; Line 3577
 	movsxd	rax, DWORD PTR base$[rsp]
 	mov	QWORD PTR tv70[rsp], rax
 	xor	edx, edx
@@ -14075,10 +14059,10 @@ $LN2@crt_putint:
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR d$1[rsp], eax
-; Line 3600
+; Line 3578
 	cmp	DWORD PTR d$1[rsp], 10
 	jge	SHORT $LN16@crt_putint
-; Line 3601
+; Line 3579
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -14086,10 +14070,10 @@ $LN2@crt_putint:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 3602
+; Line 3580
 	jmp	SHORT $LN17@crt_putint
 $LN16@crt_putint:
-; Line 3603
+; Line 3581
 	cmp	DWORD PTR upper$[rsp], 0
 	je	SHORT $LN27@crt_putint
 	mov	BYTE PTR tv85[rsp], 65			; 00000041H
@@ -14106,7 +14090,7 @@ $LN28@crt_putint:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN17@crt_putint:
-; Line 3605
+; Line 3583
 	movsxd	rax, DWORD PTR base$[rsp]
 	mov	QWORD PTR tv90[rsp], rax
 	xor	edx, edx
@@ -14114,13 +14098,13 @@ $LN17@crt_putint:
 	mov	rcx, QWORD PTR tv90[rsp]
 	div	rcx
 	mov	QWORD PTR val$[rsp], rax
-; Line 3606
+; Line 3584
 	jmp	$LN2@crt_putint
 $LN3@crt_putint:
 $LN15@crt_putint:
-; Line 3609
+; Line 3587
 	mov	DWORD PTR out_i$[rsp], 0
-; Line 3611
+; Line 3589
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
@@ -14132,29 +14116,29 @@ $LN15@crt_putint:
 	cmp	DWORD PTR negative$[rsp], 0
 	jne	SHORT $LN18@crt_putint
 $LN4@crt_putint:
-; Line 3612
+; Line 3590
 	mov	eax, DWORD PTR width$[rsp]
 	cmp	DWORD PTR i$[rsp], eax
 	jge	SHORT $LN5@crt_putint
-; Line 3613
+; Line 3591
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 48			; 00000030H
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3614
+; Line 3592
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 3615
+; Line 3593
 	jmp	SHORT $LN4@crt_putint
 $LN5@crt_putint:
 $LN18@crt_putint:
-; Line 3618
+; Line 3596
 	cmp	DWORD PTR negative$[rsp], 0
 	je	SHORT $LN19@crt_putint
-; Line 3619
+; Line 3597
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 45			; 0000002dH
@@ -14163,12 +14147,12 @@ $LN18@crt_putint:
 	mov	DWORD PTR out_i$[rsp], eax
 	jmp	SHORT $LN20@crt_putint
 $LN19@crt_putint:
-; Line 3620
+; Line 3598
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 2
 	test	eax, eax
 	je	SHORT $LN21@crt_putint
-; Line 3621
+; Line 3599
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 43			; 0000002bH
@@ -14177,12 +14161,12 @@ $LN19@crt_putint:
 	mov	DWORD PTR out_i$[rsp], eax
 	jmp	SHORT $LN22@crt_putint
 $LN21@crt_putint:
-; Line 3622
+; Line 3600
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 4
 	test	eax, eax
 	je	SHORT $LN23@crt_putint
-; Line 3623
+; Line 3601
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 32			; 00000020H
@@ -14192,22 +14176,22 @@ $LN21@crt_putint:
 $LN23@crt_putint:
 $LN22@crt_putint:
 $LN20@crt_putint:
-; Line 3626
+; Line 3604
 	mov	eax, DWORD PTR i$[rsp]
 	mov	ecx, DWORD PTR width$[rsp]
 	sub	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR pad$[rsp], eax
-; Line 3627
+; Line 3605
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN24@crt_putint
 $LN6@crt_putint:
-; Line 3628
+; Line 3606
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN7@crt_putint
-; Line 3629
+; Line 3607
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -14219,57 +14203,57 @@ $LN6@crt_putint:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3630
+; Line 3608
 	jmp	SHORT $LN6@crt_putint
 $LN7@crt_putint:
 $LN8@crt_putint:
-; Line 3631
+; Line 3609
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN9@crt_putint
-; Line 3632
+; Line 3610
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 32			; 00000020H
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3633
+; Line 3611
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 3634
+; Line 3612
 	jmp	SHORT $LN8@crt_putint
 $LN9@crt_putint:
-; Line 3635
+; Line 3613
 	jmp	SHORT $LN25@crt_putint
 $LN24@crt_putint:
 $LN10@crt_putint:
-; Line 3636
+; Line 3614
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN11@crt_putint
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 8
 	test	eax, eax
 	jne	SHORT $LN11@crt_putint
-; Line 3637
+; Line 3615
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 32			; 00000020H
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3638
+; Line 3616
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 3639
+; Line 3617
 	jmp	SHORT $LN10@crt_putint
 $LN11@crt_putint:
 $LN12@crt_putint:
-; Line 3640
+; Line 3618
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN13@crt_putint
-; Line 3641
+; Line 3619
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -14281,13 +14265,13 @@ $LN12@crt_putint:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3642
+; Line 3620
 	jmp	SHORT $LN12@crt_putint
 $LN13@crt_putint:
 $LN25@crt_putint:
-; Line 3645
+; Line 3623
 	mov	eax, DWORD PTR out_i$[rsp]
-; Line 3646
+; Line 3624
 	add	rsp, 88					; 00000058H
 	ret	0
 ?crt_putint@@YAHPEAD_KHHHHHH@Z ENDP			; crt_putint
@@ -14309,41 +14293,41 @@ flags$ = 112
 upper$ = 120
 ?crt_puthex@@YAHPEAD_KHHHH@Z PROC			; crt_puthex
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3648
+; Line 3626
 	mov	DWORD PTR [rsp+32], r9d
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
-; Line 3650
+; Line 3628
 	mov	DWORD PTR i$[rsp], 0
-; Line 3652
+; Line 3630
 	cmp	QWORD PTR val$[rsp], 0
 	jne	SHORT $LN10@crt_puthex
-; Line 3653
+; Line 3631
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	BYTE PTR tmp$[rsp+rax], 48		; 00000030H
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 3654
+; Line 3632
 	jmp	$LN11@crt_puthex
 $LN10@crt_puthex:
 $LN2@crt_puthex:
-; Line 3655
+; Line 3633
 	cmp	QWORD PTR val$[rsp], 0
 	jbe	$LN3@crt_puthex
-; Line 3656
+; Line 3634
 	xor	edx, edx
 	mov	rax, QWORD PTR val$[rsp]
 	mov	ecx, 16
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR d$1[rsp], eax
-; Line 3657
+; Line 3635
 	cmp	DWORD PTR d$1[rsp], 10
 	jge	SHORT $LN12@crt_puthex
-; Line 3658
+; Line 3636
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -14351,10 +14335,10 @@ $LN2@crt_puthex:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 3659
+; Line 3637
 	jmp	SHORT $LN13@crt_puthex
 $LN12@crt_puthex:
-; Line 3660
+; Line 3638
 	cmp	DWORD PTR upper$[rsp], 0
 	je	SHORT $LN18@crt_puthex
 	mov	BYTE PTR tv84[rsp], 65			; 00000041H
@@ -14371,19 +14355,19 @@ $LN19@crt_puthex:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN13@crt_puthex:
-; Line 3662
+; Line 3640
 	xor	edx, edx
 	mov	rax, QWORD PTR val$[rsp]
 	mov	ecx, 16
 	div	rcx
 	mov	QWORD PTR val$[rsp], rax
-; Line 3663
+; Line 3641
 	jmp	$LN2@crt_puthex
 $LN3@crt_puthex:
 $LN11@crt_puthex:
-; Line 3666
+; Line 3644
 	mov	DWORD PTR out_i$[rsp], 0
-; Line 3668
+; Line 3646
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 16
 	test	eax, eax
@@ -14392,7 +14376,7 @@ $LN11@crt_puthex:
 	jne	SHORT $LN14@crt_puthex
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN14@crt_puthex
-; Line 3669
+; Line 3647
 	cmp	DWORD PTR upper$[rsp], 0
 	je	SHORT $LN20@crt_puthex
 	mov	BYTE PTR tv131[rsp], 88			; 00000058H
@@ -14407,7 +14391,7 @@ $LN21@crt_puthex:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3670
+; Line 3648
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 48			; 00000030H
@@ -14415,13 +14399,13 @@ $LN21@crt_puthex:
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
 $LN14@crt_puthex:
-; Line 3673
+; Line 3651
 	mov	eax, DWORD PTR i$[rsp]
 	mov	ecx, DWORD PTR width$[rsp]
 	sub	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR pad$[rsp], eax
-; Line 3674
+; Line 3652
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
@@ -14431,29 +14415,29 @@ $LN14@crt_puthex:
 	test	eax, eax
 	je	SHORT $LN15@crt_puthex
 $LN4@crt_puthex:
-; Line 3675
+; Line 3653
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN5@crt_puthex
-; Line 3676
+; Line 3654
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 48			; 00000030H
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3677
+; Line 3655
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 3678
+; Line 3656
 	jmp	SHORT $LN4@crt_puthex
 $LN5@crt_puthex:
 $LN15@crt_puthex:
 $LN6@crt_puthex:
-; Line 3681
+; Line 3659
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN7@crt_puthex
-; Line 3682
+; Line 3660
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -14465,36 +14449,36 @@ $LN6@crt_puthex:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3683
+; Line 3661
 	jmp	SHORT $LN6@crt_puthex
 $LN7@crt_puthex:
-; Line 3685
+; Line 3663
 	mov	eax, DWORD PTR flags$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN16@crt_puthex
 $LN8@crt_puthex:
-; Line 3686
+; Line 3664
 	cmp	DWORD PTR pad$[rsp], 0
 	jle	SHORT $LN9@crt_puthex
-; Line 3687
+; Line 3665
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 32			; 00000020H
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3688
+; Line 3666
 	mov	eax, DWORD PTR pad$[rsp]
 	dec	eax
 	mov	DWORD PTR pad$[rsp], eax
-; Line 3689
+; Line 3667
 	jmp	SHORT $LN8@crt_puthex
 $LN9@crt_puthex:
 $LN16@crt_puthex:
-; Line 3692
+; Line 3670
 	mov	eax, DWORD PTR out_i$[rsp]
-; Line 3693
+; Line 3671
 	add	rsp, 72					; 00000048H
 	ret	0
 ?crt_puthex@@YAHPEAD_KHHHH@Z ENDP			; crt_puthex
@@ -14510,42 +14494,42 @@ buf$ = 80
 ptr$ = 88
 ?crt_putpointer@@YAHPEADPEAX@Z PROC			; crt_putpointer
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3695
+; Line 3673
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
-; Line 3696
+; Line 3674
 	mov	rax, QWORD PTR ptr$[rsp]
 	mov	QWORD PTR val$[rsp], rax
-; Line 3698
+; Line 3676
 	mov	DWORD PTR i$[rsp], 0
-; Line 3700
+; Line 3678
 	cmp	QWORD PTR val$[rsp], 0
 	jne	SHORT $LN6@crt_putpoi
-; Line 3701
+; Line 3679
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	BYTE PTR tmp$[rsp+rax], 48		; 00000030H
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 3702
+; Line 3680
 	jmp	SHORT $LN7@crt_putpoi
 $LN6@crt_putpoi:
 $LN2@crt_putpoi:
-; Line 3703
+; Line 3681
 	cmp	QWORD PTR val$[rsp], 0
 	jbe	SHORT $LN3@crt_putpoi
-; Line 3704
+; Line 3682
 	xor	edx, edx
 	mov	rax, QWORD PTR val$[rsp]
 	mov	ecx, 16
 	div	rcx
 	mov	rax, rdx
 	mov	DWORD PTR d$1[rsp], eax
-; Line 3705
+; Line 3683
 	cmp	DWORD PTR d$1[rsp], 10
 	jge	SHORT $LN8@crt_putpoi
-; Line 3706
+; Line 3684
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 48					; 00000030H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -14553,10 +14537,10 @@ $LN2@crt_putpoi:
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
-; Line 3707
+; Line 3685
 	jmp	SHORT $LN9@crt_putpoi
 $LN8@crt_putpoi:
-; Line 3708
+; Line 3686
 	mov	eax, DWORD PTR d$1[rsp]
 	add	eax, 87					; 00000057H
 	movsxd	rcx, DWORD PTR i$[rsp]
@@ -14565,26 +14549,26 @@ $LN8@crt_putpoi:
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 $LN9@crt_putpoi:
-; Line 3710
+; Line 3688
 	xor	edx, edx
 	mov	rax, QWORD PTR val$[rsp]
 	mov	ecx, 16
 	div	rcx
 	mov	QWORD PTR val$[rsp], rax
-; Line 3711
+; Line 3689
 	jmp	SHORT $LN2@crt_putpoi
 $LN3@crt_putpoi:
 $LN7@crt_putpoi:
-; Line 3714
+; Line 3692
 	mov	DWORD PTR out_i$[rsp], 0
-; Line 3715
+; Line 3693
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 48			; 00000030H
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3716
+; Line 3694
 	movsxd	rax, DWORD PTR out_i$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	mov	BYTE PTR [rcx+rax], 120			; 00000078H
@@ -14592,10 +14576,10 @@ $LN7@crt_putpoi:
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
 $LN4@crt_putpoi:
-; Line 3718
+; Line 3696
 	cmp	DWORD PTR i$[rsp], 0
 	jle	SHORT $LN5@crt_putpoi
-; Line 3719
+; Line 3697
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
@@ -14607,12 +14591,12 @@ $LN4@crt_putpoi:
 	mov	eax, DWORD PTR out_i$[rsp]
 	inc	eax
 	mov	DWORD PTR out_i$[rsp], eax
-; Line 3720
+; Line 3698
 	jmp	SHORT $LN4@crt_putpoi
 $LN5@crt_putpoi:
-; Line 3722
+; Line 3700
 	mov	eax, DWORD PTR out_i$[rsp]
-; Line 3723
+; Line 3701
 	add	rsp, 72					; 00000048H
 	ret	0
 ?crt_putpointer@@YAHPEADPEAX@Z ENDP			; crt_putpointer
@@ -14681,13 +14665,13 @@ fmt$ = 496
 args$ = 504
 ?crt_vsnprintf_impl@@YAHPEAD_KPEBD0@Z PROC		; crt_vsnprintf_impl
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 3725
+; Line 3703
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 472				; 000001d8H
-; Line 3726
+; Line 3704
 	cmp	QWORD PTR buf$[rsp], 0
 	je	SHORT $LN14@crt_vsnpri
 	cmp	QWORD PTR count$[rsp], 0
@@ -14695,50 +14679,50 @@ args$ = 504
 	cmp	QWORD PTR fmt$[rsp], 0
 	jne	SHORT $LN13@crt_vsnpri
 $LN14@crt_vsnpri:
-; Line 3727
+; Line 3705
 	mov	eax, -1
 	jmp	$LN1@crt_vsnpri
 $LN13@crt_vsnpri:
-; Line 3730
+; Line 3708
 	cmp	QWORD PTR count$[rsp], -1
 	jne	SHORT $LN15@crt_vsnpri
-; Line 3731
+; Line 3709
 	mov	QWORD PTR count$[rsp], 2147483647	; 7fffffffH
 $LN15@crt_vsnpri:
-; Line 3735
+; Line 3713
 	mov	rax, QWORD PTR fmt$[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 3736
+; Line 3714
 	mov	rax, QWORD PTR buf$[rsp]
 	mov	QWORD PTR out$[rsp], rax
-; Line 3737
+; Line 3715
 	mov	rax, QWORD PTR count$[rsp]
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 3738
+; Line 3716
 	mov	DWORD PTR total$[rsp], 0
-; Line 3739
+; Line 3717
 	mov	DWORD PTR full_len$[rsp], 0
 $LN105@crt_vsnpri:
 $LN104@crt_vsnpri:
 $LN2@crt_vsnpri:
-; Line 3741
+; Line 3719
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	test	eax, eax
 	je	$LN3@crt_vsnpri
-; Line 3742
+; Line 3720
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 37					; 00000025H
 	je	SHORT $LN16@crt_vsnpri
-; Line 3743
+; Line 3721
 	mov	eax, DWORD PTR full_len$[rsp]
 	inc	eax
 	mov	DWORD PTR full_len$[rsp], eax
-; Line 3744
+; Line 3722
 	cmp	QWORD PTR remaining$[rsp], 1
 	jbe	SHORT $LN17@crt_vsnpri
-; Line 3745
+; Line 3723
 	mov	rax, QWORD PTR p$[rsp]
 	movzx	eax, BYTE PTR [rax]
 	mov	BYTE PTR tv77[rsp], al
@@ -14751,32 +14735,32 @@ $LN2@crt_vsnpri:
 	mov	rax, QWORD PTR out$[rsp]
 	inc	rax
 	mov	QWORD PTR out$[rsp], rax
-; Line 3746
+; Line 3724
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 3747
+; Line 3725
 	mov	eax, DWORD PTR total$[rsp]
 	inc	eax
 	mov	DWORD PTR total$[rsp], eax
-; Line 3748
+; Line 3726
 	jmp	SHORT $LN18@crt_vsnpri
 $LN17@crt_vsnpri:
-; Line 3749
+; Line 3727
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
 $LN18@crt_vsnpri:
-; Line 3751
+; Line 3729
 	jmp	$LN2@crt_vsnpri
 $LN16@crt_vsnpri:
-; Line 3754
+; Line 3732
 	mov	DWORD PTR width$6[rsp], 0
 	mov	DWORD PTR prec$3[rsp], -1
 	mov	DWORD PTR flags$5[rsp], 0
-; Line 3755
+; Line 3733
 	mov	BYTE PTR spec$1[rsp], 0
-; Line 3756
+; Line 3734
 	lea	rax, QWORD PTR spec$1[rsp]
 	mov	QWORD PTR [rsp+32], rax
 	lea	r9, QWORD PTR flags$5[rsp]
@@ -14785,7 +14769,7 @@ $LN16@crt_vsnpri:
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?crt_format_next@@YAPEBDPEBDPEAH11PEAD@Z ; crt_format_next
 	mov	QWORD PTR next$7[rsp], rax
-; Line 3757
+; Line 3735
 	mov	rax, QWORD PTR p$[rsp]
 	mov	rcx, QWORD PTR next$7[rsp]
 	sub	rcx, rax
@@ -14794,9 +14778,9 @@ $LN16@crt_vsnpri:
 	add	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR full_len$[rsp], eax
-; Line 3758
+; Line 3736
 	mov	DWORD PTR chars$2[rsp], 0
-; Line 3760
+; Line 3738
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 100				; 00000064H
 	je	SHORT $LN21@crt_vsnpri
@@ -14804,7 +14788,7 @@ $LN16@crt_vsnpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN19@crt_vsnpri
 $LN21@crt_vsnpri:
-; Line 3762
+; Line 3740
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN74@crt_vsnpri
@@ -14826,25 +14810,25 @@ $LN74@crt_vsnpri:
 $LN75@crt_vsnpri:
 	mov	eax, DWORD PTR tv132[rsp]
 	mov	DWORD PTR v$10[rsp], eax
-; Line 3764
+; Line 3742
 	mov	DWORD PTR neg$18[rsp], 0
-; Line 3766
+; Line 3744
 	cmp	DWORD PTR v$10[rsp], 0
 	jge	SHORT $LN22@crt_vsnpri
-; Line 3768
+; Line 3746
 	xor	eax, eax
 	sub	eax, DWORD PTR v$10[rsp]
 	mov	DWORD PTR uv$17[rsp], eax
-; Line 3769
+; Line 3747
 	mov	DWORD PTR neg$18[rsp], 1
-; Line 3770
+; Line 3748
 	jmp	SHORT $LN23@crt_vsnpri
 $LN22@crt_vsnpri:
-; Line 3773
+; Line 3751
 	mov	eax, DWORD PTR v$10[rsp]
 	mov	DWORD PTR uv$17[rsp], eax
 $LN23@crt_vsnpri:
-; Line 3776
+; Line 3754
 	mov	eax, DWORD PTR uv$17[rsp]
 	mov	DWORD PTR [rsp+56], 10
 	mov	DWORD PTR [rsp+48], 0
@@ -14858,14 +14842,14 @@ $LN23@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3777
+; Line 3755
 	jmp	$LN20@crt_vsnpri
 $LN19@crt_vsnpri:
-; Line 3778
+; Line 3756
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 117				; 00000075H
 	jne	$LN24@crt_vsnpri
-; Line 3780
+; Line 3758
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN76@crt_vsnpri
@@ -14887,7 +14871,7 @@ $LN76@crt_vsnpri:
 $LN77@crt_vsnpri:
 	mov	eax, DWORD PTR tv153[rsp]
 	mov	DWORD PTR v$23[rsp], eax
-; Line 3781
+; Line 3759
 	mov	eax, DWORD PTR v$23[rsp]
 	mov	DWORD PTR [rsp+56], 10
 	mov	DWORD PTR [rsp+48], 0
@@ -14900,14 +14884,14 @@ $LN77@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3782
+; Line 3760
 	jmp	$LN25@crt_vsnpri
 $LN24@crt_vsnpri:
-; Line 3783
+; Line 3761
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 111				; 0000006fH
 	jne	$LN26@crt_vsnpri
-; Line 3785
+; Line 3763
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN78@crt_vsnpri
@@ -14929,7 +14913,7 @@ $LN78@crt_vsnpri:
 $LN79@crt_vsnpri:
 	mov	eax, DWORD PTR tv172[rsp]
 	mov	DWORD PTR v$24[rsp], eax
-; Line 3786
+; Line 3764
 	mov	eax, DWORD PTR v$24[rsp]
 	mov	DWORD PTR [rsp+56], 8
 	mov	DWORD PTR [rsp+48], 0
@@ -14942,10 +14926,10 @@ $LN79@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3787
+; Line 3765
 	jmp	$LN27@crt_vsnpri
 $LN26@crt_vsnpri:
-; Line 3788
+; Line 3766
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 120				; 00000078H
 	je	SHORT $LN30@crt_vsnpri
@@ -14953,7 +14937,7 @@ $LN26@crt_vsnpri:
 	cmp	eax, 88					; 00000058H
 	jne	$LN28@crt_vsnpri
 $LN30@crt_vsnpri:
-; Line 3790
+; Line 3768
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN80@crt_vsnpri
@@ -14975,7 +14959,7 @@ $LN80@crt_vsnpri:
 $LN81@crt_vsnpri:
 	mov	eax, DWORD PTR tv193[rsp]
 	mov	DWORD PTR v$25[rsp], eax
-; Line 3791
+; Line 3769
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 88					; 00000058H
 	jne	SHORT $LN82@crt_vsnpri
@@ -14995,14 +14979,14 @@ $LN83@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_puthex@@YAHPEAD_KHHHH@Z		; crt_puthex
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3792
+; Line 3770
 	jmp	$LN29@crt_vsnpri
 $LN28@crt_vsnpri:
-; Line 3793
+; Line 3771
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 99					; 00000063H
 	jne	SHORT $LN31@crt_vsnpri
-; Line 3795
+; Line 3773
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN84@crt_vsnpri
@@ -15026,16 +15010,16 @@ $LN85@crt_vsnpri:
 	imul	rax, rax, 0
 	movzx	ecx, BYTE PTR tv215[rsp]
 	mov	BYTE PTR temp$[rsp+rax], cl
-; Line 3796
+; Line 3774
 	mov	DWORD PTR chars$2[rsp], 1
-; Line 3797
+; Line 3775
 	jmp	$LN32@crt_vsnpri
 $LN31@crt_vsnpri:
-; Line 3798
+; Line 3776
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 115				; 00000073H
 	jne	$LN33@crt_vsnpri
-; Line 3800
+; Line 3778
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN86@crt_vsnpri
@@ -15057,24 +15041,24 @@ $LN86@crt_vsnpri:
 $LN87@crt_vsnpri:
 	mov	rax, QWORD PTR tv225[rsp]
 	mov	QWORD PTR s$19[rsp], rax
-; Line 3801
+; Line 3779
 	cmp	QWORD PTR s$19[rsp], 0
 	jne	SHORT $LN35@crt_vsnpri
-; Line 3802
+; Line 3780
 	mov	BYTE PTR sNull$9[rsp], 40		; 00000028H
 	mov	BYTE PTR sNull$9[rsp+1], 110		; 0000006eH
 	mov	BYTE PTR sNull$9[rsp+2], 117		; 00000075H
 	mov	BYTE PTR sNull$9[rsp+3], 108		; 0000006cH
 	mov	BYTE PTR sNull$9[rsp+4], 108		; 0000006cH
 	mov	BYTE PTR sNull$9[rsp+5], 0
-; Line 3803
+; Line 3781
 	lea	rax, QWORD PTR sNull$9[rsp]
 	mov	QWORD PTR s$19[rsp], rax
 $LN35@crt_vsnpri:
-; Line 3805
+; Line 3783
 	mov	DWORD PTR len$4[rsp], 0
 $LN4@crt_vsnpri:
-; Line 3806
+; Line 3784
 	movsxd	rax, DWORD PTR len$4[rsp]
 	mov	rcx, QWORD PTR s$19[rsp]
 	movsx	eax, BYTE PTR [rcx+rax]
@@ -15085,7 +15069,7 @@ $LN4@crt_vsnpri:
 	mov	DWORD PTR len$4[rsp], eax
 	jmp	SHORT $LN4@crt_vsnpri
 $LN5@crt_vsnpri:
-; Line 3807
+; Line 3785
 	cmp	DWORD PTR prec$3[rsp], 0
 	jl	SHORT $LN36@crt_vsnpri
 	mov	eax, DWORD PTR len$4[rsp]
@@ -15094,14 +15078,14 @@ $LN5@crt_vsnpri:
 	mov	eax, DWORD PTR prec$3[rsp]
 	mov	DWORD PTR len$4[rsp], eax
 $LN36@crt_vsnpri:
-; Line 3808
+; Line 3786
 	mov	eax, DWORD PTR remaining$[rsp]
 	cmp	DWORD PTR len$4[rsp], eax
 	jl	$LN37@crt_vsnpri
-; Line 3809
+; Line 3787
 	cmp	QWORD PTR remaining$[rsp], 1
 	jbe	SHORT $LN38@crt_vsnpri
-; Line 3810
+; Line 3788
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	r8, rax
@@ -15110,19 +15094,19 @@ $LN36@crt_vsnpri:
 	call	?crt_strncpy@@YAPEADPEADPEBD_K@Z	; crt_strncpy
 	npad	1
 $LN38@crt_vsnpri:
-; Line 3812
+; Line 3790
 	mov	rax, QWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	BYTE PTR [rax-1], 0
-; Line 3813
+; Line 3791
 	mov	DWORD PTR fmt_remaining$11[rsp], 0
-; Line 3814
+; Line 3792
 	mov	rax, QWORD PTR next$7[rsp]
 	mov	QWORD PTR r$20[rsp], rax
 $LN6@crt_vsnpri:
-; Line 3815
+; Line 3793
 	cmp	QWORD PTR r$20[rsp], 0
 	je	SHORT $LN7@crt_vsnpri
 	mov	rax, QWORD PTR r$20[rsp]
@@ -15137,50 +15121,50 @@ $LN6@crt_vsnpri:
 	mov	QWORD PTR r$20[rsp], rax
 	jmp	SHORT $LN6@crt_vsnpri
 $LN7@crt_vsnpri:
-; Line 3816
+; Line 3794
 	mov	eax, DWORD PTR fmt_remaining$11[rsp]
 	mov	ecx, DWORD PTR len$4[rsp]
 	add	ecx, eax
 	mov	eax, ecx
 	jmp	$LN1@crt_vsnpri
 $LN37@crt_vsnpri:
-; Line 3818
+; Line 3796
 	movsxd	rax, DWORD PTR len$4[rsp]
 	mov	r8, rax
 	mov	rdx, QWORD PTR s$19[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	call	?crt_strncpy@@YAPEADPEADPEBD_K@Z	; crt_strncpy
-; Line 3819
+; Line 3797
 	movsxd	rax, DWORD PTR len$4[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR out$[rsp], rax
-; Line 3820
+; Line 3798
 	movsxd	rax, DWORD PTR len$4[rsp]
 	mov	rcx, QWORD PTR remaining$[rsp]
 	sub	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 3821
+; Line 3799
 	mov	eax, DWORD PTR len$4[rsp]
 	mov	ecx, DWORD PTR total$[rsp]
 	add	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR total$[rsp], eax
-; Line 3822
+; Line 3800
 	mov	rax, QWORD PTR next$7[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 3823
+; Line 3801
 	jmp	$LN104@crt_vsnpri
-; Line 3824
+; Line 3802
 	jmp	$LN34@crt_vsnpri
 $LN33@crt_vsnpri:
-; Line 3825
+; Line 3803
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 112				; 00000070H
 	jne	$LN39@crt_vsnpri
-; Line 3827
+; Line 3805
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN88@crt_vsnpri
@@ -15202,32 +15186,32 @@ $LN88@crt_vsnpri:
 $LN89@crt_vsnpri:
 	mov	rax, QWORD PTR tv299[rsp]
 	mov	QWORD PTR ptr$32[rsp], rax
-; Line 3828
+; Line 3806
 	mov	rdx, QWORD PTR ptr$32[rsp]
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putpointer@@YAHPEADPEAX@Z		; crt_putpointer
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3829
+; Line 3807
 	jmp	$LN40@crt_vsnpri
 $LN39@crt_vsnpri:
-; Line 3830
+; Line 3808
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 37					; 00000025H
 	jne	SHORT $LN41@crt_vsnpri
-; Line 3832
+; Line 3810
 	mov	eax, 1
 	imul	rax, rax, 0
 	mov	BYTE PTR temp$[rsp+rax], 37		; 00000025H
-; Line 3833
+; Line 3811
 	mov	DWORD PTR chars$2[rsp], 1
-; Line 3834
+; Line 3812
 	jmp	$LN42@crt_vsnpri
 $LN41@crt_vsnpri:
-; Line 3835
+; Line 3813
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 110				; 0000006eH
 	jne	$LN43@crt_vsnpri
-; Line 3837
+; Line 3815
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN90@crt_vsnpri
@@ -15249,24 +15233,24 @@ $LN90@crt_vsnpri:
 $LN91@crt_vsnpri:
 	mov	rax, QWORD PTR tv315[rsp]
 	mov	QWORD PTR np$28[rsp], rax
-; Line 3838
+; Line 3816
 	cmp	QWORD PTR np$28[rsp], 0
 	je	SHORT $LN45@crt_vsnpri
-; Line 3839
+; Line 3817
 	mov	rax, QWORD PTR np$28[rsp]
 	mov	ecx, DWORD PTR total$[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN45@crt_vsnpri:
-; Line 3841
+; Line 3819
 	mov	DWORD PTR chars$2[rsp], 0
-; Line 3842
+; Line 3820
 	jmp	$LN44@crt_vsnpri
 $LN43@crt_vsnpri:
-; Line 3843
+; Line 3821
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 108				; 0000006cH
 	jne	$LN46@crt_vsnpri
-; Line 3845
+; Line 3823
 	mov	eax, 1
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR next$7[rsp]
@@ -15280,7 +15264,7 @@ $LN43@crt_vsnpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN48@crt_vsnpri
 $LN50@crt_vsnpri:
-; Line 3847
+; Line 3825
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN92@crt_vsnpri
@@ -15302,27 +15286,27 @@ $LN92@crt_vsnpri:
 $LN93@crt_vsnpri:
 	mov	eax, DWORD PTR tv333[rsp]
 	mov	DWORD PTR v$12[rsp], eax
-; Line 3849
+; Line 3827
 	mov	DWORD PTR neg$14[rsp], 0
-; Line 3851
+; Line 3829
 	cmp	DWORD PTR v$12[rsp], 0
 	jge	SHORT $LN51@crt_vsnpri
-; Line 3853
+; Line 3831
 	movsxd	rax, DWORD PTR v$12[rsp]
 	xor	ecx, ecx
 	sub	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR uv$29[rsp], rax
-; Line 3854
+; Line 3832
 	mov	DWORD PTR neg$14[rsp], 1
-; Line 3855
+; Line 3833
 	jmp	SHORT $LN52@crt_vsnpri
 $LN51@crt_vsnpri:
-; Line 3858
+; Line 3836
 	movsxd	rax, DWORD PTR v$12[rsp]
 	mov	QWORD PTR uv$29[rsp], rax
 $LN52@crt_vsnpri:
-; Line 3861
+; Line 3839
 	mov	DWORD PTR [rsp+56], 10
 	mov	DWORD PTR [rsp+48], 0
 	mov	eax, DWORD PTR neg$14[rsp]
@@ -15335,17 +15319,17 @@ $LN52@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3862
+; Line 3840
 	jmp	$LN49@crt_vsnpri
 $LN48@crt_vsnpri:
-; Line 3863
+; Line 3841
 	mov	eax, 1
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR next$7[rsp]
 	movsx	eax, BYTE PTR [rcx+rax]
 	cmp	eax, 117				; 00000075H
 	jne	$LN53@crt_vsnpri
-; Line 3865
+; Line 3843
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN94@crt_vsnpri
@@ -15367,7 +15351,7 @@ $LN94@crt_vsnpri:
 $LN95@crt_vsnpri:
 	mov	eax, DWORD PTR tv357[rsp]
 	mov	DWORD PTR v$22[rsp], eax
-; Line 3866
+; Line 3844
 	mov	eax, DWORD PTR v$22[rsp]
 	mov	DWORD PTR [rsp+56], 10
 	mov	DWORD PTR [rsp+48], 0
@@ -15380,10 +15364,10 @@ $LN95@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3867
+; Line 3845
 	jmp	$LN54@crt_vsnpri
 $LN53@crt_vsnpri:
-; Line 3868
+; Line 3846
 	mov	eax, 1
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR next$7[rsp]
@@ -15403,7 +15387,7 @@ $LN53@crt_vsnpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN55@crt_vsnpri
 $LN57@crt_vsnpri:
-; Line 3870
+; Line 3848
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN96@crt_vsnpri
@@ -15425,25 +15409,25 @@ $LN96@crt_vsnpri:
 $LN97@crt_vsnpri:
 	mov	rax, QWORD PTR tv386[rsp]
 	mov	QWORD PTR v$26[rsp], rax
-; Line 3872
+; Line 3850
 	mov	DWORD PTR neg$15[rsp], 0
-; Line 3874
+; Line 3852
 	cmp	QWORD PTR v$26[rsp], 0
 	jge	SHORT $LN58@crt_vsnpri
-; Line 3876
+; Line 3854
 	xor	eax, eax
 	sub	rax, QWORD PTR v$26[rsp]
 	mov	QWORD PTR uv$30[rsp], rax
-; Line 3877
+; Line 3855
 	mov	DWORD PTR neg$15[rsp], 1
-; Line 3878
+; Line 3856
 	jmp	SHORT $LN59@crt_vsnpri
 $LN58@crt_vsnpri:
-; Line 3881
+; Line 3859
 	mov	rax, QWORD PTR v$26[rsp]
 	mov	QWORD PTR uv$30[rsp], rax
 $LN59@crt_vsnpri:
-; Line 3884
+; Line 3862
 	mov	DWORD PTR [rsp+56], 10
 	mov	DWORD PTR [rsp+48], 0
 	mov	eax, DWORD PTR neg$15[rsp]
@@ -15456,10 +15440,10 @@ $LN59@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3885
+; Line 3863
 	jmp	$LN56@crt_vsnpri
 $LN55@crt_vsnpri:
-; Line 3886
+; Line 3864
 	mov	eax, 1
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR next$7[rsp]
@@ -15472,7 +15456,7 @@ $LN55@crt_vsnpri:
 	movsx	eax, BYTE PTR [rcx+rax]
 	cmp	eax, 117				; 00000075H
 	jne	$LN60@crt_vsnpri
-; Line 3888
+; Line 3866
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN98@crt_vsnpri
@@ -15494,7 +15478,7 @@ $LN98@crt_vsnpri:
 $LN99@crt_vsnpri:
 	mov	rax, QWORD PTR tv412[rsp]
 	mov	QWORD PTR v$33[rsp], rax
-; Line 3889
+; Line 3867
 	mov	DWORD PTR [rsp+56], 10
 	mov	DWORD PTR [rsp+48], 0
 	mov	DWORD PTR [rsp+40], 0
@@ -15506,34 +15490,34 @@ $LN99@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3890
+; Line 3868
 	jmp	SHORT $LN61@crt_vsnpri
 $LN60@crt_vsnpri:
-; Line 3893
+; Line 3871
 	mov	eax, 1
 	imul	rax, rax, 0
 	mov	BYTE PTR temp$[rsp+rax], 108		; 0000006cH
-; Line 3894
+; Line 3872
 	mov	DWORD PTR chars$2[rsp], 1
 $LN61@crt_vsnpri:
 $LN56@crt_vsnpri:
 $LN54@crt_vsnpri:
 $LN49@crt_vsnpri:
-; Line 3896
+; Line 3874
 	jmp	$LN47@crt_vsnpri
 $LN46@crt_vsnpri:
-; Line 3897
+; Line 3875
 	movsx	eax, BYTE PTR spec$1[rsp]
 	cmp	eax, 122				; 0000007aH
 	jne	$LN62@crt_vsnpri
-; Line 3899
+; Line 3877
 	mov	eax, 1
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax]
 	cmp	eax, 117				; 00000075H
 	jne	$LN64@crt_vsnpri
-; Line 3901
+; Line 3879
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN100@crt_vsnpri
@@ -15555,7 +15539,7 @@ $LN100@crt_vsnpri:
 $LN101@crt_vsnpri:
 	mov	rax, QWORD PTR tv436[rsp]
 	mov	QWORD PTR v$34[rsp], rax
-; Line 3902
+; Line 3880
 	mov	DWORD PTR [rsp+56], 10
 	mov	DWORD PTR [rsp+48], 0
 	mov	DWORD PTR [rsp+40], 0
@@ -15567,10 +15551,10 @@ $LN101@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3903
+; Line 3881
 	jmp	$LN65@crt_vsnpri
 $LN64@crt_vsnpri:
-; Line 3904
+; Line 3882
 	mov	eax, 1
 	imul	rax, rax, 1
 	mov	rcx, QWORD PTR p$[rsp]
@@ -15584,7 +15568,7 @@ $LN64@crt_vsnpri:
 	cmp	eax, 105				; 00000069H
 	jne	$LN66@crt_vsnpri
 $LN68@crt_vsnpri:
-; Line 3906
+; Line 3884
 	xor	eax, eax
 	test	eax, eax
 	je	SHORT $LN102@crt_vsnpri
@@ -15606,22 +15590,22 @@ $LN102@crt_vsnpri:
 $LN103@crt_vsnpri:
 	mov	rax, QWORD PTR tv460[rsp]
 	mov	QWORD PTR v$27[rsp], rax
-; Line 3907
+; Line 3885
 	mov	rax, QWORD PTR v$27[rsp]
 	mov	QWORD PTR uv$31[rsp], rax
-; Line 3908
+; Line 3886
 	mov	DWORD PTR neg$16[rsp], 0
-; Line 3910
+; Line 3888
 	cmp	DWORD PTR v$27[rsp], 0
 	jge	SHORT $LN69@crt_vsnpri
-; Line 3912
+; Line 3890
 	xor	eax, eax
 	sub	rax, QWORD PTR v$27[rsp]
 	mov	QWORD PTR uv$31[rsp], rax
-; Line 3913
+; Line 3891
 	mov	DWORD PTR neg$16[rsp], 1
 $LN69@crt_vsnpri:
-; Line 3916
+; Line 3894
 	mov	DWORD PTR [rsp+56], 10
 	mov	DWORD PTR [rsp+48], 0
 	mov	eax, DWORD PTR neg$16[rsp]
@@ -15634,27 +15618,27 @@ $LN69@crt_vsnpri:
 	lea	rcx, QWORD PTR temp$[rsp]
 	call	?crt_putint@@YAHPEAD_KHHHHHH@Z		; crt_putint
 	mov	DWORD PTR chars$2[rsp], eax
-; Line 3917
+; Line 3895
 	jmp	SHORT $LN67@crt_vsnpri
 $LN66@crt_vsnpri:
-; Line 3920
+; Line 3898
 	mov	eax, 1
 	imul	rax, rax, 0
 	mov	BYTE PTR temp$[rsp+rax], 122		; 0000007aH
-; Line 3921
+; Line 3899
 	mov	DWORD PTR chars$2[rsp], 1
 $LN67@crt_vsnpri:
 $LN65@crt_vsnpri:
-; Line 3923
+; Line 3901
 	jmp	SHORT $LN63@crt_vsnpri
 $LN62@crt_vsnpri:
-; Line 3926
+; Line 3904
 	mov	eax, 1
 	imul	rax, rax, 0
 	mov	rcx, QWORD PTR p$[rsp]
 	movzx	ecx, BYTE PTR [rcx]
 	mov	BYTE PTR temp$[rsp+rax], cl
-; Line 3927
+; Line 3905
 	mov	DWORD PTR chars$2[rsp], 1
 $LN63@crt_vsnpri:
 $LN47@crt_vsnpri:
@@ -15667,30 +15651,30 @@ $LN29@crt_vsnpri:
 $LN27@crt_vsnpri:
 $LN25@crt_vsnpri:
 $LN20@crt_vsnpri:
-; Line 3930
+; Line 3908
 	mov	eax, DWORD PTR remaining$[rsp]
 	cmp	DWORD PTR chars$2[rsp], eax
 	jl	$LN70@crt_vsnpri
-; Line 3931
+; Line 3909
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	r8, rax
 	lea	rdx, QWORD PTR temp$[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	call	?crt_strncpy@@YAPEADPEADPEBD_K@Z	; crt_strncpy
-; Line 3932
+; Line 3910
 	mov	rax, QWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	BYTE PTR [rax-1], 0
-; Line 3933
+; Line 3911
 	mov	DWORD PTR fmt_remaining$13[rsp], 0
-; Line 3934
+; Line 3912
 	mov	rax, QWORD PTR next$7[rsp]
 	mov	QWORD PTR r$21[rsp], rax
 $LN8@crt_vsnpri:
-; Line 3935
+; Line 3913
 	cmp	QWORD PTR r$21[rsp], 0
 	je	SHORT $LN9@crt_vsnpri
 	mov	rax, QWORD PTR r$21[rsp]
@@ -15705,14 +15689,14 @@ $LN8@crt_vsnpri:
 	mov	QWORD PTR r$21[rsp], rax
 	jmp	SHORT $LN8@crt_vsnpri
 $LN9@crt_vsnpri:
-; Line 3936
+; Line 3914
 	mov	eax, DWORD PTR fmt_remaining$13[rsp]
 	mov	ecx, DWORD PTR chars$2[rsp]
 	add	ecx, eax
 	mov	eax, ecx
 	jmp	$LN1@crt_vsnpri
 $LN70@crt_vsnpri:
-; Line 3939
+; Line 3917
 	mov	DWORD PTR i$8[rsp], 0
 	jmp	SHORT $LN12@crt_vsnpri
 $LN10@crt_vsnpri:
@@ -15725,7 +15709,7 @@ $LN12@crt_vsnpri:
 	jge	SHORT $LN11@crt_vsnpri
 	cmp	QWORD PTR remaining$[rsp], 1
 	jbe	SHORT $LN11@crt_vsnpri
-; Line 3940
+; Line 3918
 	movsxd	rax, DWORD PTR i$8[rsp]
 	mov	rcx, QWORD PTR out$[rsp]
 	movzx	eax, BYTE PTR temp$[rsp+rax]
@@ -15733,43 +15717,43 @@ $LN12@crt_vsnpri:
 	mov	rax, QWORD PTR out$[rsp]
 	inc	rax
 	mov	QWORD PTR out$[rsp], rax
-; Line 3941
+; Line 3919
 	mov	rax, QWORD PTR remaining$[rsp]
 	dec	rax
 	mov	QWORD PTR remaining$[rsp], rax
-; Line 3942
+; Line 3920
 	mov	eax, DWORD PTR total$[rsp]
 	inc	eax
 	mov	DWORD PTR total$[rsp], eax
-; Line 3943
+; Line 3921
 	jmp	SHORT $LN10@crt_vsnpri
 $LN11@crt_vsnpri:
-; Line 3945
+; Line 3923
 	mov	rax, QWORD PTR next$7[rsp]
 	mov	QWORD PTR p$[rsp], rax
-; Line 3946
+; Line 3924
 	jmp	$LN105@crt_vsnpri
 $LN3@crt_vsnpri:
-; Line 3948
+; Line 3926
 	cmp	QWORD PTR remaining$[rsp], 0
 	jbe	SHORT $LN71@crt_vsnpri
-; Line 3949
+; Line 3927
 	mov	rax, QWORD PTR out$[rsp]
 	mov	BYTE PTR [rax], 0
-; Line 3950
+; Line 3928
 	jmp	SHORT $LN72@crt_vsnpri
 $LN71@crt_vsnpri:
-; Line 3951
+; Line 3929
 	mov	rax, QWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	BYTE PTR [rax-1], 0
 $LN72@crt_vsnpri:
-; Line 3953
+; Line 3931
 	mov	eax, DWORD PTR full_len$[rsp]
 $LN1@crt_vsnpri:
-; Line 3954
+; Line 3932
 	add	rsp, 472				; 000001d8H
 	ret	0
 ?crt_vsnprintf_impl@@YAHPEAD_KPEBD0@Z ENDP		; crt_vsnprintf_impl
@@ -15791,22 +15775,22 @@ compare$ = 152
 work_buffer$ = 160
 ?quick_sort_helper@@YAXPEAX_K1P6AHPEBX2@ZPEAD@Z PROC	; quick_sort_helper
 ; File C:\Users\ADMIN\Documents\GitHub\MalDev\CRT\CRT\CRT.cpp
-; Line 4003
+; Line 3981
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
-; Line 4004
+; Line 3982
 	cmp	QWORD PTR num$[rsp], 1
 	ja	SHORT $LN8@quick_sort
-; Line 4005
+; Line 3983
 	jmp	$LN1@quick_sort
 $LN8@quick_sort:
-; Line 4008
+; Line 3986
 	mov	rax, QWORD PTR base$[rsp]
 	mov	QWORD PTR arr$[rsp], rax
-; Line 4011
+; Line 3989
 	xor	edx, edx
 	mov	rax, QWORD PTR num$[rsp]
 	mov	ecx, 2
@@ -15816,10 +15800,10 @@ $LN8@quick_sort:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR pivot$[rsp], rax
-; Line 4013
+; Line 3991
 	mov	rax, QWORD PTR arr$[rsp]
 	mov	QWORD PTR left$[rsp], rax
-; Line 4014
+; Line 3992
 	mov	rax, QWORD PTR num$[rsp]
 	dec	rax
 	imul	rax, QWORD PTR width$[rsp]
@@ -15828,12 +15812,12 @@ $LN8@quick_sort:
 	mov	rax, rcx
 	mov	QWORD PTR right$[rsp], rax
 $LN2@quick_sort:
-; Line 4016
+; Line 3994
 	mov	rax, QWORD PTR right$[rsp]
 	cmp	QWORD PTR left$[rsp], rax
 	ja	$LN3@quick_sort
 $LN4@quick_sort:
-; Line 4017
+; Line 3995
 	mov	rax, QWORD PTR compare$[rsp]
 	mov	QWORD PTR tv76[rsp], rax
 	mov	rdx, QWORD PTR pivot$[rsp]
@@ -15841,17 +15825,17 @@ $LN4@quick_sort:
 	call	QWORD PTR tv76[rsp]
 	test	eax, eax
 	jge	SHORT $LN5@quick_sort
-; Line 4018
+; Line 3996
 	mov	rax, QWORD PTR width$[rsp]
 	mov	rcx, QWORD PTR left$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR left$[rsp], rax
-; Line 4019
+; Line 3997
 	jmp	SHORT $LN4@quick_sort
 $LN5@quick_sort:
 $LN6@quick_sort:
-; Line 4020
+; Line 3998
 	mov	rax, QWORD PTR compare$[rsp]
 	mov	QWORD PTR tv83[rsp], rax
 	mov	rdx, QWORD PTR pivot$[rsp]
@@ -15859,70 +15843,70 @@ $LN6@quick_sort:
 	call	QWORD PTR tv83[rsp]
 	test	eax, eax
 	jle	SHORT $LN7@quick_sort
-; Line 4021
+; Line 3999
 	mov	rax, QWORD PTR width$[rsp]
 	mov	rcx, QWORD PTR right$[rsp]
 	sub	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR right$[rsp], rax
-; Line 4022
+; Line 4000
 	jmp	SHORT $LN6@quick_sort
 $LN7@quick_sort:
-; Line 4024
+; Line 4002
 	mov	rax, QWORD PTR right$[rsp]
 	cmp	QWORD PTR left$[rsp], rax
 	ja	$LN9@quick_sort
-; Line 4025
+; Line 4003
 	mov	r8, QWORD PTR width$[rsp]
 	mov	rdx, QWORD PTR left$[rsp]
 	mov	rcx, QWORD PTR work_buffer$[rsp]
 	call	?crt_memcpy@@YAPEAXPEAXPEBX_K@Z		; crt_memcpy
-; Line 4026
+; Line 4004
 	mov	r8, QWORD PTR width$[rsp]
 	mov	rdx, QWORD PTR right$[rsp]
 	mov	rcx, QWORD PTR left$[rsp]
 	call	?crt_memcpy@@YAPEAXPEAXPEBX_K@Z		; crt_memcpy
-; Line 4027
+; Line 4005
 	mov	r8, QWORD PTR width$[rsp]
 	mov	rdx, QWORD PTR work_buffer$[rsp]
 	mov	rcx, QWORD PTR right$[rsp]
 	call	?crt_memcpy@@YAPEAXPEAXPEBX_K@Z		; crt_memcpy
 	npad	1
-; Line 4029
+; Line 4007
 	mov	rax, QWORD PTR pivot$[rsp]
 	cmp	QWORD PTR left$[rsp], rax
 	jne	SHORT $LN10@quick_sort
-; Line 4030
+; Line 4008
 	mov	rax, QWORD PTR right$[rsp]
 	mov	QWORD PTR pivot$[rsp], rax
 	jmp	SHORT $LN11@quick_sort
 $LN10@quick_sort:
-; Line 4031
+; Line 4009
 	mov	rax, QWORD PTR pivot$[rsp]
 	cmp	QWORD PTR right$[rsp], rax
 	jne	SHORT $LN12@quick_sort
-; Line 4032
+; Line 4010
 	mov	rax, QWORD PTR left$[rsp]
 	mov	QWORD PTR pivot$[rsp], rax
 $LN12@quick_sort:
 $LN11@quick_sort:
-; Line 4035
+; Line 4013
 	mov	rax, QWORD PTR width$[rsp]
 	mov	rcx, QWORD PTR left$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR left$[rsp], rax
-; Line 4036
+; Line 4014
 	mov	rax, QWORD PTR width$[rsp]
 	mov	rcx, QWORD PTR right$[rsp]
 	sub	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR right$[rsp], rax
 $LN9@quick_sort:
-; Line 4038
+; Line 4016
 	jmp	$LN2@quick_sort
 $LN3@quick_sort:
-; Line 4040
+; Line 4018
 	mov	rax, QWORD PTR arr$[rsp]
 	mov	rcx, QWORD PTR right$[rsp]
 	sub	rcx, rax
@@ -15931,16 +15915,16 @@ $LN3@quick_sort:
 	div	QWORD PTR width$[rsp]
 	inc	rax
 	mov	QWORD PTR leftSize$[rsp], rax
-; Line 4041
+; Line 4019
 	mov	rax, QWORD PTR leftSize$[rsp]
 	mov	rcx, QWORD PTR num$[rsp]
 	sub	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR rightSize$[rsp], rax
-; Line 4043
+; Line 4021
 	cmp	QWORD PTR leftSize$[rsp], 1
 	jbe	SHORT $LN13@quick_sort
-; Line 4044
+; Line 4022
 	mov	rax, QWORD PTR work_buffer$[rsp]
 	mov	QWORD PTR [rsp+32], rax
 	mov	r9, QWORD PTR compare$[rsp]
@@ -15950,10 +15934,10 @@ $LN3@quick_sort:
 	call	?quick_sort_helper@@YAXPEAX_K1P6AHPEBX2@ZPEAD@Z ; quick_sort_helper
 	npad	1
 $LN13@quick_sort:
-; Line 4047
+; Line 4025
 	cmp	QWORD PTR rightSize$[rsp], 1
 	jbe	SHORT $LN14@quick_sort
-; Line 4048
+; Line 4026
 	mov	rax, QWORD PTR work_buffer$[rsp]
 	mov	QWORD PTR [rsp+32], rax
 	mov	r9, QWORD PTR compare$[rsp]
@@ -15964,7 +15948,7 @@ $LN13@quick_sort:
 	npad	1
 $LN14@quick_sort:
 $LN1@quick_sort:
-; Line 4050
+; Line 4028
 	add	rsp, 120				; 00000078H
 	ret	0
 ?quick_sort_helper@@YAXPEAX_K1P6AHPEBX2@ZPEAD@Z ENDP	; quick_sort_helper

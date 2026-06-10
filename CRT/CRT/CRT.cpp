@@ -1197,12 +1197,17 @@ double __cdecl crt_strtod(const char* str, char** endptr) {
     unsigned long integer_part = crt_strtoul_float(p, &p, &overflow);
 
     long double result = (long double)integer_part;
+    int frac_digits = 0;
 
     if (*p == '.') {
         p++;
         while (crt_isdigit(*p)) {
             result = result * 10.0L + (long double)(*p - '0');
+            frac_digits++;
             p++;
+        }
+        for (int i = 0; i < frac_digits; i++) {
+            result /= 10.0L;
         }
     }
 
@@ -1227,7 +1232,8 @@ double __cdecl crt_strtod(const char* str, char** endptr) {
     }
 
     if (exp_value > 0 || exp_sign < 0) {
-        long double power = 1.0L;
+        char onel[8] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x3f };
+        long double power = *(long double*)onel;
         for (int i = 0; i < exp_value; i++) {
             power *= 10.0L;
         }

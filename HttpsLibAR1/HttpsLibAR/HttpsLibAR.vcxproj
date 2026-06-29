@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5852d221-e661-4f03-b599-36fd291cbf32}</ProjectGuid>
+    <ProjectGuid>{84de4f4f-52db-4fba-8908-3d773e82615b}</ProjectGuid>
     <RootNamespace>HttpsLibAR</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -77,6 +77,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve;C:\Users\vuong\Documents\GitHub\MalDev\CRT\CRT;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,13 +141,13 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="HttpClient.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\..\APIResolve\APIResolve\ApiResolve.cpp" />
     <ClCompile Include="..\..\CRT\CRT\CRT.cpp" />
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="HttpClient.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

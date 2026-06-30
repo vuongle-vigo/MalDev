@@ -142,10 +142,12 @@
   <ItemGroup>
     <ClCompile Include="..\..\APIResolve\APIResolve\ApiResolve.cpp" />
     <ClCompile Include="..\..\CRT\CRT\CRT.cpp" />
+    <ClCompile Include="Custom.cpp" />
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Custom.h" />
     <ClInclude Include="HttpClient.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

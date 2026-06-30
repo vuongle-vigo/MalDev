@@ -32,7 +32,7 @@ EXTRN	?crt_wcslwr@@YAPEA_WPEA_W@Z:PROC		; crt_wcslwr
 _TEXT	SEGMENT
 this$ = 8
 ??0ApiResolve@@QEAA@XZ PROC				; ApiResolve::ApiResolve
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
 ; Line 5
 	mov	QWORD PTR [rsp+8], rcx
 ; Line 7
@@ -48,7 +48,7 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 this$ = 8
 ??1ApiResolve@@QEAA@XZ PROC				; ApiResolve::~ApiResolve
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
 ; Line 13
 	mov	QWORD PTR [rsp+8], rcx
 	ret	0
@@ -66,7 +66,7 @@ wsModuleName$5 = 80
 this$ = 624
 lpwsModuleName$ = 632
 ?GetModuleBaseAddress@ApiResolve@@QEAAPEAXQEA_W@Z PROC	; ApiResolve::GetModuleBaseAddress
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
 ; Line 15
 $LN9:
 	mov	QWORD PTR [rsp+16], rdx
@@ -170,7 +170,7 @@ wsModuleName$5 = 80
 this$ = 624
 hash$ = 632
 ?GetModuleBaseAddress@ApiResolve@@QEAAPEAXI@Z PROC	; ApiResolve::GetModuleBaseAddress
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
 ; Line 62
 $LN9:
 	mov	DWORD PTR [rsp+16], edx
@@ -281,7 +281,7 @@ this$ = 144
 lpBaseAddress$ = 152
 sApiName$ = 160
 ?GetApiAddress@ApiResolve@@QEAAPEAXPEAXPEBD@Z PROC	; ApiResolve::GetApiAddress
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
 ; Line 103
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
@@ -427,7 +427,7 @@ this$ = 256
 lpBaseAddress$ = 264
 hash$ = 272
 ?GetApiAddress@ApiResolve@@QEAAPEAXPEAXI@Z PROC		; ApiResolve::GetApiAddress
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\ApiResolve.cpp
 ; Line 134
 $LN8:
 	mov	DWORD PTR [rsp+24], r8d
@@ -618,7 +618,7 @@ _TEXT	SEGMENT
 x$ = 8
 n$ = 16
 ?Rotr@@YAIII@Z PROC					; Rotr, COMDAT
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\HashString.h
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\HashString.h
 ; Line 4
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
@@ -645,7 +645,7 @@ hash$ = 36
 temp$ = 40
 str$ = 64
 ?ComplexHashForWChar@@YAIPEB_W@Z PROC			; ComplexHashForWChar, COMDAT
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\HashString.h
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\HashString.h
 ; Line 9
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
@@ -695,7 +695,7 @@ hash$ = 36
 temp$ = 40
 str$ = 64
 ?ComplexHashForAnsi@@YAIPEBD@Z PROC			; ComplexHashForAnsi, COMDAT
-; File C:\Users\ADMIN\Documents\GitHub\MalDev\APIResolve\APIResolve\HashString.h
+; File C:\Users\vuong\Documents\GitHub\MalDev\APIResolve\APIResolve\HashString.h
 ; Line 23
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx

@@ -23,9 +23,15 @@
     <ClCompile Include="..\..\CRT\CRT\CRT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Custom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HttpClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Custom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

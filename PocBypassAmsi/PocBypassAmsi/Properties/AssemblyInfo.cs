@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MalBypassTest")]
+[assembly: AssemblyTitle("PocBypassAmsi")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MalBypassTest")]
+[assembly: AssemblyProduct("PocBypassAmsi")]
 [assembly: AssemblyCopyright("Copyright ©  2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9b8d1c1d-05b4-4234-8fc7-9724f3b840eb")]
+[assembly: Guid("24c5bfc9-3cd1-4de8-a1d8-f05827424079")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -217,10 +217,8 @@ BOOL StartConsoleShell(mscorlib::_AppDomain* pAppDomain, VARIANT vtRunspaceConfi
         goto exit;
 
     bResult = TRUE;
-
 exit:
     if (pStartArguments) SafeArrayDestroy(pStartArguments);
-
     if (pStartMethodInfo) pStartMethodInfo->Release();
     if (pConsoleShellType) pConsoleShellType->Release();
 

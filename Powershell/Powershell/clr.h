@@ -13,7 +13,7 @@
 using namespace mscorlib;
 
 
-#define APP_DOMAIN L"PowerChell"
+#define APP_DOMAIN L"PowershellHosting"
 #define ASSEMBLY_NAME_SYSTEM_CORE L"System.Core"
 #define ASSEMBLY_NAME_SYSTEM_REFLECTION L"System.Reflection"
 #define ASSEMBLY_NAME_SYSTEM_RUNTIME L"System.Runtime"

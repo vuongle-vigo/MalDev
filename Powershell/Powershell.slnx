@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Powershell/Powershell.vcxproj" Id="28733df5-b66f-44b4-b226-8543997676e5" />
+</Solution>

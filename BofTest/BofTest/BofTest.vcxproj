@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5852d221-e661-4f03-b599-36fd291cbf32}</ProjectGuid>
-    <RootNamespace>HttpsLibAR</RootNamespace>
+    <ProjectGuid>{a56ebbc7-2e67-4c08-be4d-42b5988f050b}</ProjectGuid>
+    <RootNamespace>BofTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -110,8 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\admin\Documents\GitHub\MalDev\APIResolve\APIResolve;C:\Users\admin\Documents\GitHub\MalDev\CRT\CRT;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,15 +139,13 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\APIResolve\APIResolve\ApiResolve.cpp" />
-    <ClCompile Include="..\..\CRT\CRT\CRT.cpp" />
-    <ClCompile Include="Custom.cpp" />
-    <ClCompile Include="HttpClient.cpp" />
+    <ClCompile Include="beacon_compatibility.c" />
+    <ClCompile Include="COFFLoader.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Custom.h" />
-    <ClInclude Include="HttpClient.h" />
+    <ClInclude Include="beacon_compatibility.h" />
+    <ClInclude Include="COFFLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

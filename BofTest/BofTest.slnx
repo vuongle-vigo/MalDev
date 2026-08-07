@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="HttpsLibAR/HttpsLibAR.vcxproj" Id="5852d221-e661-4f03-b599-36fd291cbf32" />
+  <Project Path="BofTest/BofTest.vcxproj" />
 </Solution>

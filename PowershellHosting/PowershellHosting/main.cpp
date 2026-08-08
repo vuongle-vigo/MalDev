@@ -1,14 +1,11 @@
 #include "clr.h"
 #include "common.h"
 #include "patch.h"
-#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
+#include <iostream>
 #include <propvarutil.h>
-
-
-#ifdef _WINDLL
-
-#else
 
 // Helper functions
 BOOL System_Object_GetType(CLR& clr, VARIANT vtObject, VARIANT* pvtType) {
@@ -152,7 +149,9 @@ BOOL System_Reflection_PropertyInfo_GetValue(CLR& clr, VARIANT vtPropertyInfo, V
 }
 
 // Main print function
-void PrintPowerShellOutput(CLR& clr, VARIANT vtResult) {
+// Collect PSDataCollection<PSObject> → std::wstring (mỗi item ToString nối tiếp).
+// Dùng chung cho REPL (sau đó in ra stdout) và DLL (convert sang BSTR).
+void CollectOutput(CLR& clr, VARIANT vtResult, std::wstring* pOut) {
     VARIANT vtResultType = { 0 };
     VARIANT vtCountProperty = { 0 };
     VARIANT vtCount = { 0 };
@@ -164,22 +163,18 @@ void PrintPowerShellOutput(CLR& clr, VARIANT vtResult) {
     _MethodInfo* pToString = NULL;
     _Assembly* pAsm = NULL;
 
-    // Get result type
     if (!System_Object_GetType(clr, vtResult, &vtResultType))
         goto exit;
 
-    // Get Count property
     if (!System_Type_GetProperty(clr, vtResultType, L"Count", &vtCountProperty))
         goto exit;
 
     if (!System_Reflection_PropertyInfo_GetValue(clr, vtCountProperty, vtResult, &vtCount))
         goto exit;
 
-    // Get Item property
     if (!System_Type_GetProperty(clr, vtResultType, L"Item", &vtItemProperty))
         goto exit;
 
-    // Get PSObject type for ToString
     if (clr.LoadAssembly(L"System.Management.Automation", &pAsm)) {
         BSTR bstrTypeName = SysAllocString(L"System.Management.Automation.PSObject");
         if (bstrTypeName) {
@@ -192,7 +187,7 @@ void PrintPowerShellOutput(CLR& clr, VARIANT vtResult) {
 
     if (pPSObjectType) {
         if (!clr.GetMethod(pPSObjectType, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"ToString", 0, &pToString))
-            pToString = NULL;  // an toàn: skip ToString bên dưới
+            pToString = NULL;
     }
 
     if (vtCount.vt == VT_I4 && vtCount.intVal > 0) {
@@ -214,7 +209,12 @@ void PrintPowerShellOutput(CLR& clr, VARIANT vtResult) {
                 VariantInit(&vtValueAsString);
                 if (pToString && clr.InvokeMethod(pToString, vtValue, NULL, &vtValueAsString)) {
                     if (vtValueAsString.vt == VT_BSTR && vtValueAsString.bstrVal) {
-                        wprintf(L"%ws", vtValueAsString.bstrVal);
+                        if (pOut) {
+                            *pOut += vtValueAsString.bstrVal;
+                        }
+                        else {
+                            wprintf(L"%ws", vtValueAsString.bstrVal);
+                        }
                     }
                 }
                 VariantClear(&vtValueAsString);
@@ -240,7 +240,12 @@ exit:
     VariantClear(&vtResultType);
 }
 
-BOOL PowerShellGetStream(CLR &clr, VARIANT vtPowerShellInstance, LPCWSTR pwszStreamName, VARIANT* pvtStream)
+// REPL wrapper: collect rồi in ra stdout.
+void PrintPowerShellOutput(CLR& clr, VARIANT vtResult) {
+    CollectOutput(clr, vtResult, NULL);
+}
+
+BOOL PowerShellGetStream(CLR& clr, VARIANT vtPowerShellInstance, LPCWSTR pwszStreamName, VARIANT* pvtStream)
 {
     BOOL bResult = FALSE;
     VARIANT vtStreams = { 0 };
@@ -279,7 +284,7 @@ exit:
     return bResult;
 }
 
-void PrintErrorRecord(CLR &clr, VARIANT vtErrorRecord)
+void PrintErrorRecord(CLR& clr, VARIANT vtErrorRecord)
 {
     WORD wOldColor = 0;
     size_t sScriptStackTraceLen;
@@ -421,7 +426,7 @@ exit:
     VariantClear(&vtErrorRecordType);
 }
 
-void PrintPowerShellErrorStream(CLR &clr, VARIANT vtErrorStream)
+void PrintPowerShellErrorStream(CLR& clr, VARIANT vtErrorStream)
 {
     LONG lArgumentIndex;
     VARIANT vtPSDataCollectionType = { 0 };
@@ -486,7 +491,7 @@ exit:
     VariantClear(&vtPSDataCollectionType);
 }
 
-void PrintPowerShellInvocationStateInfoReason(CLR &clr, VARIANT vtReason)
+void PrintPowerShellInvocationStateInfoReason(CLR& clr, VARIANT vtReason)
 {
     WORD wOldColor = 0;
     VARIANT vtExceptionAsString = { 0 };
@@ -529,7 +534,7 @@ exit:
     VariantClear(&vtExceptionAsString);
 }
 
-void PrintPowerShellInvokeErrors(CLR &clr, VARIANT vtPowerShellInstance)
+void PrintPowerShellInvokeErrors(CLR& clr, VARIANT vtPowerShellInstance)
 {
     VARIANT vtErrorStream = { 0 };
     VARIANT vtInvocationStateInfo = { 0 };
@@ -582,7 +587,214 @@ void ClearStreamErrors(CLR& clr, VARIANT vtPowerShellInstance) {
     (void)clr; (void)vtPowerShellInstance;
 }
 
-BOOL PowerShellHadErrors(CLR &clr, VARIANT vtPowerShellInstance, PBOOL pbHadErrors)
+// =====================================================================
+// Collect* helpers — mirror của Print* helpers trong EXE build.
+// Cùng logic reflection, nhưng append output vào std::wstring thay vì wprintf.
+// Dùng bởi DLL PS_Execute() để merge errors vào BSTR trả về.
+// =====================================================================
+
+// Mirror PrintErrorRecord (line ~287).
+void CollectErrorRecord(CLR& clr, VARIANT vtErrorRecord, std::wstring* pOut)
+{
+    VARIANT vtErrorRecordType = { 0 };
+    VARIANT vtTargetObjectProperty = { 0 };
+    VARIANT vtTargetObject = { 0 };
+    VARIANT vtScriptStackTraceProperty = { 0 };
+    VARIANT vtScriptStackTrace = { 0 };
+    VARIANT vtCategoryInfoProperty = { 0 };
+    VARIANT vtCategoryInfo = { 0 };
+    VARIANT vtCategoryInfoMessage = { 0 };
+    VARIANT vtFullyQualifiedErrorIdProperty = { 0 };
+    VARIANT vtFullyQualifiedErrorId = { 0 };
+    VARIANT vtExceptionProperty = { 0 };
+    VARIANT vtException = { 0 };
+    VARIANT vtExceptionType = { 0 };
+    VARIANT vtExceptionMessageProperty = { 0 };
+    VARIANT vtExceptionMessage = { 0 };
+    _Type* pErrorCategoryInfoType = NULL;
+    _MethodInfo* pErrorCategoryInfoGetMessageMethodInfo = NULL;
+    _Assembly* pAsm = NULL;
+    wchar_t buf[1024];
+
+    if (!clr.LoadAssembly(L"System.Management.Automation", &pAsm)) goto exit;
+
+    if (!System_Object_GetType(clr, vtErrorRecord, &vtErrorRecordType)) goto exit;
+    if (!System_Type_GetProperty(clr, vtErrorRecordType, L"TargetObject", &vtTargetObjectProperty)) goto exit;
+    if (!System_Reflection_PropertyInfo_GetValue(clr, vtTargetObjectProperty, vtErrorRecord, &vtTargetObject)) goto exit;
+    if (!System_Type_GetProperty(clr, vtErrorRecordType, L"ScriptStackTrace", &vtScriptStackTraceProperty)) goto exit;
+    if (!System_Reflection_PropertyInfo_GetValue(clr, vtScriptStackTraceProperty, vtErrorRecord, &vtScriptStackTrace)) goto exit;
+    if (!System_Type_GetProperty(clr, vtErrorRecordType, L"CategoryInfo", &vtCategoryInfoProperty)) goto exit;
+    if (!System_Reflection_PropertyInfo_GetValue(clr, vtCategoryInfoProperty, vtErrorRecord, &vtCategoryInfo)) goto exit;
+    if (!clr.GetType(pAsm, L"System.Management.Automation.ErrorCategoryInfo", &pErrorCategoryInfoType)) goto exit;
+    if (!clr.GetMethod(pErrorCategoryInfoType, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"GetMessage", 0, &pErrorCategoryInfoGetMessageMethodInfo)) goto exit;
+    if (!clr.InvokeMethod(pErrorCategoryInfoGetMessageMethodInfo, vtCategoryInfo, NULL, &vtCategoryInfoMessage)) goto exit;
+    if (!System_Type_GetProperty(clr, vtErrorRecordType, L"FullyQualifiedErrorId", &vtFullyQualifiedErrorIdProperty)) goto exit;
+    if (!System_Reflection_PropertyInfo_GetValue(clr, vtFullyQualifiedErrorIdProperty, vtErrorRecord, &vtFullyQualifiedErrorId)) goto exit;
+    if (!System_Type_GetProperty(clr, vtErrorRecordType, L"Exception", &vtExceptionProperty)) goto exit;
+    if (!System_Reflection_PropertyInfo_GetValue(clr, vtExceptionProperty, vtErrorRecord, &vtException)) goto exit;
+    if (!System_Object_GetType(clr, vtException, &vtExceptionType)) goto exit;
+    if (!System_Type_GetProperty(clr, vtExceptionType, L"Message", &vtExceptionMessageProperty)) goto exit;
+    if (!System_Reflection_PropertyInfo_GetValue(clr, vtExceptionMessageProperty, vtException, &vtExceptionMessage)) goto exit;
+
+    if (vtTargetObject.vt == VT_BSTR && vtExceptionMessage.vt == VT_BSTR)
+        swprintf_s(buf, 1024, L"%ws : %ws\n", vtTargetObject.bstrVal, vtExceptionMessage.bstrVal);
+    else if (vtTargetObject.vt != VT_BSTR && vtExceptionMessage.vt == VT_BSTR)
+        swprintf_s(buf, 1024, L". : %ws\n", vtExceptionMessage.bstrVal);
+    else
+        buf[0] = 0;
+    *pOut += buf;
+
+    if (vtScriptStackTrace.vt == VT_BSTR && vtScriptStackTrace.bstrVal) {
+        *pOut += std::wstring(vtScriptStackTrace.bstrVal) + L"\n";
+    }
+
+    if (vtTargetObject.vt == VT_BSTR && vtTargetObject.bstrVal) {
+        size_t n = wcslen(vtTargetObject.bstrVal);
+        *pOut += std::wstring(L"+ ") + vtTargetObject.bstrVal + L"\n+ ";
+        for (size_t i = 0; i < n; i++) *pOut += L"~";
+        *pOut += L"\n";
+    }
+
+    if (vtCategoryInfoMessage.vt == VT_BSTR && vtCategoryInfoMessage.bstrVal) {
+        *pOut += std::wstring(L"    + CategoryInfo          : ") + vtCategoryInfoMessage.bstrVal + L"\n";
+    }
+    if (vtFullyQualifiedErrorId.vt == VT_BSTR && vtFullyQualifiedErrorId.bstrVal) {
+        *pOut += std::wstring(L"    + FullyQualifiedErrorId : ") + vtFullyQualifiedErrorId.bstrVal + L"\n";
+    }
+
+exit:
+    if (pErrorCategoryInfoGetMessageMethodInfo) pErrorCategoryInfoGetMessageMethodInfo->Release();
+    if (pErrorCategoryInfoType) pErrorCategoryInfoType->Release();
+    if (pAsm) pAsm->Release();
+    VariantClear(&vtExceptionMessage);
+    VariantClear(&vtExceptionMessageProperty);
+    VariantClear(&vtExceptionType);
+    VariantClear(&vtException);
+    VariantClear(&vtExceptionProperty);
+    VariantClear(&vtFullyQualifiedErrorId);
+    VariantClear(&vtFullyQualifiedErrorIdProperty);
+    VariantClear(&vtCategoryInfoMessage);
+    VariantClear(&vtCategoryInfo);
+    VariantClear(&vtCategoryInfoProperty);
+    VariantClear(&vtScriptStackTrace);
+    VariantClear(&vtScriptStackTraceProperty);
+    VariantClear(&vtTargetObject);
+    VariantClear(&vtTargetObjectProperty);
+    VariantClear(&vtErrorRecordType);
+}
+
+// Mirror PrintPowerShellErrorStream (line ~429).
+void CollectPowerShellErrorStream(CLR& clr, VARIANT vtErrorStream, std::wstring* pOut)
+{
+    LONG lArgumentIndex;
+    VARIANT vtPSDataCollectionType = { 0 };
+    VARIANT vtPSDataCollectionCountProperty = { 0 };
+    VARIANT vtErrorStreamCount = { 0 };
+    VARIANT vtPSDataCollectionItemProperty = { 0 };
+    VARIANT vtIndex = { 0 };
+    VARIANT vtErrorRecord = { 0 };
+    SAFEARRAY* pIndex = NULL;
+
+    if (!System_Object_GetType(clr, vtErrorStream, &vtPSDataCollectionType)) goto exit;
+    if (!System_Type_GetProperty(clr, vtPSDataCollectionType, L"Count", &vtPSDataCollectionCountProperty)) goto exit;
+    if (!System_Reflection_PropertyInfo_GetValue(clr, vtPSDataCollectionCountProperty, vtErrorStream, &vtErrorStreamCount)) goto exit;
+    if (!System_Type_GetProperty(clr, vtPSDataCollectionType, L"Item", &vtPSDataCollectionItemProperty)) goto exit;
+
+    if (vtErrorStreamCount.vt == VT_I4 && vtErrorStreamCount.lVal > 0) {
+        for (LONG i = 0; i < vtErrorStreamCount.lVal; i++) {
+            InitVariantFromInt32(i, &vtIndex);
+            pIndex = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+            lArgumentIndex = 0;
+            if (pIndex) {
+                if (FAILED(SafeArrayPutElement(pIndex, &lArgumentIndex, &vtIndex))) {
+                    SafeArrayDestroy(pIndex);
+                    pIndex = NULL;
+                }
+            }
+            if (pIndex && System_Reflection_PropertyInfo_GetValue(clr, vtPSDataCollectionItemProperty, vtErrorStream, pIndex, &vtErrorRecord)) {
+                CollectErrorRecord(clr, vtErrorRecord, pOut);
+                VariantClear(&vtErrorRecord);
+            }
+            SafeArrayDestroy(pIndex);
+            pIndex = NULL;
+            VariantClear(&vtIndex);
+        }
+    }
+
+exit:
+    if (pIndex) SafeArrayDestroy(pIndex);
+    VariantClear(&vtErrorStreamCount);
+    VariantClear(&vtIndex);
+    VariantClear(&vtPSDataCollectionItemProperty);
+    VariantClear(&vtPSDataCollectionCountProperty);
+    VariantClear(&vtPSDataCollectionType);
+    VariantClear(&vtErrorRecord);
+}
+
+// Mirror PrintPowerShellInvocationStateInfoReason (line ~494).
+void CollectPowerShellInvocationStateInfoReason(CLR& clr, VARIANT vtReason, std::wstring* pOut)
+{
+    VARIANT vtExceptionAsString = { 0 };
+    _Type* pExceptionType = NULL;
+    _MethodInfo* pToStringMethod = NULL;
+    _Assembly* pAsm = NULL;
+
+    if (!clr.LoadAssembly(L"System.Runtime", &pAsm)) goto exit;
+    if (!clr.GetType(pAsm, L"System.Exception", &pExceptionType)) goto exit;
+    if (!clr.GetMethod(pExceptionType, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"ToString", 0, &pToStringMethod)) goto exit;
+    if (!clr.InvokeMethod(pToStringMethod, vtReason, NULL, &vtExceptionAsString)) goto exit;
+
+    if (vtExceptionAsString.vt == VT_BSTR && vtExceptionAsString.bstrVal && wcslen(vtExceptionAsString.bstrVal) > 0) {
+        *pOut += std::wstring(vtExceptionAsString.bstrVal) + L"\n\n";
+    }
+
+exit:
+    if (pToStringMethod) pToStringMethod->Release();
+    if (pExceptionType) pExceptionType->Release();
+    if (pAsm) pAsm->Release();
+    VariantClear(&vtExceptionAsString);
+}
+
+// Mirror PrintPowerShellInvokeErrors (line ~537) — gom error stream + invocation reason
+// vào một std::wstring.
+void CollectPowerShellInvokeErrors(CLR& clr, VARIANT vtPowerShellInstance, std::wstring* pOut)
+{
+    VARIANT vtErrorStream = { 0 };
+    VARIANT vtInvocationStateInfo = { 0 };
+    VARIANT vtReason = { 0 };
+    _Type* pPowerShellType = NULL;
+    _Type* pPSInvocationStateInfoType = NULL;
+    _Assembly* pAsm = NULL;
+
+    if (!clr.LoadAssembly(L"System.Management.Automation", &pAsm)) goto exit;
+    if (!clr.GetType(pAsm, L"System.Management.Automation.PowerShell", &pPowerShellType)) goto exit;
+
+    if (!PowerShellGetStream(clr, vtPowerShellInstance, L"Error", &vtErrorStream)) goto exit;
+
+    if (vtErrorStream.vt != VT_EMPTY) {
+        CollectPowerShellErrorStream(clr, vtErrorStream, pOut);
+    }
+
+    if (!clr.GetPropertyValue(pPowerShellType, BindingFlags(BindingFlags_Public | BindingFlags_Instance), vtPowerShellInstance, L"InvocationStateInfo", &vtInvocationStateInfo)) goto exit;
+
+    if (!clr.GetType(pAsm, L"System.Management.Automation.PSInvocationStateInfo", &pPSInvocationStateInfoType)) goto exit;
+
+    if (!clr.GetPropertyValue(pPSInvocationStateInfoType, BindingFlags(BindingFlags_Public | BindingFlags_Instance), vtInvocationStateInfo, L"Reason", &vtReason)) goto exit;
+
+    if (vtReason.vt != VT_EMPTY) {
+        CollectPowerShellInvocationStateInfoReason(clr, vtReason, pOut);
+    }
+
+exit:
+    if (pPSInvocationStateInfoType) pPSInvocationStateInfoType->Release();
+    if (pPowerShellType) pPowerShellType->Release();
+    if (pAsm) pAsm->Release();
+    VariantClear(&vtReason);
+    VariantClear(&vtInvocationStateInfo);
+    VariantClear(&vtErrorStream);
+}
+
+BOOL PowerShellHadErrors(CLR& clr, VARIANT vtPowerShellInstance, PBOOL pbHadErrors)
 {
     BOOL bResult = FALSE;
     VARIANT vtHadErrors = { 0 };
@@ -699,6 +911,27 @@ void Patch(CLR& clr) {
         PRINT_ERROR("Failed to disable Constrained Mode Language.\n");
     }
 }
+
+#ifdef _WINDLL
+// ===== DLL build: exported API =====
+#define PS_API extern "C" __declspec(dllexport)
+
+// Internal PowerShell session state (single instance per DLL — thread-unsafe theo design).
+// Nếu cần multi-session, refactor thành struct + handle table.
+static struct {
+    BOOL bReady;
+    CLR clr;
+    _Assembly* pAsm;
+    _Type* pTypePS;
+    _MethodInfo* pMethodCreate;
+    _MethodInfo* pMethodAddScript;
+    _MethodInfo* pMethodInvoke;
+    VARIANT vtPSInstance;
+    SAFEARRAY* pEmptyArgs;
+} g_Session = { FALSE, {}, NULL, NULL, NULL, NULL, NULL, { 0 }, NULL };
+
+#else
+// ===== EXE build: standalone REPL =====
 
 int main() {
     int nRet = 0;
@@ -846,6 +1079,198 @@ cleanup:
     if (pAsm) pAsm->Release();
 
     return nRet;
+}
+
+#endif // !_WINDLL (REPL)
+
+#ifdef _WINDLL
+// ===== DLL EXPORTS =====
+//
+// C interface exported từ DLL để caller (C/C++/any FFI) dùng:
+//   PS_Init()                  : setup CLR, load System.Management.Automation, lookup methods,
+//                                create PowerShell instance, apply patches (AMSI/ETW/Transcription).
+//                                Idempotent — gọi nhiều lần OK.
+//   PS_Execute(script)         : chạy 1 PowerShell pipeline. Trả về BSTR (caller SysFreeString).
+//                                NULL = error. Pipes output qua Out-String nên return là plain text.
+//   PS_Reset()                 : dispose instance hiện tại + tạo mới. Gọi khi script làm hỏng state
+//                                (vd: gọi [System.Management.Automation.PowerShell]::Create() trong script).
+//   PS_Shutdown()              : cleanup toàn bộ. Idempotent.
+//
+// Threading: single global session, KHÔNG thread-safe. Caller tự sync nếu dùng đa luồng.
+
+PS_API BOOL PS_Init() {
+    if (g_Session.bReady) return TRUE;
+
+    if (!g_Session.clr.InitCLR()) {
+        return FALSE;
+    }
+
+    if (!g_Session.clr.LoadAssembly(L"System.Management.Automation", &g_Session.pAsm)) {
+        return FALSE;
+    }
+
+    if (!g_Session.clr.GetType(g_Session.pAsm, L"System.Management.Automation.PowerShell", &g_Session.pTypePS)) {
+        return FALSE;
+    }
+
+    if (!g_Session.clr.GetMethod(g_Session.pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Static), L"Create", 0, &g_Session.pMethodCreate)) {
+        return FALSE;
+    }
+
+    if (!g_Session.clr.GetMethod(g_Session.pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"AddScript", 1, &g_Session.pMethodAddScript)) {
+        return FALSE;
+    }
+
+    if (!g_Session.clr.GetMethod(g_Session.pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"Invoke", 0, &g_Session.pMethodInvoke)) {
+        return FALSE;
+    }
+
+    VariantInit(&g_Session.vtPSInstance);
+    g_Session.pEmptyArgs = SafeArrayCreateVector(VT_VARIANT, 0, 0);
+    if (!g_Session.pEmptyArgs) return FALSE;
+
+    if (!g_Session.clr.InvokeMethod(g_Session.pMethodCreate, g_Session.vtPSInstance, g_Session.pEmptyArgs, &g_Session.vtPSInstance)) {
+        SafeArrayDestroy(g_Session.pEmptyArgs);
+        g_Session.pEmptyArgs = NULL;
+        return FALSE;
+    }
+
+    // Apply AMSI bypass + ETW disable + Transcription disable — cùng patch như REPL.
+    Patch(g_Session.clr);
+
+    g_Session.bReady = TRUE;
+    return TRUE;
+}
+
+// Helper: gọi Reset thủ công nếu cần dispose instance mà không thoát DLL.
+static BOOL PS_ResetInternal() {
+    VariantClear(&g_Session.vtPSInstance);
+    VariantInit(&g_Session.vtPSInstance);
+
+    if (!g_Session.clr.InvokeMethod(g_Session.pMethodCreate, g_Session.vtPSInstance, g_Session.pEmptyArgs, &g_Session.vtPSInstance)) {
+        return FALSE;
+    }
+
+    // Re-apply patches trên instance mới (state đã reset).
+    Patch(g_Session.clr);
+    return TRUE;
+}
+
+PS_API BOOL PS_Reset() {
+    if (!g_Session.bReady) return FALSE;
+    return PS_ResetInternal();
+}
+
+PS_API void PS_Shutdown() {
+    if (!g_Session.bReady) return;
+
+    VariantClear(&g_Session.vtPSInstance);
+
+    if (g_Session.pMethodInvoke) {
+        g_Session.pMethodInvoke->Release();
+        g_Session.pMethodInvoke = NULL;
+    }
+    if (g_Session.pMethodAddScript) {
+        g_Session.pMethodAddScript->Release();
+        g_Session.pMethodAddScript = NULL;
+    }
+    if (g_Session.pMethodCreate) {
+        g_Session.pMethodCreate->Release();
+        g_Session.pMethodCreate = NULL;
+    }
+    if (g_Session.pTypePS) {
+        g_Session.pTypePS->Release();
+        g_Session.pTypePS = NULL;
+    }
+    if (g_Session.pAsm) {
+        g_Session.pAsm->Release();
+        g_Session.pAsm = NULL;
+    }
+    if (g_Session.pEmptyArgs) {
+        SafeArrayDestroy(g_Session.pEmptyArgs);
+        g_Session.pEmptyArgs = NULL;
+    }
+
+    g_Session.clr.FreeCLR();
+    g_Session.bReady = FALSE;
+}
+
+// PS_Execute: chạy 1 PowerShell command, trả về BSTR (caller SysFreeString).
+// NULL nếu lỗi. Tự pipe qua Out-String để output là plain text.
+// Tự reset instance khi gặp lỗi (giống REPL main).
+PS_API BSTR PS_Execute(LPCWSTR pwszScript) {
+    if (!g_Session.bReady || !pwszScript) return NULL;
+
+    BSTR bstrFinal = NULL;
+    long idx = 0;
+    VARIANT vtScript;
+    VariantInit(&vtScript);
+    SAFEARRAY* pArgs = NULL;
+    VARIANT vtResult;
+    VariantInit(&vtResult);
+    std::wstring out;
+    BOOL bHadErrors = FALSE;
+
+    std::wstring inputOut = std::wstring(pwszScript) + L" | Out-String";
+    BSTR bstrScript = SysAllocString(inputOut.c_str());
+    if (!bstrScript) goto cleanup;
+    vtScript.vt = VT_BSTR;
+    vtScript.bstrVal = bstrScript;
+
+    pArgs = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+    if (!pArgs) goto cleanup;
+    if (FAILED(SafeArrayPutElement(pArgs, &idx, &vtScript))) goto cleanup;
+
+    VariantClear(&vtResult);
+    VariantInit(&vtResult);
+    g_Session.clr.InvokeMethod(g_Session.pMethodAddScript, g_Session.vtPSInstance, pArgs, &vtResult);
+
+    SafeArrayDestroy(pArgs);
+    pArgs = NULL;
+    VariantClear(&vtScript);
+    VariantClear(&vtResult);
+
+    VariantInit(&vtResult);
+    if (!g_Session.clr.InvokeMethod(g_Session.pMethodInvoke, g_Session.vtPSInstance, NULL, &vtResult)) {
+        goto cleanup;
+    }
+
+    CollectOutput(g_Session.clr, vtResult, &out);
+
+    // Nếu có errors, thu thập tất cả errors + invocation reason vào output trước khi reset.
+    if (PowerShellHadErrors(g_Session.clr, g_Session.vtPSInstance, &bHadErrors) && bHadErrors) {
+        std::wstring errOut;
+        CollectPowerShellInvokeErrors(g_Session.clr, g_Session.vtPSInstance, &errOut);
+        if (!errOut.empty()) {
+            if (!out.empty()) out += L"\n";
+            out += L"[ERR]\n" + errOut;
+        }
+        PS_ResetInternal();
+    }
+
+    if (!out.empty()) {
+        bstrFinal = SysAllocString(out.c_str());
+    }
+
+cleanup:
+    VariantClear(&vtResult);
+    if (pArgs) SafeArrayDestroy(pArgs);
+    VariantClear(&vtScript);
+    return bstrFinal;
+}
+
+// DLL entry point — chỉ cần thiết nếu cần cleanup ở process detach.
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ulReasonForCall, LPVOID lpReserved) {
+    switch (ulReasonForCall) {
+    case DLL_PROCESS_ATTACH:
+        DisableThreadLibraryCalls(hModule);
+        break;
+    case DLL_PROCESS_DETACH:
+        // Không auto-call PS_Shutdown() ở đây — COM cleanup có thể không an toàn tại DllMain.
+        // Caller phải gọi PS_Shutdown() explicitly.
+        break;
+    }
+    return TRUE;
 }
 
 #endif

@@ -4,6 +4,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="LoadLib/LoadLib.vcxproj" Id="07e10df8-b34c-4ff4-a564-487d7c5f80cb" />
   <Project Path="PowershellCS/PowershellCS.csproj" Id="56d5c653-4515-4030-b936-d1cad6b551c0" />
   <Project Path="PowershellHosting/PowershellHosting.vcxproj" Id="8a8b8a17-40bd-4170-bc10-120ac24b4acb" />
 </Solution>

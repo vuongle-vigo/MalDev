@@ -17,6 +17,9 @@
     <ClCompile Include="clr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="patch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clr.h">
@@ -26,6 +29,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="patch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

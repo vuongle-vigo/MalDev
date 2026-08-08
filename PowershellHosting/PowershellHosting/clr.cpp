@@ -381,6 +381,49 @@ BOOL CLR::GetMethod(_Type* pType, BindingFlags flags, LPCWSTR pwszMethodName, in
 	return TRUE;
 }
 
+BOOL CLR::GetField(_Type* pType,BindingFlags bindingFlags, LPCWSTR pwszFieldName, _FieldInfo** ppFieldInfo)
+{
+	HRESULT hr;
+	BOOL bResult = FALSE;
+	BSTR bstrFieldName = SysAllocString(pwszFieldName);
+	_FieldInfo* pFieldInfo = NULL;
+
+	hr = pType->GetField(bstrFieldName, bindingFlags, &pFieldInfo);
+	if (FAILED(hr) || !pFieldInfo) {
+		goto exit;
+	}
+	*ppFieldInfo = pFieldInfo;
+	bResult = TRUE;
+
+exit:
+	if (bstrFieldName) SysFreeString(bstrFieldName);
+
+	return bResult;
+}
+
+BOOL CLR::GetFieldValue(_Type* pType, BindingFlags bindingFlags, VARIANT vtObject, LPCWSTR pwszFieldName, VARIANT* pvtFieldValue) {
+	BOOL bResult = FALSE;
+	HRESULT hr;
+	VARIANT vtValue = { 0 };
+	_FieldInfo* pFieldInfo = NULL;
+
+	if (!GetField(pType, bindingFlags, pwszFieldName, &pFieldInfo))
+		goto exit;
+
+	hr = pFieldInfo->GetValue(vtObject, &vtValue);
+	if (FAILED(hr)) {
+		goto exit;
+	}
+
+	memcpy_s(pvtFieldValue, sizeof(*pvtFieldValue), &vtValue, sizeof(vtValue));
+	bResult = TRUE;
+
+exit:
+	if (pFieldInfo) pFieldInfo->Release();
+
+	return bResult;
+}
+
 BOOL CLR::GetProperty(_Type* pType, BindingFlags bindingFlags, LPCWSTR pwszPropertyName, _PropertyInfo** ppPropertyInfo) {
 	HRESULT hr;
 	BOOL bResult = FALSE;
@@ -448,8 +491,8 @@ BOOL CLR::GetJustInTimeMethodAddress(LPCWSTR pwszAssemblyName, LPCWSTR pwszClass
 		BindingFlags_Public |
 		BindingFlags_NonPublic |
 		BindingFlags_DeclaredOnly);
-	_Assembly* pAsmReflect;
-	_Assembly* pAsm;
+	_Assembly* pAsmReflect = NULL;
+	_Assembly* pAsm = NULL;
 	if (!LoadAssembly(pwszAssemblyName, &pAsm)) {
 		goto exit;
 	}

@@ -6,14 +6,14 @@
 BOOL PatchAmsiOpenSession();
 BOOL PatchAmsiScanBuffer();
 
-BOOL PatchSystemPolicyGetSystemLockdownPolicy(_AppDomain* pAppDomain);
-BOOL PatchTranscriptionOptionFlushContentToDisk(_AppDomain* pAppDomain);
-BOOL PatchAuthorizationManagerShouldRunInternal(_AppDomain* pAppDomain);
+BOOL PatchSystemPolicyGetSystemLockdownPolicy(CLR &clr);
+BOOL PatchTranscriptionOptionFlushContentToDisk(CLR &clr);
+BOOL PatchAuthorizationManagerShouldRunInternal(CLR &clr);
 
 BOOL GetProcedureAddress(LPCWSTR pwszModuleName, LPCSTR pszProcedureName, PULONG_PTR pProcedureAddress);
 BOOL PatchProcedure(LPVOID pTargetAddress, LPBYTE pSourceBuffer, DWORD dwSourceBufferSize);
 
 BOOL PatchUnmanagedFunction(LPCWSTR pwszMdoduleName, LPCSTR pszProcedureName, LPBYTE pbPatch, DWORD dwPatchSize, DWORD dwPatchOffset);
-BOOL PatchManagedFunction(_AppDomain* pAppDomain, LPCWSTR pwszAssemblyName, LPCWSTR pwszClassName, LPCWSTR pwszMethodName, DWORD dwNbArgs, LPBYTE pbPatch, DWORD dwPatchSize, DWORD dwPatchOffset);
+BOOL PatchManagedFunction(CLR &clr, LPCWSTR pwszAssemblyName, LPCWSTR pwszClassName, LPCWSTR pwszMethodName, DWORD dwNbArgs, LPBYTE pbPatch, DWORD dwPatchSize, DWORD dwPatchOffset);
 
 BOOL FindBufferOffset(LPVOID pStartAddress, LPBYTE pBuffer, DWORD dwBufferSize, DWORD dwMaxSize, PDWORD pdwBufferOffset);

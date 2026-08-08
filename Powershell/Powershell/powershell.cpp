@@ -52,7 +52,7 @@ void ExecutePowerShellScript(LPWSTR pwszScript)
     if (PowerShellInvoke(pAppDomain, vtPowerShell, &vtInvokeResult))
     {
         PrintPowerShellInvokeResult(pAppDomain, vtInvokeResult);
-        PrintPowerShellInvokeInformation(pAppDomain, vtPowerShell);
+        //PrintPowerShellInvokeInformation(pAppDomain, vtPowerShell);
     }
 
     if (!PowerShellHadErrors(pAppDomain, vtPowerShell, &bHadErrors))

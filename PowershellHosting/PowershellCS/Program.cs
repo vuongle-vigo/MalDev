@@ -40,8 +40,8 @@ namespace PowershellCS
                         foreach (var err in ps.Streams.Error)
                             Console.WriteLine(err);
                     }
-
-                    ps.Streams.Error.Clear();
+                    ps.Streams.ClearStreams();
+                    //ps.Streams.Error.Clear();
                 }
             }
 

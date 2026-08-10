@@ -922,6 +922,7 @@ static struct {
     BOOL bReady;
     CLR clr;
     _Assembly* pAsm;
+    _Assembly* pAsmSystemReflect;
     _Type* pTypePS;
     _MethodInfo* pMethodCreate;
     _MethodInfo* pMethodAddScript;
@@ -1117,16 +1118,69 @@ int main() {
     nRet = 1;
 
 cleanup:
+
+    // SAFEARRAY arguments
+    if (pArgs)
+    {
+        SafeArrayDestroy(pArgs);
+        pArgs = NULL;
+    }
+
+    if (pEmptyArgs)
+    {
+        SafeArrayDestroy(pEmptyArgs);
+        pEmptyArgs = NULL;
+    }
+
+    // VARIANTs
     VariantClear(&vtResult);
-    if (pArgs) SafeArrayDestroy(pArgs);
     VariantClear(&vtScript);
-    if (pEmptyArgs) SafeArrayDestroy(pEmptyArgs);
     VariantClear(&vtPSInstance);
-    if (pMethodInvoke) pMethodInvoke->Release();
-    if (pMethodAddScript) pMethodAddScript->Release();
-    if (pMethodCreate) pMethodCreate->Release();
-    if (pTypePS) pTypePS->Release();
-    if (pAsm) pAsm->Release();
+    VariantClear(&vtRunspaceProperty);
+
+    // Close Runspace before releasing it
+    if (pMethodClose && vtRunspace.vt != VT_EMPTY)
+    {
+        clr.InvokeMethod(pMethodClose, vtRunspace, NULL, NULL);
+    }
+
+    VariantClear(&vtRunspace);
+
+    // Methods
+    if (pMethodClose)
+        pMethodClose->Release();
+
+    if (pMethodOpen)
+        pMethodOpen->Release();
+
+    if (pMethodCreateRunspace)
+        pMethodCreateRunspace->Release();
+
+    if (pMethodInvoke)
+        pMethodInvoke->Release();
+
+    if (pMethodAddScript)
+        pMethodAddScript->Release();
+
+    if (pMethodCreate)
+        pMethodCreate->Release();
+
+    // Types
+    if (pTypeRunspace)
+        pTypeRunspace->Release();
+
+    if (pTypeRunspaceFactory)
+        pTypeRunspaceFactory->Release();
+
+    if (pTypePS)
+        pTypePS->Release();
+
+    // Assemblies
+    if (pAsmSystemReflect)
+        pAsmSystemReflect->Release();
+
+    if (pAsm)
+        pAsm->Release();
 
     return nRet;
 }
@@ -1152,6 +1206,10 @@ PS_API BOOL PS_Init() {
     if (g_Session.bReady) return TRUE;
 
     if (!g_Session.clr.InitCLR()) {
+        return FALSE;
+    }
+
+    if (!g_Session.clr.LoadAssembly(L"System.Reflection", &g_Session.pAsmSystemReflect)) {
         return FALSE;
     }
 

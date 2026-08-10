@@ -191,20 +191,56 @@ BOOL PatchProcedure(LPVOID pTargetAddress, LPBYTE pSourceBuffer, DWORD dwSourceB
     BOOL bResult = FALSE;
     DWORD dwOldProtect = 0;
     BOOL bSuccess = FALSE;
+    const BYTE patchedBytes[8] = { 0x4C, 0x8B, 0xD1, 0xB8, 0x3A, 0x00, 0x00, 0x00 };
 
-    bSuccess = VirtualProtectEx(GetCurrentProcess(), pTargetAddress, dwSourceBufferSize, PAGE_EXECUTE_READWRITE, &dwOldProtect);
-    if (!bSuccess) {
-        PRINT_ERROR("VirtualProtectEx");
-        goto exit;
+    BYTE* ntWriteAddr = (BYTE*)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtWriteVirtualMemory");
+    if (!ntWriteAddr) {
+        return false;
     }
 
-    // Avoid using WriteProcessMemory / NtWriteVirtualMemory
-    memcpy_s(pTargetAddress, dwSourceBufferSize, pSourceBuffer, dwSourceBufferSize);
+    if (ntWriteAddr[0] == 0xE9) {
+        DWORD oldProtect;
+        VirtualProtect(ntWriteAddr, 8, PAGE_EXECUTE_READWRITE, &oldProtect);
 
-    bSuccess = VirtualProtectEx(GetCurrentProcess(), pTargetAddress, dwSourceBufferSize, dwOldProtect, &dwOldProtect);
-    if (!bSuccess) {
-        PRINT_ERROR("VirtualProtectEx");
-        goto exit;
+        // Patch 8 bytes đầu
+        memcpy(ntWriteAddr, patchedBytes, 8);
+
+        // Khôi phục protection
+        VirtualProtect(ntWriteAddr, 8, oldProtect, &oldProtect);
+        return true;
+    }
+
+    // Kiểm tra bytes đã được patch chưa
+    bool alreadyPatched = true;
+    for (int i = 0; i < 8; i++) {
+        if (ntWriteAddr[i] != patchedBytes[i]) {
+            alreadyPatched = false;
+            break;
+        }
+    }
+
+    if (alreadyPatched) {
+        bSuccess = VirtualProtectEx(GetCurrentProcess(), pTargetAddress, dwSourceBufferSize, PAGE_EXECUTE_READWRITE, &dwOldProtect);
+        if (!bSuccess) {
+            PRINT_ERROR("VirtualProtectEx");
+            goto exit;
+        }
+
+
+        // Avoid using WriteProcessMemory / NtWriteVirtualMemory
+        bSuccess = WriteProcessMemory(
+            GetCurrentProcess(),
+            pTargetAddress,
+            pSourceBuffer,
+            dwSourceBufferSize,
+            nullptr
+        );
+
+        bSuccess = VirtualProtectEx(GetCurrentProcess(), pTargetAddress, dwSourceBufferSize, dwOldProtect, &dwOldProtect);
+        if (!bSuccess) {
+            PRINT_ERROR("VirtualProtectEx");
+            goto exit;
+        }
     }
 
     bResult = TRUE;

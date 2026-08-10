@@ -937,6 +937,7 @@ int main() {
     int nRet = 0;
     CLR clr;
     _Assembly* pAsm = NULL;
+    _Assembly* pAsmSystemReflect = NULL;
     _Type* pTypePS = NULL;
     _Type* pTypeRunspace = NULL;
     _Type* pTypeRunspaceFactory = NULL;
@@ -967,6 +968,12 @@ int main() {
     }
 
     if (!clr.LoadAssembly(L"System.Management.Automation", &pAsm)) {
+        wprintf(L"[!] Failed to load assembly\n");
+        nRet = 0;
+        goto cleanup;
+    }
+
+    if (!clr.LoadAssembly(L"System.Reflection", &pAsmSystemReflect)) {
         wprintf(L"[!] Failed to load assembly\n");
         nRet = 0;
         goto cleanup;
@@ -1023,6 +1030,8 @@ int main() {
         goto cleanup;
     }
 
+    Patch(clr);
+
     // Create runspace instance
     if (!clr.InvokeMethod(pMethodCreateRunspace, vtRunspace, NULL, &vtRunspace)) {
         wprintf(L"[!] Failed to Create Runspace\n");
@@ -1035,8 +1044,6 @@ int main() {
         nRet = 0;
         goto cleanup;
     }
-
-    Patch(clr);
 
     while (true) {
         if (!clr.InvokeMethod(pMethodCreate, vtPSInstance, NULL, &vtPSInstance)) {
@@ -1068,8 +1075,7 @@ int main() {
         if (input.empty())
             continue;
 
-        std::wstring inputOut = input + L"| Out-String";
-        BSTR bstrScript = SysAllocString(inputOut.c_str());
+        BSTR bstrScript = SysAllocString(input.c_str());
         if (!bstrScript) goto cleanup;
         vtScript.vt = VT_BSTR;
         vtScript.bstrVal = bstrScript;
@@ -1255,8 +1261,7 @@ PS_API BSTR PS_Execute(LPCWSTR pwszScript) {
     std::wstring out;
     BOOL bHadErrors = FALSE;
 
-    std::wstring inputOut = std::wstring(pwszScript) + L" | Out-String";
-    BSTR bstrScript = SysAllocString(inputOut.c_str());
+    BSTR bstrScript = SysAllocString(pwszScript.c_str());
     if (!bstrScript) goto cleanup;
     vtScript.vt = VT_BSTR;
     vtScript.bstrVal = bstrScript;

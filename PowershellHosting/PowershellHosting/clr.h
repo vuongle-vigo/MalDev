@@ -22,8 +22,23 @@ public:
 	BOOL GetMethod(_Type* pType, BindingFlags flags, LPCWSTR pwszMethodName, int paramCount, _MethodInfo** ppMethodInfo);
 	BOOL GetField(_Type* pType, BindingFlags bindingFlags, LPCWSTR pwszFieldName, _FieldInfo** ppFieldInfo);
 	BOOL GetFieldValue(_Type* pType, BindingFlags bindingFlags, VARIANT vtObject, LPCWSTR pwszFieldName, VARIANT* pvtFieldValue);
+	BOOL SetField(_Type* pType, BindingFlags bindingFlags, LPCWSTR pwszFieldName, _FieldInfo** ppFieldInfo);
+	BOOL SetFieldValue(
+		_Type* pType,
+		BindingFlags bindingFlags,
+		VARIANT vtObject,      // vtObject cho instance, vtEmpty cho static
+		LPCWSTR pwszFieldName,
+		VARIANT vtFieldValue  // Giá trị cần gán
+	);
 	BOOL GetProperty(_Type* pType, BindingFlags bindingFlags, LPCWSTR pwszPropertyName, _PropertyInfo** ppPropertyInfo);
 	BOOL GetPropertyValue(_Type* pType, BindingFlags bindingFlags, VARIANT vtObject, LPCWSTR pwszPropertyName, VARIANT* pvtPropertyValue);
+	BOOL SetPropertyValue(
+		_Type* pType,
+		BindingFlags bindingFlags,
+		VARIANT vtObject,
+		LPCWSTR pwszPropertyName,
+		VARIANT vtPropertyValue
+	);
 	BOOL InvokeMethod(_MethodInfo* pMethodInfo, VARIANT vtObject, SAFEARRAY* pParameters, VARIANT* pvtResult);
 	BOOL GetJustInTimeMethodAddress(LPCWSTR pwszAssemblyName, LPCWSTR pwszClassName, LPCWSTR pwszMethodName, DWORD dwNbArgs, PULONG_PTR pMethodAddress);
 	BOOL PrepareMethod(VARIANT* pvtMethodHandle);

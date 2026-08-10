@@ -52,7 +52,7 @@ void ExecutePowerShellScript(LPWSTR pwszScript)
     if (PowerShellInvoke(pAppDomain, vtPowerShell, &vtInvokeResult))
     {
         PrintPowerShellInvokeResult(pAppDomain, vtInvokeResult);
-        //PrintPowerShellInvokeInformation(pAppDomain, vtPowerShell);
+        PrintPowerShellInvokeInformation(pAppDomain, vtPowerShell);
     }
 
     if (!PowerShellHadErrors(pAppDomain, vtPowerShell, &bHadErrors))
@@ -132,9 +132,9 @@ void PatchAllTheThings(mscorlib::_AppDomain* pAppDomain)
     //    PRINT_ERROR("Failed to disable AMSI (2).\n");
     //}
 
-    //if (!DisablePowerShellEtwProvider(pAppDomain)) {
-    //    PRINT_ERROR("Failed to disable ETW Provider.\n");
-    //}
+    if (!DisablePowerShellEtwProvider(pAppDomain)) {
+        PRINT_ERROR("Failed to disable ETW Provider.\n");
+    }
 
     //if (!PatchTranscriptionOptionFlushContentToDisk(pAppDomain)) {
     //    PRINT_ERROR("Failed to disable Transcription.\n");

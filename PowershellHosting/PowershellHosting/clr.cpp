@@ -424,6 +424,53 @@ exit:
 	return bResult;
 }
 
+BOOL CLR::SetField(_Type* pType, BindingFlags bindingFlags, LPCWSTR pwszFieldName, _FieldInfo** ppFieldInfo)
+{
+	HRESULT hr;
+	BOOL bResult = FALSE;
+	BSTR bstrFieldName = SysAllocString(pwszFieldName);
+	_FieldInfo* pFieldInfo = NULL;
+	hr = pType->GetField(bstrFieldName, bindingFlags, &pFieldInfo);
+	if (FAILED(hr) || !pFieldInfo) {
+		goto exit;
+	}
+	*ppFieldInfo = pFieldInfo;
+	bResult = TRUE;
+exit:
+	if (bstrFieldName) SysFreeString(bstrFieldName);
+	return bResult;
+}
+
+BOOL CLR::SetFieldValue(
+	_Type* pType,
+	BindingFlags bindingFlags,
+	VARIANT vtObject,      // Object cần set (vtEmpty cho static)
+	LPCWSTR pwszFieldName,
+	VARIANT vtFieldValue   // Giá trị cần gán
+) {
+	BOOL bResult = FALSE;
+	HRESULT hr;
+	_FieldInfo* pFieldInfo = NULL;
+	// 1. Lấy FieldInfo
+	if (!GetField(pType, bindingFlags, pwszFieldName, &pFieldInfo))
+		goto exit;
+	// 2. SetValue với đầy đủ tham số
+	hr = pFieldInfo->SetValue(
+		vtObject,           // obj - object chứa field (vtEmpty cho static)
+		vtFieldValue,      // value - giá trị gán
+		bindingFlags,       // invokeAttr - BindingFlags
+		NULL,               // Binder - thường NULL
+		NULL                // culture - NULL cho invariant culture
+	);
+
+	if (FAILED(hr))
+		goto exit;
+	bResult = TRUE;
+exit:
+	if (pFieldInfo) pFieldInfo->Release();
+	return bResult;
+}
+
 BOOL CLR::GetProperty(_Type* pType, BindingFlags bindingFlags, LPCWSTR pwszPropertyName, _PropertyInfo** ppPropertyInfo) {
 	HRESULT hr;
 	BOOL bResult = FALSE;
@@ -466,6 +513,36 @@ BOOL CLR::GetPropertyValue(_Type* pType, BindingFlags bindingFlags, VARIANT vtOb
 exit:
 	if (pPropertyInfo) pPropertyInfo->Release();
 
+	return bResult;
+}
+
+BOOL CLR::SetPropertyValue(
+	_Type* pType,
+	BindingFlags bindingFlags,
+	VARIANT vtObject,
+	LPCWSTR pwszPropertyName,
+	VARIANT vtPropertyValue
+) {
+	BOOL bResult = FALSE;
+	HRESULT hr;
+	_PropertyInfo* pPropertyInfo = NULL;
+	if (!GetProperty(pType, bindingFlags, pwszPropertyName, &pPropertyInfo))
+		goto exit;
+	// ============================================================
+	// SetValue - signature ngắn gọn
+	// SetValue(obj, value, index)
+	// index = NULL cho non-indexed property (như ps.Runspace)
+	// ============================================================
+	hr = pPropertyInfo->SetValue(
+		vtObject,           // Object chứa property (vtEmpty cho static)
+		vtPropertyValue,    // Giá trị gán
+		NULL                // SAFEARRAY* index - NULL cho property thường
+	);
+	if (FAILED(hr))
+		goto exit;
+	bResult = TRUE;
+exit:
+	if (pPropertyInfo) pPropertyInfo->Release();
 	return bResult;
 }
 

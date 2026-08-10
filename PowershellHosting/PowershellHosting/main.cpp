@@ -938,17 +938,26 @@ int main() {
     CLR clr;
     _Assembly* pAsm = NULL;
     _Type* pTypePS = NULL;
+    _Type* pTypeRunspace = NULL;
+    _Type* pTypeRunspaceFactory = NULL;
     _MethodInfo* pMethodCreate = NULL;
+    _MethodInfo* pMethodClose = NULL;
     _MethodInfo* pMethodAddScript = NULL;
     _MethodInfo* pMethodInvoke = NULL;
+    _MethodInfo* pMethodCreateRunspace = NULL;
+    _MethodInfo* pMethodOpen = NULL;
     VARIANT vtPSInstance;
     VariantInit(&vtPSInstance);
     SAFEARRAY* pEmptyArgs = NULL;
     VARIANT vtScript;
     VariantInit(&vtScript);
+    VARIANT vtRunspace;
+    VariantInit(&vtRunspace);
     SAFEARRAY* pArgs = NULL;
     VARIANT vtResult;
     VariantInit(&vtResult);
+    VARIANT vtRunspaceProperty;
+    VariantInit(&vtRunspaceProperty);
     long idx = 0;
     BOOL bHadErrors = FALSE;
 
@@ -966,6 +975,33 @@ int main() {
     if (!clr.GetType(pAsm, L"System.Management.Automation.PowerShell", &pTypePS)) {
         wprintf(L"[!] Failed to get PowerShell type\n");
         nRet = 0;
+        goto cleanup;
+    }
+
+    if (!clr.GetType(pAsm, L"System.Management.Automation.Runspaces.RunspaceFactory", &pTypeRunspaceFactory)) {
+        wprintf(L"[!] Failed to get PowerShell type RunspaceFactory\n");
+        nRet = 0;
+        goto cleanup;
+    }
+
+    if (!clr.GetType(pAsm, L"System.Management.Automation.Runspaces.Runspace", &pTypeRunspace)) {
+        wprintf(L"[!] Failed to get PowerShell type Runspace\n");
+        nRet = 0;
+        goto cleanup;
+    }
+
+    if (!clr.GetMethod(pTypeRunspaceFactory, BindingFlags(BindingFlags_Public | BindingFlags_Static), L"CreateRunspace", 0, &pMethodCreateRunspace)) {
+        wprintf(L"[!] Failed to get CreateRunspace method\n");
+        goto cleanup;
+    }
+
+    if (!clr.GetMethod(pTypeRunspace, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"Open", 0, &pMethodOpen)) {
+        wprintf(L"[!] Failed to get Open method\n");
+        goto cleanup;
+    }
+
+    if (!clr.GetMethod(pTypeRunspace, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"Open", 0, &pMethodClose)) {
+        wprintf(L"[!] Failed to get Open method\n");
         goto cleanup;
     }
 
@@ -987,20 +1023,40 @@ int main() {
         goto cleanup;
     }
 
-    pEmptyArgs = SafeArrayCreateVector(VT_VARIANT, 0, 0);
-    if (!pEmptyArgs) goto cleanup;
-    if (!clr.InvokeMethod(pMethodCreate, vtPSInstance, pEmptyArgs, &vtPSInstance)) {
-        wprintf(L"[!] Failed to create PowerShell instance\n");
+    // Create runspace instance
+    if (!clr.InvokeMethod(pMethodCreateRunspace, vtRunspace, NULL, &vtRunspace)) {
+        wprintf(L"[!] Failed to Create Runspace\n");
         nRet = 0;
         goto cleanup;
     }
-    SafeArrayDestroy(pEmptyArgs);
-    pEmptyArgs = NULL;
+
+    if (!clr.InvokeMethod(pMethodOpen, vtRunspace, NULL, NULL)) {
+        wprintf(L"[!] Failed to Open Runspace\n");
+        nRet = 0;
+        goto cleanup;
+    }
 
     Patch(clr);
-    wprintf(L"[+] PowerShell ready (type 'exit' to quit)\n\n");
 
     while (true) {
+        if (!clr.InvokeMethod(pMethodCreate, vtPSInstance, NULL, &vtPSInstance)) {
+            wprintf(L"[!] Failed to create PowerShell instance\n");
+            nRet = 0;
+            goto cleanup;
+        }
+
+        //if (!clr.GetPropertyValue(pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance), vtPSInstance, L"Runspace", &vtRunspaceProperty)) {
+        //    wprintf(L"[!] Failed to get property Runspace\n");
+        //    nRet = 0;
+        //    goto cleanup;
+        //}
+
+        if (!clr.SetPropertyValue(pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance), vtPSInstance, L"Runspace", vtRunspace)) {
+            wprintf(L"[!] Failed to set property Runspace\n");
+            nRet = 0;
+            goto cleanup;
+        }
+
         wprintf(L"PS> ");
 
         std::wstring input;
@@ -1047,21 +1103,9 @@ int main() {
             // Reset PowerShell instance: release cái cũ, tạo cái mới.
             // Cách này xóa mọi errors/streams/commands — không cần gọi Clear() từng phần.
             VariantClear(&vtPSInstance);
-
-            SAFEARRAY* pResetArgs = SafeArrayCreateVector(VT_VARIANT, 0, 0);
-            if (!pResetArgs) goto cleanup;
-            if (!clr.InvokeMethod(pMethodCreate, vtPSInstance, pResetArgs, &vtPSInstance)) {
-                SafeArrayDestroy(pResetArgs);
-                wprintf(L"[!] Failed to recreate PowerShell instance\n");
-                goto cleanup;
-            }
-
-            Patch(clr);
-            SafeArrayDestroy(pResetArgs);
         }
 
         VariantClear(&vtResult);
-        wprintf(L"\n");
     }
 
     nRet = 1;

@@ -46,7 +46,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="clr.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="main_v1.cpp" />
     <ClCompile Include="patch.cpp" />
   </ItemGroup>
   <ItemGroup>

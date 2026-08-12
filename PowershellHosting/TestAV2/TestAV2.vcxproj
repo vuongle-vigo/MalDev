@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{8a8b8a17-40bd-4170-bc10-120ac24b4acb}</ProjectGuid>
-    <RootNamespace>PowershellHosting</RootNamespace>
+    <ProjectGuid>{bc087f0f-7bcf-4db5-aba4-ba809a23b13e}</ProjectGuid>
+    <RootNamespace>TestAV2</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -140,16 +140,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="clr.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="patch.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="bypass.h" />
-    <ClInclude Include="clr.h" />
-    <ClInclude Include="common.h" />
-    <ClInclude Include="mscorlib.h" />
-    <ClInclude Include="patch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

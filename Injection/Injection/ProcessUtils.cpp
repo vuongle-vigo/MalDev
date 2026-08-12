@@ -26,11 +26,12 @@ HANDLE GetProcessHandleByNameW(const std::wstring& wsProcessName) {
     do {
         if (_wcsicmp(pe32.szExeFile, wsProcessName.c_str()) == 0) {
             hProcess = OpenProcess(
-                PROCESS_QUERY_LIMITED_INFORMATION,
+                PROCESS_ALL_ACCESS,
                 FALSE,
                 pe32.th32ProcessID
             );
 
+            std::cout << "process id: " << pe32.th32ProcessID << std::endl;
             break;
         }
 

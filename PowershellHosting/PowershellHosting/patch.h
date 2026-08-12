@@ -6,6 +6,8 @@
 BOOL PatchAmsiOpenSession();
 BOOL PatchAmsiScanBuffer();
 
+BOOL PatchEtwRet(CLR& clr);
+BOOL UnpatchEtwRet(CLR& clr);
 BOOL PatchSystemPolicyGetSystemLockdownPolicy(CLR &clr);
 BOOL PatchTranscriptionOptionFlushContentToDisk(CLR &clr);
 BOOL PatchAuthorizationManagerShouldRunInternal(CLR &clr);

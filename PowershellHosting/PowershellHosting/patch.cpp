@@ -76,7 +76,7 @@ BOOL PatchEtwRet(CLR &clr)
     BYTE patch[1] = { 0xC3 };
     return PatchUnmanagedFunction(
         L"ntdll.dll",
-        "NtTraceEvent",
+        "EtwEventWriteTransfer",
         patch,
         sizeof(patch),
         0
@@ -327,8 +327,8 @@ BOOL FindBufferOffset(LPVOID pStartAddress, LPBYTE pBuffer, DWORD dwBufferSize, 
         }
     }
 
-    if (!bResult)
-        PRINT_ERROR("Failed to find pattern of size %d within the address range 0x%llx - 0x%llx\n", dwBufferSize, (ULONG_PTR)pStartAddress, (ULONG_PTR)pStartAddress + dwMaxSize);
+    //if (!bResult)
+    //    PRINT_ERROR("Failed to find pattern of size %d within the address range 0x%llx - 0x%llx\n", dwBufferSize, (ULONG_PTR)pStartAddress, (ULONG_PTR)pStartAddress + dwMaxSize);
 
     return bResult;
 }

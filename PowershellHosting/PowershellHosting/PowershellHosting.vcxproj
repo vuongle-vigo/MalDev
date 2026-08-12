@@ -141,13 +141,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="clr.cpp" />
+    <ClCompile Include="ghost_amsi.cpp" />
+    <ClCompile Include="hwbp_veh.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="main_ver_runspaces.cpp" />
     <ClCompile Include="patch.cpp" />
+    <ClCompile Include="powershell.cpp" />
+    <ClCompile Include="powershell.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bypass.h" />
     <ClInclude Include="clr.h" />
     <ClInclude Include="common.h" />
+    <ClInclude Include="ghost_amsi.h" />
+    <ClInclude Include="hwbp_veh.h" />
     <ClInclude Include="mscorlib.h" />
     <ClInclude Include="patch.h" />
   </ItemGroup>

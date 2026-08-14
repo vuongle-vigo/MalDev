@@ -37,6 +37,7 @@ void CollectPowerShellInvokeErrors(CLR& clr, VARIANT vtPowerShellInstance, std::
 // Utility functions
 void ClearStreamErrors(CLR& clr, VARIANT vtPowerShellInstance);
 BOOL PowerShellHadErrors(CLR& clr, VARIANT vtPowerShellInstance, PBOOL pbHadErrors);
+BOOL PowerShellStop(CLR& clr, VARIANT vtPowerShellInstance);
 BOOL DisablePowerShellEtwProvider(CLR& clr);
 
 // Patching functions
@@ -44,3 +45,20 @@ void Patch(CLR& clr);
 
 // Main entry point
 BOOL Invoke(CLR& clr, std::wstring command, std::wstring *out);
+
+// Runspace management for persistent session
+struct RunspaceContext {
+    _Assembly* pAsm;
+    _Assembly* pAsmSystemReflect;
+    _Type* pTypePS;
+    _Type* pTypeRunspace;
+    _Type* pTypeRunspaceFactory;
+    _MethodInfo* pMethodCreate;
+    _MethodInfo* pMethodAddScript;
+    _MethodInfo* pMethodInvoke;
+    VARIANT vtRunspace;
+};
+
+BOOL InitRunspace(CLR& clr, RunspaceContext* pCtx);
+void CloseRunspace(RunspaceContext* pCtx);
+BOOL InvokeInRunspace(CLR& clr, RunspaceContext* pCtx, std::wstring command, std::wstring* out);

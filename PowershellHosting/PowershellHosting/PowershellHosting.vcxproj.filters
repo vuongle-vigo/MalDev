@@ -20,9 +20,6 @@
     <ClCompile Include="patch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main_ver_runspaces.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="powershell.h">
       <Filter>Header Files</Filter>
     </ClCompile>
@@ -32,15 +29,9 @@
     <ClCompile Include="hwbp_veh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ghost_amsi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mscorlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
@@ -52,7 +43,7 @@
     <ClInclude Include="hwbp_veh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ghost_amsi.h">
+    <ClInclude Include="mscorlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

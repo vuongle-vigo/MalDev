@@ -72,7 +72,7 @@ void PowerChellMain()
     }
     else
     {
-        printf("CreatePowerShellConsole\n");
+        printf("CreatePowerShellCodnsole\n");
         CreatePowerShellConsole();
     }
 }

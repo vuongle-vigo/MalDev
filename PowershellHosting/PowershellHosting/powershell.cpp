@@ -1127,22 +1127,7 @@ BOOL InvokeInRunspace(CLR& clr, RunspaceContext* pCtx, std::wstring command, std
     VariantInit(&vtResult);
     BOOL bSuccess = FALSE;
     BOOL bHadErrors = FALSE;
-
-    //PVOID lpClrAddr = GetModuleHandleA("System.Numerics.ni.dll");
-    //if (!lpClrAddr) {
-    //    PRINT_ERROR("GetModuleHandleA");
-    //    return 0;
-    //}
-
-    //wchar_t patchAmsi = L'H';
-    //LPVOID addrAmsi = (LPVOID)FindFirstStringW((uintptr_t)lpClrAddr, 0x9A0000, L"amsi.dll");
-    //if (addrAmsi) {
-    //    DEBUG("Patch string amsi dll");
-    //    PatchProcedure(addrAmsi, (BYTE*)&patchAmsi, sizeof(char));
-    //}
-
-    EnumeratePrivateMemory();
-
+    
     if (clr.InvokeMethod(pCtx->pMethodInvoke, vtPSAfterScript, NULL, &vtResult)) {
         PrintPowerShellOutput(clr, vtResult, out);
         bSuccess = TRUE;

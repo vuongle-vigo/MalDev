@@ -11,7 +11,6 @@ void* __cdecl crt_malloc(SIZE_T Size) {
         Size = 1;
     }
 
-    ApiResolve apiResolve;
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     constexpr unsigned int hashGetProcessHeap = ComplexHashForAnsi("GetProcessHeap");
@@ -43,7 +42,6 @@ void* __cdecl crt_calloc(SIZE_T Count, SIZE_T Size) {
         return NULL;
     }
 
-    ApiResolve apiResolve;
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     constexpr unsigned int hashGetProcessHeap = ComplexHashForAnsi("GetProcessHeap");
@@ -74,7 +72,6 @@ void* __cdecl crt_realloc(void* Block, SIZE_T NewSize) {
         return NULL;
     }
     
-    ApiResolve apiResolve;
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     constexpr unsigned int hashGetProcessHeap = ComplexHashForAnsi("GetProcessHeap");
@@ -129,7 +126,6 @@ void* __cdecl crt_realloc(void* Block, SIZE_T NewSize) {
 
 void __cdecl crt_free(void* Block) {
     if (Block != NULL) {
-        ApiResolve apiResolve;
         constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
         LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
         typedef BOOL
@@ -909,7 +905,7 @@ wchar_t* __cdecl crt_atowc(const char* str) {
         return NULL;
     }
     
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef int
@@ -933,7 +929,7 @@ char* __cdecl crt_wctoa(const wchar_t* str) {
         return NULL;
     }
     
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef int
@@ -2894,7 +2890,7 @@ crt_FILE* __cdecl crt_fopen(const char* filename, const char* mode) {
         return NULL;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
 
@@ -2960,7 +2956,7 @@ crt_FILE* __cdecl crt_wfopen(const wchar_t* filename, const wchar_t* mode) {
         return NULL;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
 
@@ -3011,7 +3007,7 @@ int __cdecl crt_fclose(crt_FILE* stream) {
         return CRT_EOF;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef BOOL (WINAPI* _CloseHandle)(HANDLE hObject);
@@ -3033,7 +3029,7 @@ SIZE_T __cdecl crt_fread(void* buffer, SIZE_T size, SIZE_T count, crt_FILE* stre
         return 0;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef BOOL (WINAPI* _ReadFile)(
@@ -3071,7 +3067,7 @@ SIZE_T __cdecl crt_fwrite(const void* buffer, SIZE_T size, SIZE_T count, crt_FIL
         return 0;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef BOOL (WINAPI* _WriteFile)(
@@ -3100,7 +3096,7 @@ int __cdecl crt_fseek(crt_FILE* stream, long offset, int origin) {
         return -1;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef DWORD (WINAPI* _SetFilePointer)(
@@ -3137,7 +3133,7 @@ long __cdecl crt_ftell(crt_FILE* stream) {
         return -1;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef DWORD (WINAPI* _SetFilePointer)(
@@ -3169,7 +3165,7 @@ int __cdecl crt_fflush(crt_FILE* stream) {
         return 0;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef BOOL (WINAPI* _FlushFileBuffers)(_In_ HANDLE hFile);
@@ -3205,7 +3201,7 @@ int __cdecl crt_remove(const char* filename) {
         return -1;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef BOOL (WINAPI* _DeleteFileW)(_In_ LPCWSTR lpFileName);
@@ -3227,7 +3223,7 @@ int __cdecl crt_wremove(const wchar_t* filename) {
         return -1;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef BOOL (WINAPI* _DeleteFileW)(_In_ LPCWSTR lpFileName);
@@ -3243,7 +3239,7 @@ int __cdecl crt_rename(const char* oldname, const char* newname) {
         return -1;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef BOOL (WINAPI* _MoveFileExW)(
@@ -3274,7 +3270,7 @@ int __cdecl crt_wrename(const wchar_t* oldname, const wchar_t* newname) {
         return -1;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef BOOL (WINAPI* _MoveFileExW)(
@@ -3294,7 +3290,7 @@ BOOL __cdecl crt_fileexists(const char* filename) {
         return FALSE;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef HANDLE (WINAPI* _CreateFileW)(
@@ -3334,7 +3330,7 @@ BOOL __cdecl crt_wfileexists(const wchar_t* filename) {
         return FALSE;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef HANDLE (WINAPI* _CreateFileW)(
@@ -3368,7 +3364,7 @@ long long __cdecl crt_filesize(const char* filename) {
         return -1;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef HANDLE (WINAPI* _CreateFileW)(
@@ -3415,7 +3411,7 @@ long long __cdecl crt_wfilesize(const wchar_t* filename) {
         return -1;
     }
 
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef HANDLE (WINAPI* _CreateFileW)(
@@ -3456,7 +3452,7 @@ long long __cdecl crt_wfilesize(const wchar_t* filename) {
 //=============================================================================
 
 static int crt_cputchar(char c) {
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef HANDLE (WINAPI* _GetStdHandle)(_In_ DWORD nStdHandle);
@@ -3488,7 +3484,7 @@ static int crt_cputs(const char* str) {
 
 static int crt_cpputs(const char* str, SIZE_T len) {
     if (str == NULL || len == 0) return 0;
-    ApiResolve apiResolve;
+    
     constexpr unsigned int hashKernel32 = ComplexHashForWChar(L"kernel32.dll");
     LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
     typedef HANDLE (WINAPI* _GetStdHandle)(_In_ DWORD nStdHandle);

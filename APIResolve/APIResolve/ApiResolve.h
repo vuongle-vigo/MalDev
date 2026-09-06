@@ -67,3 +67,5 @@ private:
 	PPEB pPeb;
 };
 
+extern ApiResolve apiResolve;
+

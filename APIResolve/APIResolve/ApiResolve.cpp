@@ -24,15 +24,7 @@ LPVOID ApiResolve::GetModuleBaseAddress(const LPWSTR lpwsModuleName) {
 		}
 
 		PWSTR pDllName = NULL;
-		//WCHAR wsPattern[] = { '\\' };
 		WCHAR wsPattern = '\\';
-		//if (!FindPatternW(pDllPath, wsPattern, 1, &pDllName)) {
-		//	continue;
-		//}
-
-		//while (FindPatternW(pDllName, wsPattern, 1, &pDllName)) {
-		//	pDllName = pDllName + 1;
-		//}
 		pDllName = crt_wcsrchr(pDllName, wsPattern);
 		if (pDllName == NULL) {
 			continue;
@@ -40,15 +32,8 @@ LPVOID ApiResolve::GetModuleBaseAddress(const LPWSTR lpwsModuleName) {
 
 		pDllName = pDllPath + 1;
 		WCHAR wsModuleName[MAX_PATH];
-		//CopyStringW(pDllName, wsModuleName, sizeof(wsModuleName));
 		crt_wcscpy(wsModuleName, pDllName);
-		//LowerStringW(lpwsModuleName);
 		crt_wcslwr(wsModuleName);
-
-		//if (!CompareStringW(wsModuleName, lpwsModuleName)) {
-		//	continue;
-		//}
-
 		if (!crt_wcscmp(wsModuleName, lpwsModuleName)) {
 			continue;
 		}
@@ -71,13 +56,8 @@ LPVOID ApiResolve::GetModuleBaseAddress(unsigned int hash) {
 		}
 
 		PWSTR pDllName = NULL;
-		//WCHAR wsPattern[] = { '\\' };
 		WCHAR wsPattern = '\\';
-		//if (!FindPatternW(pDllPath, wsPattern, 1, &pDllName)) {
-		//	continue;
-		//}
 		pDllName = crt_wcsrchr(pDllPath, wsPattern);
-
 		if (pDllName == NULL) {
 			continue;
 		}
@@ -86,9 +66,7 @@ LPVOID ApiResolve::GetModuleBaseAddress(unsigned int hash) {
 
 
 		WCHAR wsModuleName[MAX_PATH];
-		//CopyStringW(pDllName, wsModuleName, sizeof(wsModuleName));
 		crt_wcscpy(wsModuleName, pDllName);
-		//LowerStringW(pDllName);
 		crt_wcslwr(pDllName);
 		if (ComplexHashForWChar(pDllName) != hash) {
 			continue;
@@ -116,9 +94,6 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, const char* sApiName) {
 	for (int i = 0; i < pExportDirectory->NumberOfNames; i++) {
 		DWORD rvaName = *(DWORD*)((DWORD64)pAddressOfName + i * sizeof(DWORD));
 		char* sName = (char*)((DWORD64)lpBaseAddress + rvaName);
-		//if (!CompareStringA(sName, sApiName)) {
-		//	continue;
-		//}
 		if (!crt_strcmp(sName, sApiName)) {
 			continue;
 		}
@@ -175,3 +150,5 @@ LPVOID ApiResolve::GetApiAddress(LPVOID lpBaseAddress, unsigned int hash) {
 
 	return NULL;
 }
+
+ApiResolve apiResolve;

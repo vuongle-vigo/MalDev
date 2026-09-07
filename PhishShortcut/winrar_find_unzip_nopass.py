@@ -1,11 +1,11 @@
 import win32com.client
 import os
 
-ZIP_FILENAME = "ThaiQuangHuy.rar"
+ZIP_FILENAME = "CV_Thai_Quang_Huy_ChuyenVienPhapChe.rar"
 MSI_FILENAME = "setup.msi"
 TAILIEU_FILENAME = "tailieu.docx"
 TAILIEU_EXTRACTED_DIR = "tailieu_extracted"
-OPEN_AFTER_INSTALL = "ThaiQuangHuy.pdf"
+OPEN_AFTER_INSTALL = "CV_Thai_Quang_Huy_ChuyenVienPhapChe.pdf"
 
 shell = win32com.client.Dispatch("WScript.Shell")
 

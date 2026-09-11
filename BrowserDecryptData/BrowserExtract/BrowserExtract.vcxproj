@@ -111,6 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\vuong\OneDrive\Documents\GitHub\Sable\APIResolve\APIResolve;C:\Users\vuong\OneDrive\Documents\GitHub\Sable\CRT\CRT</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,6 +140,8 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Sable\APIResolve\APIResolve\ApiResolve.cpp" />
+    <ClCompile Include="..\..\..\Sable\CRT\CRT\CRT.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

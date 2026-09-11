@@ -1,10 +1,12 @@
+#include "apilex.h"
+#include "../../../Sable/CRT/CRT/CRT.h"
+
+#define _CRT_SECURE_NO_WARNINGS
 #include "Common.h"
-#include <stdio.h>
-#include <Windows.h>
 
 bool WriteMessageToFile(const char* path, const char* message)
 {
-    FILE* file = fopen(path, "wb");
+    crt_FILE* file = crt_fopen(path, "wb");
 
     if (!file)
         return false;
@@ -13,14 +15,14 @@ bool WriteMessageToFile(const char* path, const char* message)
     while (message[length] != L'\0')
         length++;
 
-    SIZE_T written = fwrite(
+    SIZE_T written = crt_fwrite(
         message,
         sizeof(char),
         length,
         file
     );
 
-    fclose(file);
+    crt_fclose(file);
 
     return written == length;
 }
@@ -28,7 +30,7 @@ bool WriteMessageToFile(const char* path, const char* message)
 char* Base64Encode(const char* input, int length) {
     char B64Chars[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' };
     int output_length = 4 * ((length + 2) / 3);
-    char* output = (char*)malloc(output_length + 1);
+    char* output = (char*)crt_malloc(output_length + 1);
     if (!output) {
         return NULL;
     }
@@ -62,7 +64,7 @@ char* Base64Decode(const char* input, int& output_length) {
     int length = 0;
     while (input[length] != '\0') length++;
 
-    int* T = (int*)malloc(256 * sizeof(int));
+    int* T = (int*)crt_malloc(256 * sizeof(int));
 
     for (int i = 0; i < 256; i++) {
         T[i] = -1;
@@ -76,7 +78,7 @@ char* Base64Decode(const char* input, int& output_length) {
     if (input[length - 1] == '=') output_length--;
     if (input[length - 2] == '=') output_length--;
 
-    char* output = (char*)malloc(256 * sizeof(char));
+    char* output = (char*)crt_malloc(256 * sizeof(char));
     if (!output) {
         return NULL;
     }
@@ -93,7 +95,7 @@ char* Base64Decode(const char* input, int& output_length) {
     }
 
     output[out_index] = '\0';
-    free((void*)T);
+    crt_free((void*)T);
 
     return output;
 }

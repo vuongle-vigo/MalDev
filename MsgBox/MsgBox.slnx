@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="OfficeSideloading/OfficeSideloading.vcxproj" Id="1f799f03-27a5-4ec2-b428-82dfd4cc0d6e" />
+  <Project Path="MsgBox/MsgBox.vcxproj" />
 </Solution>

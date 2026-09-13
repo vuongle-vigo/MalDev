@@ -291,18 +291,6 @@ int main() {
         return 1;
     }
 
-    typedef HRESULT(WINAPI* _CoSetProxyBlanket)(
-        IUnknown* pProxy,
-        DWORD                    dwAuthnSvc,
-        DWORD                    dwAuthzSvc,
-        OLECHAR* pServerPrincName,
-        DWORD                    dwAuthnLevel,
-        DWORD                    dwImpLevel,
-        RPC_AUTH_IDENTITY_HANDLE pAuthInfo,
-        DWORD                    dwCapabilities
-        );
-
-
     hr = pCoSetProxyBlanket(
         (IUnknown*)pElevatorEdge,
         RPC_C_AUTHN_DEFAULT,
@@ -378,9 +366,6 @@ int main() {
     }
 
     crt_free(fileBuf);
-    //constexpr unsigned int hashExitThread = ComplexHashForAnsi("ExitThread");
-    //typedef VOID(WINAPI* _ExitThread)(DWORD);
-    //_ExitThread pExitThread = (_ExitThread)apiResolve.GetApiAddress(lpKernel32, hashExitThread);
-    //pExitThread(0);
+    pCoUninitialize();
     pExitThread(0);
 }

@@ -65,7 +65,7 @@ void HttpResponse_Free(HttpResponse* resp);
 
 class HttpClient {
 public:
-    static HttpClient& GetInstance();
+    //static HttpClient& GetInstance();
 
     HttpClient();
     ~HttpClient();

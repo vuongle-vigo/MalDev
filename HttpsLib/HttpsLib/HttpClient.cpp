@@ -102,10 +102,10 @@ static void GetStatusText(DWORD statusCode, wchar_t* buffer, int bufferSize) {
     buffer[bufferSize - 1] = L'\0';
 }
 
-HttpClient& HttpClient::GetInstance() {
-    static HttpClient instance;
-    return instance;
-}
+//HttpClient& HttpClient::GetInstance() {
+//    static HttpClient instance;
+//    return instance;
+//}
 
 HttpClient::HttpClient() {
     InitializeCriticalSection(&m_cs);

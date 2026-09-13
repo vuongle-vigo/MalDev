@@ -10,7 +10,7 @@ static wchar_t HTTPBIN_URL[256] = L"https://httpbin.org";
 
 // ============= Helper Functions =============
 static void GenerateUuidV4(wchar_t* output, int size) {
-    static const wchar_t hexChars[] = L"0123456789abcdef";
+    const wchar_t hexChars[] = L"0123456789abcdef";
     wchar_t uuid[37] = {};
     
     for (int i = 0; i < 36; i++) {
@@ -31,12 +31,12 @@ static void GenerateUuidV4(wchar_t* output, int size) {
 }
 
 static void GenerateDmTs(wchar_t* output, int size) {
-    uint64_t millis = (uint64_t)time(NULL) * 1000;
-    swprintf(output, size, L"%llu", (unsigned long long)millis);
+    //uint64_t millis = (uint64_t)time(NULL) * 1000;
+    swprintf(output, size, L"%llu", (unsigned long long)1000);
 }
 
 static void RandomBase36(wchar_t* output, int length) {
-    static const wchar_t chars[] = L"0123456789abcdefghijklmnopqrstuvwxyz";
+    const wchar_t chars[] = L"0123456789abcdefghijklmnopqrstuvwxyz";
     for (int i = 0; i < length; i++) {
         output[i] = chars[rand() % 36];
     }
@@ -98,7 +98,7 @@ void PrintResponse(HttpResponse* response) {
 void ExampleBasicGet() {
     wprintf(L"\n=== Example 1: Basic GET Request ===\n");
     
-    HttpClient& client = HttpClient::GetInstance();
+    HttpClient client;
     client.SetTimeout(30000);
     
     HttpResponse response;
@@ -116,7 +116,7 @@ void ExampleBasicGet() {
 void ExamplePostJson() {
     wprintf(L"\n=== Example 2: POST JSON Data ===\n");
     
-    HttpClient& client = HttpClient::GetInstance();
+    HttpClient client;
     
     const wchar_t* body = L"{\"name\": \"test\", \"value\": 123}";
     DWORD bodyLen = (DWORD)wcslen(body);
@@ -142,7 +142,7 @@ void ExamplePostJson() {
 void ExamplePutRequest() {
     wprintf(L"\n=== Example 3: PUT Request ===\n");
     
-    HttpClient& client = HttpClient::GetInstance();
+    HttpClient client;
     
     const wchar_t* body = L"{\"update\": \"data\"}";
     DWORD bodyLen = (DWORD)wcslen(body);
@@ -166,7 +166,7 @@ void ExamplePutRequest() {
 void ExampleDeleteRequest() {
     wprintf(L"\n=== Example 4: DELETE Request ===\n");
     
-    HttpClient& client = HttpClient::GetInstance();
+    HttpClient client;
     
     HttpResponse response;
     HttpResponse_Init(&response);
@@ -183,7 +183,7 @@ void ExampleDeleteRequest() {
 void ExamplePatchRequest() {
     wprintf(L"\n=== Example 5: PATCH Request ===\n");
     
-    HttpClient& client = HttpClient::GetInstance();
+    HttpClient client;
     
     const wchar_t* body = L"{\"patch\": \"value\"}";
     DWORD bodyLen = (DWORD)wcslen(body);
@@ -207,7 +207,7 @@ void ExamplePatchRequest() {
 void ExampleHeadRequest() {
     wprintf(L"\n=== Example 6: HEAD Request ===\n");
     
-    HttpClient& client = HttpClient::GetInstance();
+    HttpClient client;
     
     HttpResponse response;
     HttpResponse_Init(&response);
@@ -239,7 +239,7 @@ void ExampleUrlEncoding() {
 void ExampleUsingRequestBuilder() {
     wprintf(L"\n=== Example 8: Using HttpRequest Struct ===\n");
     
-    HttpClient& client = HttpClient::GetInstance();
+    HttpClient client;
     
     HttpRequest request;
     HttpRequest_Init(&request);
@@ -270,7 +270,7 @@ void ExampleUsingRequestBuilder() {
 void ExampleDailyMotionApi() {
     wprintf(L"\n=== Example 9: DailyMotion API ===\n");
     
-    HttpClient& client = HttpClient::GetInstance();
+    HttpClient client;
     client.SetTimeout(30000);
     
     const wchar_t* videoId = L"xa7ewfg";
@@ -299,7 +299,7 @@ void ExampleDailyMotionApi() {
     HttpResponse_Free(&response);
 }
 
-int wmain() {
+int main() {
     wprintf(L"========================================\n");
     wprintf(L"       HttpLib WinHTTP Demo\n");
     wprintf(L"========================================\n");

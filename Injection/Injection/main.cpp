@@ -31,5 +31,5 @@ int main() {
 		return -1;
 	}
 
-	CreateRemoteThread(hTargetProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((DWORD64)lpRemoteAddr + 0x710), NULL, 0, NULL);
+	CreateRemoteThread(hTargetProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((DWORD64)lpRemoteAddr + 0x118e9), NULL, 0, NULL);
 }

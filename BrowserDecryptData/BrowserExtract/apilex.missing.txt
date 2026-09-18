@@ -1,8 +1,0 @@
-# Identifiers called in the scanned sources but NOT in api.db.
-# Review them and add real ones with: py apilex.py headers <header>
-# count  first-seen-location
-     3  C:\Users\vuong\OneDrive\Documents\GitHub\MalDev\BrowserDecryptData\BrowserExtract\main.cpp:276  FAILED
-     1  C:\Users\vuong\OneDrive\Documents\GitHub\MalDev\BrowserDecryptData\BrowserExtract\main.cpp:332  BOOL
-     1  C:\Users\vuong\OneDrive\Documents\GitHub\MalDev\BrowserDecryptData\BrowserExtract\main.cpp:229  HANDLE
-     1  C:\Users\vuong\OneDrive\Documents\GitHub\MalDev\BrowserDecryptData\BrowserExtract\main.cpp:117  STATUS_BUFFER_TOO_SMALL
-     1  C:\Users\vuong\OneDrive\Documents\GitHub\MalDev\BrowserDecryptData\BrowserExtract\main.cpp:116  STATUS_INFO_LENGTH_MISMATCH

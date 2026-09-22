@@ -63,6 +63,32 @@ def chrome_time_to_iso(us_since_1601: int) -> str:
         return str(us_since_1601)
 
 
+MULTI_PART_TLDS = {  # for extracting the registered domain from a cookie host
+    "com.vn", "net.vn", "org.vn", "edu.vn", "gov.vn", "co.uk", "org.uk", "co.jp",
+    "com.au", "com.br", "com.cn", "co.in", "com.mx", "co.kr", "com.tr", "co.za",
+    "com.sg", "com.my", "com.ar", "com.pl", "com.ua",
+}
+
+
+def registered_domain(host: str) -> str:
+    h = host.lstrip(".").lower()
+    parts = h.split(".")
+    if len(parts) >= 3 and ".".join(parts[-2:]) in MULTI_PART_TLDS:
+        return ".".join(parts[-3:])
+    return ".".join(parts[-2:]) if len(parts) >= 2 else h
+
+
+def smart_time_to_iso(t) -> str:
+    """Chrome timestamps (us since 1601) or unix seconds, whichever fits."""
+    if not t:
+        return ""
+    if t > 10**14:
+        return chrome_time_to_iso(t)
+    if t > 10**9:
+        return datetime.fromtimestamp(t, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return str(t)
+
+
 def load_keys(browser_dir: Path) -> dict:
     keys = {}
     for ver in ("v10", "v20"):
@@ -159,16 +185,22 @@ def decrypt_database(src: Path, dst: Path, keys: dict, stats: dict) -> None:
         con.close()
 
 
-def export_csv(path: Path, header: list[str], rows: list) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", newline="", encoding="utf-8-sig") as f:
-        w = csv.writer(f)
-        w.writerow(header)
-        w.writerows(rows)
+def write_export(path_base: Path, fmt: str, header: list[str], rows: list[list]) -> None:
+    path_base.parent.mkdir(parents=True, exist_ok=True)
+    if fmt in ("csv", "both"):
+        with open(str(path_base) + ".csv", "w", newline="", encoding="utf-8-sig") as f:
+            w = csv.writer(f)
+            w.writerow(header)
+            w.writerows(rows)
+    if fmt in ("json", "both"):
+        data = [dict(zip(header, row)) for row in rows]
+        with open(str(path_base) + ".json", "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def export_credentials(src: Path, keys: dict, browser: str, profile: str, out_dir: Path) -> dict:
-    """Human-readable CSV exports for the known tables (read from a temp copy)."""
+def export_credentials(src: Path, keys: dict, browser: str, profile: str,
+                        out_dir: Path, fmt: str, combined: dict) -> dict:
+    """Exports (CSV and/or JSON) for the known tables (read from a temp copy)."""
     counts = {}
     tmp = Path(tempfile.mkdtemp()) / src.name
     shutil.copy2(src, tmp)
@@ -191,9 +223,10 @@ def export_credentials(src: Path, keys: dict, browser: str, profile: str, out_di
                 rows.append([browser, profile, host, name, value, path_,
                              chrome_time_to_iso(expires), secure, httponly,
                              chrome_time_to_iso(created)])
-            export_csv(out_dir / f"{browser}_{profile}_cookies.csv",
-                       ["browser", "profile", "host_key", "name", "value", "path",
-                        "expires_utc", "is_secure", "is_httponly", "creation_utc"], rows)
+            header = ["browser", "profile", "host_key", "name", "value", "path",
+                      "expires_utc", "is_secure", "is_httponly", "creation_utc"]
+            write_export(out_dir / f"{browser}_{profile}_cookies", fmt, header, rows)
+            combined.setdefault("cookies", []).extend(dict(zip(header, r)) for r in rows)
             counts["cookies"] = len(rows)
 
         if src.name == "Login Data" and "logins" in tables:
@@ -210,9 +243,10 @@ def export_credentials(src: Path, keys: dict, browser: str, profile: str, out_di
                         pwd = pt.decode("utf-8", "replace")
                 rows.append([browser, profile, origin, action, user, pwd,
                              chrome_time_to_iso(created), used, blacklisted])
-            export_csv(out_dir / f"{browser}_{profile}_passwords.csv",
-                       ["browser", "profile", "origin_url", "action_url", "username_value",
-                        "password", "date_created", "times_used", "blacklisted"], rows)
+            header = ["browser", "profile", "origin_url", "action_url", "username_value",
+                      "password", "date_created", "times_used", "blacklisted"]
+            write_export(out_dir / f"{browser}_{profile}_passwords", fmt, header, rows)
+            combined.setdefault("passwords", []).extend(dict(zip(header, r)) for r in rows)
             counts["passwords"] = len(rows)
 
         if src.name == "Web Data" and "credit_cards" in tables:
@@ -230,17 +264,47 @@ def export_credentials(src: Path, keys: dict, browser: str, profile: str, out_di
                 rows.append([browser, profile, guid, name, num,
                              f"{mon:02d}/{year}" if mon and year else "",
                              chrome_time_to_iso(modified)])
-            export_csv(out_dir / f"{browser}_{profile}_cards.csv",
-                       ["browser", "profile", "guid", "name_on_card", "card_number",
-                        "expires", "date_modified"], rows)
+            header = ["browser", "profile", "guid", "name_on_card", "card_number",
+                      "expires", "date_modified"]
+            write_export(out_dir / f"{browser}_{profile}_cards", fmt, header, rows)
+            combined.setdefault("cards", []).extend(dict(zip(header, r)) for r in rows)
             counts["cards"] = len(rows)
+
+        if src.name == "Web Data" and "masked_credit_cards" in tables:
+            rows = []
+            for r in con.execute(
+                "SELECT id,name_on_card,network,last_four,exp_month,exp_year,"
+                "bank_name,nickname FROM masked_credit_cards"
+            ):
+                cid, name, network, last4, mon, year, bank, nick = r
+                rows.append([browser, profile, cid, name, network, last4,
+                             f"{mon:02d}/{year}" if mon and year else "", bank, nick])
+            header = ["browser", "profile", "id", "name_on_card", "network", "last_four",
+                      "expires", "bank_name", "nickname"]
+            write_export(out_dir / f"{browser}_{profile}_masked_cards", fmt, header, rows)
+            combined.setdefault("masked_cards", []).extend(dict(zip(header, r)) for r in rows)
+            counts["masked_cards"] = len(rows)
+
+        if src.name == "Web Data" and "autofill" in tables:
+            rows = []
+            for r in con.execute(
+                "SELECT name,value,count,date_created,date_last_used FROM autofill"
+            ):
+                name, value, cnt, created, used = r
+                rows.append([browser, profile, name, value, cnt,
+                             smart_time_to_iso(created), smart_time_to_iso(used)])
+            header = ["browser", "profile", "field_name", "value", "count",
+                      "date_created", "date_last_used"]
+            write_export(out_dir / f"{browser}_{profile}_autofill", fmt, header, rows)
+            combined.setdefault("autofill", []).extend(dict(zip(header, r)) for r in rows)
+            counts["autofill"] = len(rows)
     finally:
         con.close()
         shutil.rmtree(tmp.parent, ignore_errors=True)
     return counts
 
 
-def process_browser(browser_dir: Path, out_root: Path) -> dict:
+def process_browser(browser_dir: Path, out_root: Path, fmt: str, combined: dict) -> dict:
     browser = browser_dir.name
     keys = load_keys(browser_dir)
     if not keys:
@@ -266,7 +330,7 @@ def process_browser(browser_dir: Path, out_root: Path) -> dict:
             try:
                 decrypt_database(db, dst, keys, stats)
                 counts = export_credentials(db, keys, browser, profile_dir.name,
-                                            out_root / "exports")
+                                            out_root / "exports", fmt, combined)
                 result[f"{browser}/{profile_dir.name}/{db.name}"] = {
                     "decrypted_fields": stats, "exports": counts}
                 detail = ", ".join(f"{k}={v}" for k, v in stats.items()) or "no encrypted fields"
@@ -284,6 +348,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Decrypt v10/v20 fields in BrowserExtract sqlite dumps")
     ap.add_argument("input", help="extract folder, e.g. C:\\Users\\x\\Downloads\\tsk_..._BrowserExtract")
     ap.add_argument("-o", "--output", help="output folder (default: <input>_decrypted)")
+    ap.add_argument("-f", "--format", choices=("json", "csv", "both"), default="both",
+                    help="export format for cookies/passwords/cards (default: both)")
     args = ap.parse_args()
 
     in_root = Path(args.input)
@@ -302,16 +368,38 @@ def main() -> None:
         sys.exit(1)
 
     report = {}
+    combined: dict = {}
     for bd in browser_dirs:
-        report.update(process_browser(bd, out_root))
+        report.update(process_browser(bd, out_root, args.format, combined))
 
     report_file = out_root / "report.json"
     report_file.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
 
+    combined_file = out_root / "exports" / "all_decrypted.json"
+    combined_file.write_text(json.dumps(combined, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    # companion summary: which sites have cookies (unique domains, aggregated)
+    domains: dict = {}
+    for c in combined.get("cookies", []):
+        host = c["host_key"]
+        d = domains.setdefault(host, {"domain": host, "site": registered_domain(host),
+                                      "total": 0, "profiles": {}})
+        d["total"] += 1
+        pk = f"{c['browser']}/{c['profile']}"
+        d["profiles"][pk] = d["profiles"].get(pk, 0) + 1
+    dom_rows = sorted(domains.values(), key=lambda d: (-d["total"], d["domain"]))
+    write_export(out_root / "exports" / "cookie_domains", args.format,
+                 ["domain", "site", "total", "profiles"],
+                 [[d["domain"], d["site"], d["total"],
+                   "; ".join(f"{k}={v}" for k, v in sorted(d["profiles"].items()))]
+                  for d in dom_rows])
+
     total = sum(sum(v.values()) for r in report.values() for v in [r.get("decrypted_fields", {})])
     print(f"\n[*] done: {len(report)} databases, {total} encrypted fields decrypted")
     print(f"[*] decrypted databases -> {out_root}")
-    print(f"[*] csv exports         -> {out_root / 'exports'}")
+    print(f"[*] exports ({args.format})     -> {out_root / 'exports'}")
+    print(f"[*] everything as one json -> {combined_file}")
+    print(f"[*] cookie site summary   -> {out_root / 'exports' / 'cookie_domains'} ({len(dom_rows)} domains)")
     print(f"[*] report              -> {report_file}")
 
 

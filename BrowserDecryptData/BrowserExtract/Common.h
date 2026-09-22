@@ -97,6 +97,7 @@ BOOL DecryptDpapiBlob(IN PBYTE pBlob, IN DWORD dwBlob, OUT PBYTE* ppDecrypted, O
 
 // Resolves the current user's desktop directory.
 BOOL GetDesktopDirectoryA(OUT LPSTR pszBuffer, IN DWORD dwBufferSize);
+BOOL GetRoamingDirectoryA(OUT LPSTR pszBuffer, IN DWORD dwBufferSize);
 
 // Returns a pointer to the file name part of a path (no shlwapi dependency).
 LPCSTR PathFindFileNameLocalA(IN LPCSTR pszPath);

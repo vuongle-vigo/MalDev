@@ -1,6 +1,11 @@
 #pragma once
 #include <Windows.h>
 
+/* forward decl với fixed underlying type — tham số `enum BindingFlags`
+ * ở các interface bên dưới được dùng TRƯỚC khi enum định nghĩa cuối file;
+ * MSVC dung túng dạng nonfixed, clang thì đây mới là khai báo hợp lệ */
+enum BindingFlags : int;
+
 struct __declspec(uuid("05f696dc-2b29-3663-ad8b-c4389cf2a713"))
     _AppDomain : IUnknown
 {

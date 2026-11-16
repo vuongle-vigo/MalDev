@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="MsgBox/MsgBox.vcxproj" />
+  <Project Path="MsgBox/MsgBox.vcxproj" Id="9480e570-66db-4f66-873f-0f738a855276" />
 </Solution>

@@ -96,7 +96,16 @@ CLR::~CLR() {
 BOOL CLR::InitCLR() {
 	HRESULT hr;
 
-	hr = CLRCreateInstance(CLSID_CLRMetaHost, IID_ICLRMetaHost, (LPVOID*) & m_pMetaHost);
+	/* metahost.h khai báo CLRCreateInstance plain (kỳ vọng mscoree.lib) —
+	 * resolve runtime qua GetProcAddress cho shellcode build */
+	typedef HRESULT(__stdcall* fnCLRCreateInstance)(REFCLSID, REFIID, LPVOID*);
+	fnCLRCreateInstance pCLRCreateInstance = (fnCLRCreateInstance)
+	    GetProcAddress(LoadLibraryA("mscoree.dll"), "CLRCreateInstance");
+	if (!pCLRCreateInstance) {
+		PRINT_ERROR("GetProcAddress CLRCreateInstance");
+		return false;
+	}
+	hr = pCLRCreateInstance(CLSID_CLRMetaHost, IID_ICLRMetaHost, (LPVOID*) & m_pMetaHost);
 	if (FAILED(hr)) {
 		PRINT_ERROR("CLRCreateInstance");
 		return false;

@@ -1,6 +1,13 @@
 #pragma once
 
 #include <Windows.h>
+
+/* metahost.h khai báo CLRCreateInstance PLAIN (kỳ vọng link mscoree.lib) —
+ * khai báo lại dllimport để auto-resolve pass nhận nó (build VS không đổi:
+ * mscoree.lib vẫn thỏa dllimport) */
+extern "C" __declspec(dllimport) HRESULT __stdcall CLRCreateInstance(
+    REFCLSID clsid, REFIID riid, LPVOID *ppInterface);
+
 #include <metahost.h>
 #include "mscorlib.h"
 

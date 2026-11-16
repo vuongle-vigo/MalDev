@@ -128,7 +128,7 @@ extern "C" __declspec(dllexport) BSTR PS_Execute(LPCWSTR command) {
     }
 
     std::wstring cmd(command);
-    if (cmd == L"exit" || cmd == L"quit") {
+    if (wcscmp(cmd.c_str(), L"exit") == 0 || wcscmp(cmd.c_str(), L"quit") == 0) {
         return SysAllocString(L"");
     }
 
@@ -242,7 +242,7 @@ int main() {
 		std::getline(std::wcin, input);
 
 		// Exit on "exit" command
-		if (input == L"exit" || input == L"quit") {
+		if (wcscmp(input.c_str(), L"exit") == 0 || wcscmp(input.c_str(), L"quit") == 0) {
 			break;
 		}
 

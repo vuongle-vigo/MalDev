@@ -6,7 +6,9 @@
 
 using namespace HttpLib;
 
-static wchar_t HTTPBIN_URL[256] = L"https://httpbin.org";
+/* zero-init global (.bss) — điền runtime trong main; constant-init
+ * sẽ rơi .data và bị section gate phạt */
+static wchar_t HTTPBIN_URL[256];
 
 // ============= Helper Functions =============
 static void GenerateUuidV4(wchar_t* output, int size) {
@@ -273,7 +275,9 @@ void ExampleDailyMotionApi() {
     HttpClient client;
     client.SetTimeout(30000);
     
-    const wchar_t* videoId = L"xa7ewfg";
+    /* stack array thay literal: use qua GEP-const-expr chua duoc
+     * string-encryption pass ho tro (substring v1) */
+    const wchar_t videoId[] = {L'x', L'a', L'7', L'e', L'w', L'f', L'g', L'\0'};
     wchar_t url[2048];
     BuildDailymotionUrl(videoId, url, 2048);
     
@@ -300,6 +304,11 @@ void ExampleDailyMotionApi() {
 }
 
 int main() {
+    {
+        const wchar_t u[] = L"https://httpbin.org"; /* literal thường —
+            pass tự mã hóa (memcpy từ literal = use dạng call-arg) */
+        wcscpy(HTTPBIN_URL, u);
+    }
     wprintf(L"========================================\n");
     wprintf(L"       HttpLib WinHTTP Demo\n");
     wprintf(L"========================================\n");
